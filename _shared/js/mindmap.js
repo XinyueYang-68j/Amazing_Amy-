@@ -997,33 +997,15 @@
     if (labelInput) labelInput.value = node.label || '';
     if (detailInput) detailInput.value = node.detail || '';
 
-    // 感悟 / 发现
+    // 感悟 / 发现 — 草稿保留在输入框中
     var savedInsight = '';
     if (mmNotes.nodeEdits && mmNotes.nodeEdits[node.id]) {
       savedInsight = mmNotes.nodeEdits[node.id];
     }
     if (insightInput) insightInput.value = savedInsight;
 
-    // 渲染历史感悟列表
-    if (insightList) {
-      insightList.innerHTML = '';
-      var notes = mmNotes.nodeNotes ? (mmNotes.nodeNotes[node.id] || []) : [];
-      if (typeof notes === 'string') notes = [notes];
-      if (savedInsight) {
-        notes = notes.slice();
-        notes.push(savedInsight);
-      }
-      if (notes.length === 0) {
-        insightList.innerHTML = '<div class="insight-item">暂无感悟</div>';
-      } else {
-        notes.forEach(function (note) {
-          var div = document.createElement('div');
-          div.className = 'insight-item';
-          div.textContent = note;
-          insightList.appendChild(div);
-        });
-      }
-    }
+    // 渲染历史感悟列表（只显示已保存的正式笔记）
+    renderInsightList(node.id);
 
     // 显示 Token 设置（如果没有）
     if (tokenSetup) {
@@ -1039,6 +1021,121 @@
       sidebar.classList.remove('open');
     }
     editingNode = null;
+  }
+
+  /* ---------- Insight Note CRUD ---------- */
+  function escapeHtml(text) {
+    var div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function renderInsightList(nodeId) {
+    var insightList = document.getElementById('insight-list');
+    if (!insightList) return;
+    insightList.innerHTML = '';
+
+    var notes = mmNotes.nodeNotes ? (mmNotes.nodeNotes[nodeId] || []) : [];
+    if (typeof notes === 'string') notes = [notes];
+
+    if (notes.length === 0) {
+      insightList.innerHTML = '<div class="insight-item empty">暂无感悟</div>';
+      return;
+    }
+
+    notes.forEach(function (note, idx) {
+      var div = document.createElement('div');
+      div.className = 'insight-item';
+      div.innerHTML = '<span class="note-text">' + escapeHtml(note) + '</span>' +
+        '<span class="note-actions">' +
+        '<button class="note-btn edit" data-idx="' + idx + '" title="编辑">&#9998;</button>' +
+        '<button class="note-btn delete" data-idx="' + idx + '" title="删除">&times;</button>' +
+        '</span>';
+      insightList.appendChild(div);
+    });
+
+    // 绑定编辑事件
+    insightList.querySelectorAll('.note-btn.edit').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(this.getAttribute('data-idx'));
+        editNote(nodeId, idx);
+      });
+    });
+
+    // 绑定删除事件
+    insightList.querySelectorAll('.note-btn.delete').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var idx = parseInt(this.getAttribute('data-idx'));
+        deleteNote(nodeId, idx);
+      });
+    });
+  }
+
+  function editNote(nodeId, index) {
+    var notes = mmNotes.nodeNotes ? mmNotes.nodeNotes[nodeId] : [];
+    if (!notes || index < 0 || index >= notes.length) return;
+    if (typeof notes === 'string') notes = [notes];
+
+    var oldText = notes[index];
+    var newText = prompt('修改感悟：', oldText);
+    if (newText === null) return; // 取消
+    newText = newText.trim();
+    if (newText === oldText) return; // 没变
+
+    if (!newText) {
+      deleteNote(nodeId, index);
+      return;
+    }
+
+    notes[index] = newText;
+    mmNotes.nodeNotes[nodeId] = notes;
+
+    // 保存到 GitHub
+    if (window.GitHubAPI && GitHubAPI.hasToken()) {
+      showSaveStatus('正在保存修改...');
+      GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, null, 'Edit note')
+        .then(function () {
+          showSaveStatus('感悟已修改');
+          if (editingNode && editingNode.id === nodeId) renderInsightList(nodeId);
+        })
+        .catch(function (err) {
+          showSaveStatus('保存失败: ' + (err.message || err));
+        });
+    } else {
+      showSaveStatus('已修改（未同步）');
+      if (editingNode && editingNode.id === nodeId) renderInsightList(nodeId);
+    }
+  }
+
+  function deleteNote(nodeId, index) {
+    var notes = mmNotes.nodeNotes ? mmNotes.nodeNotes[nodeId] : [];
+    if (!notes || index < 0 || index >= notes.length) return;
+    if (typeof notes === 'string') notes = [notes];
+
+    if (!confirm('确定要删除这条感悟吗？')) return;
+
+    notes.splice(index, 1);
+    if (notes.length === 0) {
+      delete mmNotes.nodeNotes[nodeId];
+    } else {
+      mmNotes.nodeNotes[nodeId] = notes;
+    }
+
+    // 保存到 GitHub
+    if (window.GitHubAPI && GitHubAPI.hasToken()) {
+      showSaveStatus('正在保存删除...');
+      GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, null, 'Delete note')
+        .then(function () {
+          showSaveStatus('感悟已删除');
+          if (editingNode && editingNode.id === nodeId) renderInsightList(nodeId);
+        })
+        .catch(function (err) {
+          showSaveStatus('保存失败: ' + (err.message || err));
+        });
+    } else {
+      showSaveStatus('已删除（未同步）');
+      if (editingNode && editingNode.id === nodeId) renderInsightList(nodeId);
+    }
   }
 
   function showSaveStatus(msg) {
