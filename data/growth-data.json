@@ -1,0 +1,65 @@
+{
+  "influencers": [
+    {
+      "name": "罗翔",
+      "ability": "概念还原力",
+      "representative": "刑法公开课，从一个张三案例拆解到一个法律原则的本质",
+      "videos": ["https://www.bilibili.com/video/BV1hA411i7Jw/"],
+      "learningAction": "看完每次问：他把支点放在哪一句话？如果换我讲同一个东西，我会多讲多少冗余？"
+    },
+    {
+      "name": "混知（陈磊）",
+      "ability": "类比迁移（Bridging）",
+      "representative": "用历史就是一家公司的类比讲中国史",
+      "videos": ["https://www.bilibili.com/video/BV1mE411V75N/"],
+      "learningAction": "看他为什么选'公司'这个容器来装'中国史'。如果我讲同一个概念，我会选什么容器？对比校准精度。"
+    },
+    {
+      "name": "杨天真",
+      "ability": "序列化节奏感",
+      "representative": "切哥访谈，开场抛反差→拆解→收结论的节奏控制",
+      "videos": ["https://www.bilibili.com/video/BV1oV411h7Zv/"],
+      "learningAction": "每次访谈切三段，标注每段的信息功能：抛钩子/讲事实/给观点。看她怎么控制信息密度。"
+    },
+    {
+      "name": "董宇辉",
+      "ability": "元认知监控",
+      "representative": "实时读取观众反应调整叙事节奏，通过弹幕感知情绪、化解尴尬",
+      "videos": [
+        "https://www.bilibili.com/video/BV1Dw4m1R7Lr/",
+        "https://www.bilibili.com/video/BV1Gp4y1T71A/",
+        "https://www.bilibili.com/video/BV1UWpEeUEHi/"
+      ],
+      "learningAction": "每次看问三个问题：①他哪里感觉到不对了？②他用什么动作调整（降速/转话题/玩梗）？③调整后观众反馈是什么？"
+    },
+    {
+      "name": "刘润",
+      "ability": "系统思维",
+      "representative": "商业洞察，把复杂商业现象拆解为可理解的系统结构",
+      "videos": ["https://www.bilibili.com/video/BV1a84y1o7nN/"],
+      "learningAction": "看他怎么找到系统的杠杆点，哪一个变量是核心变量。尝试用同样的方法拆解自己工作中遇到的问题。"
+    }
+  ],
+  "books": {
+    "cognitiveScience": [
+      { "title": "思考，快与慢", "author": "丹尼尔·卡尼曼", "status": "待读", "note": "" },
+      { "title": "认知天性", "author": "彼得·布朗 等", "status": "待读", "note": "" }
+    ],
+    "productDesign": [
+      { "title": "俞军产品方法论", "author": "俞军", "status": "待读", "note": "" },
+      { "title": "启示录", "author": "Marty Cagan", "status": "待读", "note": "" }
+    ],
+    "orgManagement": [
+      { "title": "第五项修炼", "author": "彼得·圣吉", "status": "待读", "note": "" },
+      { "title": "非暴力沟通", "author": "马歇尔·卢森堡", "status": "待读", "note": "" }
+    ],
+    "systemThinking": [
+      { "title": "系统之美", "author": "德内拉·梅多斯", "status": "待读", "note": "" }
+    ],
+    "literature": [
+      { "title": "百年孤独", "author": "加西亚·马尔克斯", "status": "待读", "note": "训练语感和长叙事节奏感" }
+    ]
+  },
+  "writers": [],
+  "weeklyObservations": []
+}

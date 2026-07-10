@@ -1,0 +1,263 @@
+/* ============================================================
+   growth.css — Page 3 提高方向
+   ============================================================ */
+
+/* ---------- Section Titles ---------- */
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 2.5rem 0 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.section-title:first-of-type {
+  margin-top: 1.5rem;
+  border-top: none;
+  padding-top: 0;
+}
+
+.section-desc {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ---------- 3.1 Observation Templates ---------- */
+.observation-templates {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.observation-card {
+  background: var(--bg2);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.observation-card input {
+  font-family: var(--font-cn), var(--font-en);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  border: none;
+  border-bottom: 2px solid var(--rule);
+  padding: 0.5rem 0;
+  background: transparent;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.observation-card input:focus {
+  border-bottom-color: var(--accent);
+}
+
+.observation-card textarea {
+  font-family: var(--font-cn), var(--font-en);
+  font-size: 0.875rem;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 0.625rem 0.75rem;
+  resize: vertical;
+  min-height: 60px;
+  outline: none;
+  background: var(--bg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.observation-card textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* ---------- 3.2 Book List ---------- */
+.book-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.book-category h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+  padding-left: 0.5rem;
+  border-left: 3px solid var(--accent);
+}
+
+.book-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+
+.book-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  gap: 0.75rem;
+}
+
+.book-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.book-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-author {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* ---------- Badges ---------- */
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.badge-gray {
+  background: #F3F4F6;
+  color: #6B7280;
+}
+
+.badge-blue {
+  background: #DBEAFE;
+  color: #2563EB;
+}
+
+.badge-green {
+  background: #D1FAE5;
+  color: #059669;
+}
+
+/* ---------- 3.3 Writer Placeholder ---------- */
+.writer-placeholder {
+  display: flex;
+  justify-content: center;
+}
+
+.placeholder-card {
+  background: var(--bg2);
+  border: 2px dashed var(--rule);
+  border-radius: 10px;
+  padding: 2rem 3rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ---------- 3.4 Influencer Cards ---------- */
+.influencer-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.25rem;
+}
+
+.influencer-card {
+  background: var(--bg2);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+.influencer-card h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.ability-tag {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: #DBEAFE;
+  color: #2563EB;
+  margin-bottom: 0.75rem;
+}
+
+.representative {
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.6;
+  margin-bottom: 0.75rem;
+}
+
+.videos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.videos a {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.videos a:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.learning-action {
+  font-size: 0.875rem;
+  color: var(--ink);
+  background: #FFF7ED;
+  border-left: 4px solid var(--accent2);
+  padding: 0.75rem 1rem;
+  border-radius: 0 6px 6px 0;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .observation-templates {
+    grid-template-columns: 1fr;
+  }
+
+  .book-list {
+    grid-template-columns: 1fr;
+  }
+
+  .influencer-cards {
+    grid-template-columns: 1fr;
+  }
+}

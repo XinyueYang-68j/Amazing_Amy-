@@ -1,0 +1,87 @@
+/* ============================================================
+   radar.css — 能力雷达图页专属样式
+   ============================================================ */
+
+/* ---------- Radar Description ---------- */
+.radar-desc {
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+/* ---------- Chart Container ---------- */
+#chart-radar {
+  width: 100%;
+  min-height: 500px;
+  margin-bottom: 2.5rem;
+}
+
+/* ---------- Cards Container ---------- */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ---------- Dimension Card ---------- */
+.dimension-card {
+  background: var(--bg2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 1.25rem;
+  position: relative;
+}
+
+.dimension-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0.5rem 0 0.35rem;
+}
+
+.dimension-card p {
+  font-size: 0.9rem;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.dimension-card .case {
+  font-style: italic;
+  color: var(--muted);
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+/* ---------- Tier Badges ---------- */
+.tier-badge {
+  display: inline-block;
+  font-family: var(--font-en);
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  color: #ffffff;
+}
+
+.tier-s {
+  background: #2563EB;
+}
+
+.tier-a {
+  background: #60A5FA;
+}
+
+.tier-b {
+  background: #93C5FD;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  #chart-radar {
+    min-height: 350px;
+  }
+
+  .cards-container {
+    grid-template-columns: 1fr;
+  }
+}

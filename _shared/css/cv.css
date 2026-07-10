@@ -1,0 +1,183 @@
+/* ============================================================
+   cv.css — CV 页专属样式
+   ============================================================ */
+
+/* ---------- Hero ---------- */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.hero-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.hero-info h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--ink);
+}
+
+.hero-title {
+  font-size: 1.15rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.hero-contact {
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+/* ---------- Experience ---------- */
+.experience-item {
+  margin-bottom: 1.75rem;
+}
+
+.experience-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.experience-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.experience-meta {
+  font-size: 0.9rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.experience-item ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  color: var(--ink);
+}
+
+.experience-item li {
+  margin-bottom: 0.35rem;
+  line-height: 1.7;
+}
+
+/* ---------- Education ---------- */
+.education-item {
+  margin-bottom: 1rem;
+}
+
+.education-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.education-header h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.education-meta {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* ---------- Project Cards ---------- */
+.project-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.project-card {
+  background: var(--bg2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.project-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.project-context {
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+
+.project-desc {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* ---------- Skill Tags ---------- */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skill-tag {
+  display: inline-block;
+  background: var(--bg2);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.9rem;
+  color: var(--ink);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.skill-tag:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+/* ---------- Language ---------- */
+.language-text {
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.language-detail {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .experience-header,
+  .education-header {
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .project-cards {
+    grid-template-columns: 1fr;
+  }
+}
