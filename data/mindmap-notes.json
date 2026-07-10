@@ -1,4 +1,15 @@
 {
-  "nodeNotes": {},
-  "nodeEdits": {}
+  "nodeNotes": {
+    "p1": [
+      "test",
+      "test"
+    ],
+    "v3": [
+      "test"
+    ]
+  },
+  "nodeEdits": {
+    "p1": "",
+    "v3": ""
+  }
 }
