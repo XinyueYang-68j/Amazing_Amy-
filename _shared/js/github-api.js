@@ -2,8 +2,8 @@
  * GitHub API Client — 前端直连 GitHub REST API
  * Token 存储在 localStorage，不在代码中
  * 
- * 写入策略：Contents API (PUT /contents/:path) + 自动重试
- * 写失败时自动重新读取最新 SHA 再重试（最多 2 次）
+ * 写入策略：Git Data API (blob → tree → commit → update ref)
+ * 不需要文件 SHA，避免 409/422 冲突
  */
 (function () {
   'use strict';
@@ -29,7 +29,7 @@
       return !!token;
     },
 
-    /* ---------- Helper ---------- */
+    /* ---------- Helpers ---------- */
     _baseUrl: function () {
       return 'https://api.github.com/repos/' + CONFIG.owner + '/' + CONFIG.repo;
     },
@@ -43,7 +43,7 @@
       return btoa(unescape(encodeURIComponent(JSON.stringify(obj, null, 2))));
     },
 
-    /* ---------- Read file ---------- */
+    /* ---------- Read file via Contents API ---------- */
     readFile: function (path) {
       return fetch(
         this._baseUrl() + '/contents/' + encodeURIComponent(path) + '?ref=' + CONFIG.branch,
@@ -57,54 +57,91 @@
       });
     },
 
-    /* ---------- Write file with retry ---------- */
-    writeFile: function (path, contentObj, sha, message) {
+    /* ---------- Write file via Git Data API ---------- */
+    writeFile: function (path, contentObj, _shaIgnored, message) {
       var self = this;
       var contentStr = this._encode(contentObj);
+      var baseUrl = this._baseUrl();
+      var headers = this._headers();
+      var msg = message || 'Update ' + path + ' via online CV';
 
-      function doWrite(currentSha, retriesLeft) {
-        var body = {
-          message: message || 'Update ' + path + ' via online CV',
-          content: contentStr,
-          branch: CONFIG.branch
-        };
-        if (currentSha) body.sha = currentSha;
-
-        return fetch(
-          self._baseUrl() + '/contents/' + encodeURIComponent(path),
-          {
-            method: 'PUT',
-            headers: self._headers(),
-            body: JSON.stringify(body)
-          }
-        ).then(function (res) {
-          if (!res.ok) {
-            // 409: SHA conflict 或 422: SHA missing — 重新读取最新 SHA 再重试
-            if ((res.status === 409 || res.status === 422) && retriesLeft > 0) {
-              return self.readFile(path).then(function (fresh) {
-                return doWrite(fresh.sha, retriesLeft - 1);
-              });
-            }
-            return res.json().then(function (err) {
-              throw new Error(err.message || 'Write failed: ' + res.status);
-            });
-          }
+      // Step 1: Create blob
+      return fetch(baseUrl + '/git/blobs', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ content: contentStr, encoding: 'base64' })
+      }).then(function (res) {
+        if (!res.ok) return res.json().then(function (e) { throw new Error('Blob create failed: ' + (e.message || res.status)); });
+        return res.json();
+      }).then(function (blob) {
+        // Step 2: Get latest commit ref
+        return fetch(baseUrl + '/git/refs/heads/' + CONFIG.branch, {
+          headers: headers
+        }).then(function (res) {
+          if (!res.ok) throw new Error('Get ref failed: ' + res.status);
+          return res.json();
+        }).then(function (ref) {
+          return { blobSha: blob.sha, headSha: ref.object.sha };
+        });
+      }).then(function (state) {
+        // Step 3: Get the commit object to get tree SHA
+        return fetch(baseUrl + '/git/commits/' + state.headSha, {
+          headers: headers
+        }).then(function (res) {
+          if (!res.ok) throw new Error('Get commit failed: ' + res.status);
+          return res.json();
+        }).then(function (commit) {
+          state.treeSha = commit.tree.sha;
+          return state;
+        });
+      }).then(function (state) {
+        // Step 4: Create new tree with the updated file
+        return fetch(baseUrl + '/git/trees', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            base_tree: state.treeSha,
+            tree: [{
+              path: path,
+              mode: '100644',
+              type: 'blob',
+              sha: state.blobSha
+            }]
+          })
+        }).then(function (res) {
+          if (!res.ok) return res.json().then(function (e) { throw new Error('Tree create failed: ' + (e.message || res.status)); });
+          return res.json();
+        }).then(function (tree) {
+          state.newTreeSha = tree.sha;
+          return state;
+        });
+      }).then(function (state) {
+        // Step 5: Create commit
+        return fetch(baseUrl + '/git/commits', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            message: msg,
+            tree: state.newTreeSha,
+            parents: [state.headSha]
+          })
+        }).then(function (res) {
+          if (!res.ok) return res.json().then(function (e) { throw new Error('Commit create failed: ' + (e.message || res.status)); });
+          return res.json();
+        }).then(function (commit) {
+          state.commitSha = commit.sha;
+          return state;
+        });
+      }).then(function (state) {
+        // Step 6: Update branch reference
+        return fetch(baseUrl + '/git/refs/heads/' + CONFIG.branch, {
+          method: 'PATCH',
+          headers: headers,
+          body: JSON.stringify({ sha: state.commitSha, force: false })
+        }).then(function (res) {
+          if (!res.ok) return res.json().then(function (e) { throw new Error('Ref update failed: ' + (e.message || res.status)); });
           return res.json();
         });
-      }
-
-      // 如果提供了 SHA 直接写入
-      if (sha) return doWrite(sha, 2);
-
-      // 未提供 SHA：先读取文件获取最新 SHA，再写入（文件不存在则创建）
-      return self.readFile(path).then(function (fresh) {
-        return doWrite(fresh.sha, 2);
-      }).catch(function (err) {
-        // 文件不存在（404）则创建新文件
-        if (err.message && err.message.indexOf('404') !== -1) {
-          return doWrite(null, 2);
-        }
-        throw err;
       });
     },
 
