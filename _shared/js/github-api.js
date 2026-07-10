@@ -79,8 +79,8 @@
           }
         ).then(function (res) {
           if (!res.ok) {
-            // 409: SHA conflict — 重新读取最新 SHA 再重试
-            if (res.status === 409 && retriesLeft > 0) {
+            // 409: SHA conflict 或 422: SHA missing — 重新读取最新 SHA 再重试
+            if ((res.status === 409 || res.status === 422) && retriesLeft > 0) {
               return self.readFile(path).then(function (fresh) {
                 return doWrite(fresh.sha, retriesLeft - 1);
               });
@@ -93,8 +93,19 @@
         });
       }
 
-      // 第一轮：用传入的 sha 尝试写入（如果为 null 会自动创建新文件）
-      return doWrite(sha || null, 2);
+      // 如果提供了 SHA 直接写入
+      if (sha) return doWrite(sha, 2);
+
+      // 未提供 SHA：先读取文件获取最新 SHA，再写入（文件不存在则创建）
+      return self.readFile(path).then(function (fresh) {
+        return doWrite(fresh.sha, 2);
+      }).catch(function (err) {
+        // 文件不存在（404）则创建新文件
+        if (err.message && err.message.indexOf('404') !== -1) {
+          return doWrite(null, 2);
+        }
+        throw err;
+      });
     },
 
     /* ---------- Ensure file exists ---------- */
