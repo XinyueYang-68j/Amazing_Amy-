@@ -68,8 +68,6 @@
   var NOTES_PATH = './data/mindmap-notes.json';
   var mmData = null;     // 原始 mindmap 数据
   var mmNotes = { nodeNotes: {}, nodeEdits: {} };
-  var mmSha = '';
-  var notesSha = '';
 
   /* ============================================================
      State
@@ -197,7 +195,6 @@
     GitHubAPI.readFile('data/mindmap-data.json')
       .then(function (result) {
         mmData = result.content;
-        mmSha = result.sha;
         buildGraph(mmData);
         buildLegend(mmData.clusters);
       })
@@ -211,7 +208,6 @@
       GitHubAPI.ensureFile('data/mindmap-notes.json', { nodeNotes: {}, nodeEdits: {} })
         .then(function (result) {
           mmNotes = result.content;
-          notesSha = result.sha;
           if (editingNode) openSidebar(editingNode);
         })
         .catch(function (err) {
@@ -1084,31 +1080,12 @@
     // 写回 GitHub
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
       showSaveStatus('正在保存...');
-      Promise.resolve()
+      GitHubAPI.writeFile('data/mindmap-data.json', mmData, null, 'Update mindmap data')
         .then(function () {
-          // 先读取两个文件的最新 SHA，避免 SHA 过期
-          return Promise.all([
-            GitHubAPI.readFile('data/mindmap-data.json').catch(function () { return null; }),
-            GitHubAPI.readFile('data/mindmap-notes.json').catch(function () { return null; })
-          ]);
-        })
-        .then(function (results) {
-          if (results[0]) { mmData = results[0].content; mmSha = results[0].sha; }
-          if (results[1]) { notesSha = results[1].sha; }
-          // 注意：不覆盖 mmNotes，因为感悟已在本地写入
-        })
-        .then(function () {
-          // 重新同步用户编辑到 mmData（因为上面可能覆盖了）
-          syncMmDataFromNodes();
-          return GitHubAPI.writeFile('data/mindmap-data.json', mmData, mmSha, 'Update mindmap data');
-        })
-        .then(function (res) {
-          if (res && res.content && res.content.sha) mmSha = res.content.sha;
           showSaveStatus('脑图数据已保存');
-          return GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, notesSha, 'Update mindmap notes');
+          return GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, null, 'Update mindmap notes');
         })
-        .then(function (res) {
-          if (res && res.content && res.content.sha) notesSha = res.content.sha;
+        .then(function () {
           showSaveStatus('脑图与笔记已保存');
           if (editingNode) openSidebar(editingNode);
         })
@@ -1153,10 +1130,7 @@
     editingNode = null;
 
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
-      GitHubAPI.writeFile('data/mindmap-data.json', mmData, mmSha, 'Delete node')
-        .then(function (res) {
-          if (res && res.content && res.content.sha) mmSha = res.content.sha;
-        })
+      GitHubAPI.writeFile('data/mindmap-data.json', mmData, null, 'Delete node')
         .catch(function (err) {
           console.error(err);
           showSaveStatus('删除保存失败: ' + (err.message || err));
@@ -1226,9 +1200,8 @@
     });
 
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
-      GitHubAPI.writeFile('data/mindmap-data.json', mmData, mmSha, 'Add child node')
-        .then(function (res) {
-          if (res && res.content && res.content.sha) mmSha = res.content.sha;
+      GitHubAPI.writeFile('data/mindmap-data.json', mmData, null, 'Add child node')
+        .then(function () {
           showSaveStatus('子节点已添加');
         })
         .catch(function (err) {
@@ -1261,14 +1234,8 @@
 
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
       showSaveStatus('正在保存笔记...');
-      GitHubAPI.readFile('data/mindmap-notes.json')
-        .then(function (fresh) {
-          notesSha = fresh.sha;
-          return GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, notesSha, 'Update mindmap notes');
-        })
-        .then(function (res) {
-          if (res && res.content && res.content.sha) notesSha = res.content.sha;
-          console.log('[saveNodeNote] GitHub write success. notesSha updated.');
+      GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, null, 'Update mindmap notes')
+        .then(function () {
           showSaveStatus('笔记已保存（' + notes.length + '条）');
           if (editingNode) openSidebar(editingNode);
         })
