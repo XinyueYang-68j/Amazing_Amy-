@@ -58,7 +58,9 @@
      * @param {string} sha — 文件的当前 SHA（更新时必须）
      * @param {string} message — 提交消息
      */
-    writeFile: function (path, content, sha, message) {
+    writeFile: function (path, content, sha, message, _retryCount) {
+      var self = this;
+      var retries = typeof _retryCount === 'number' ? _retryCount : 0;
       var body = {
         message: message || 'Update ' + path + ' via online CV',
         content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))),
@@ -80,6 +82,12 @@
         }
       ).then(function (res) {
         if (!res.ok) {
+          // SHA mismatch — auto retry with fresh SHA (max 2 retries)
+          if (res.status === 409 && retries < 2) {
+            return self.readFile(path).then(function (fresh) {
+              return self.writeFile(path, content, fresh.sha, message, retries + 1);
+            });
+          }
           return res.json().then(function (err) {
             throw new Error('Write failed: ' + (err.message || res.status));
           });
