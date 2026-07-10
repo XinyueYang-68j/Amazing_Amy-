@@ -4,13 +4,13 @@
 
 /* ---------- CSS Variables ---------- */
 :root {
-  --bg: #F8F9FA;
-  --bg2: #FFFFFF;
-  --ink: #1F2937;
-  --muted: #6B7280;
-  --rule: #E5E7EB;
-  --accent: #2563EB;
-  --accent2: #EA580C;
+  --bg: #0A0A0F;
+  --bg2: #14151A;
+  --ink: #F0F0F0;
+  --muted: #8A8F98;
+  --rule: #2A2D35;
+  --accent: #C9A84C;
+  --accent2: #B8954A;
   --font-cn: 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-en: 'Outfit', sans-serif;
   --font-mono: 'Geist Mono', monospace;

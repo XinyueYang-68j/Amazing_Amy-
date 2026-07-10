@@ -74,7 +74,7 @@
 
 .observation-card textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
 }
 
 /* ---------- 3.2 Book List ---------- */
@@ -143,17 +143,17 @@
 }
 
 .badge-gray {
-  background: #F3F4F6;
-  color: #6B7280;
+  background: #1A1D24;
+  color: #8A8F98;
 }
 
 .badge-blue {
-  background: #DBEAFE;
-  color: #2563EB;
+  background: #1A1D24;
+  color: #C9A84C;
 }
 
 .badge-green {
-  background: #D1FAE5;
+  background: #1A1D24;
   color: #059669;
 }
 
@@ -200,8 +200,8 @@
   font-weight: 600;
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
-  background: #DBEAFE;
-  color: #2563EB;
+  background: #1A1D24;
+  color: #C9A84C;
   margin-bottom: 0.75rem;
 }
 
@@ -239,8 +239,8 @@
 .learning-action {
   font-size: 0.875rem;
   color: var(--ink);
-  background: #FFF7ED;
-  border-left: 4px solid var(--accent2);
+  background: #1A1D24;
+  border-left: 4px solid var(--accent);
   padding: 0.75rem 1rem;
   border-radius: 0 6px 6px 0;
   line-height: 1.6;
