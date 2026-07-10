@@ -234,3 +234,98 @@
     padding: 0.625rem 0.75rem;
   }
 }
+
+/* ---------- Sidebar Edit Mode ---------- */
+#sidebar .edit-label {
+  width: 100%;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  color: var(--accent);
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  font-family: var(--font-cn);
+}
+#sidebar .edit-textarea {
+  width: 100%;
+  min-height: 80px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(212,175,55,0.2);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  color: #D1D5DB;
+  font-size: 0.9rem;
+  font-family: var(--font-cn);
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+#sidebar .edit-textarea:focus,
+#sidebar .edit-label:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+#sidebar .section-title {
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 1rem 0 0.5rem;
+}
+#sidebar .insight-list {
+  margin-bottom: 0.75rem;
+}
+#sidebar .insight-item {
+  background: rgba(212,175,55,0.05);
+  border-left: 2px solid var(--accent);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  color: #D1D5DB;
+  border-radius: 0 4px 4px 0;
+}
+#sidebar .btn-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+#sidebar .btn-gold {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+#sidebar .btn-gold:hover { opacity: 0.85; }
+#sidebar .btn-red {
+  background: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+#sidebar .btn-red:hover { background: rgba(239, 68, 68, 0.25); }
+#sidebar .btn-outline {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid rgba(212,175,55,0.3);
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+#sidebar .btn-outline:hover { background: rgba(212,175,55,0.1); }
+#sidebar .save-status {
+  font-size: 0.8rem;
+  color: var(--accent);
+  margin-top: 0.5rem;
+}

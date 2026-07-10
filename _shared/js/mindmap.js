@@ -64,10 +64,18 @@
     pulseMaxAlpha: 0.8,
   };
 
+  var GH_PATH = './data/mindmap-data.json';
+  var NOTES_PATH = './data/mindmap-notes.json';
+  var mmData = null;     // 原始 mindmap 数据
+  var mmNotes = { nodeNotes: {}, nodeEdits: {} };
+  var mmSha = '';
+  var notesSha = '';
+
   /* ============================================================
      State
      ============================================================ */
   var canvas, ctx, dpr;
+  var editingNode = null;      // 当前正在编辑的节点
   var nodes = [];              // { id, label, detail, cluster, x, y, vx, vy, radius, color, pinned, highlighted }
   var edges = [];              // { from, to, label, sourceNode, targetNode, particles: [{t, dir, speed}] }
   var clusters = {};           // { id: { name, color, nodes:[] } }
@@ -154,9 +162,11 @@
      Data Loading & Graph Construction
      ============================================================ */
   function loadData() {
+    // 1. 先加载本地数据，保证正常展示
     fetch('./data/mindmap-data.json')
       .then(function (res) { return res.json(); })
       .then(function (data) {
+        mmData = data;
         buildGraph(data);
         buildLegend(data.clusters);
         // Center camera
@@ -165,11 +175,59 @@
         camera.zoom = 1;
         // Start simulation loop
         frameTime = performance.now();
-        rafId = requestAnimationFrame(simulate);
+        if (!rafId) rafId = requestAnimationFrame(simulate);
+
+        // 2. 如果有 GitHub Token，再尝试从 GitHub 读取最新数据覆盖
+        if (window.GitHubAPI && GitHubAPI.hasToken()) {
+          loadFromGitHub();
+        }
       })
       .catch(function (err) {
-        console.error('[mindmap] Failed to load data:', err);
+        console.error('[mindmap] Failed to load local data:', err);
+        if (window.GitHubAPI && GitHubAPI.hasToken()) {
+          loadFromGitHub();
+        }
       });
+
+    // 3. 同时加载 notes
+    loadNotes();
+  }
+
+  function loadFromGitHub() {
+    GitHubAPI.readFile('data/mindmap-data.json')
+      .then(function (result) {
+        mmData = result.content;
+        mmSha = result.sha;
+        buildGraph(mmData);
+        buildLegend(mmData.clusters);
+      })
+      .catch(function (err) {
+        console.error('[mindmap] Failed to load from GitHub:', err);
+      });
+  }
+
+  function loadNotes() {
+    if (window.GitHubAPI && GitHubAPI.hasToken()) {
+      GitHubAPI.ensureFile('data/mindmap-notes.json', { nodeNotes: {}, nodeEdits: {} })
+        .then(function (result) {
+          mmNotes = result.content;
+          notesSha = result.sha;
+          if (editingNode) openSidebar(editingNode);
+        })
+        .catch(function (err) {
+          console.error('[mindmap] Failed to load notes from GitHub:', err);
+        });
+    } else {
+      fetch('./data/mindmap-notes.json')
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          mmNotes = data;
+          if (editingNode) openSidebar(editingNode);
+        })
+        .catch(function () {
+          mmNotes = { nodeNotes: {}, nodeEdits: {} };
+        });
+    }
   }
 
   function buildGraph(data) {
@@ -863,17 +921,106 @@
       closeBtn.addEventListener('click', function () {
         closeSidebar();
         selectedNode = null;
+        editingNode = null;
+      });
+    }
+
+    // 实时更新内存数据
+    var labelInput = document.getElementById('edit-label');
+    var detailInput = document.getElementById('edit-detail');
+    var insightInput = document.getElementById('edit-insight');
+
+    if (labelInput) {
+      labelInput.addEventListener('input', function () {
+        if (editingNode) editingNode.label = labelInput.value;
+      });
+    }
+    if (detailInput) {
+      detailInput.addEventListener('input', function () {
+        if (editingNode) editingNode.detail = detailInput.value;
+      });
+    }
+    if (insightInput) {
+      insightInput.addEventListener('input', function () {
+        if (editingNode) {
+          if (!mmNotes.nodeEdits) mmNotes.nodeEdits = {};
+          mmNotes.nodeEdits[editingNode.id] = insightInput.value;
+        }
+      });
+    }
+
+    // 按钮事件
+    var btnSave = document.getElementById('btn-save');
+    var btnDelete = document.getElementById('btn-delete');
+    var btnAddChild = document.getElementById('btn-add-child');
+
+    if (btnSave) btnSave.addEventListener('click', saveNodeEdit);
+    if (btnDelete) btnDelete.addEventListener('click', deleteNode);
+    if (btnAddChild) btnAddChild.addEventListener('click', addChildNode);
+
+    // Token 设置
+    var tokenSaveBtn = document.getElementById('mm-token-save');
+    var tokenInput = document.getElementById('mm-gh-token');
+    if (tokenSaveBtn && tokenInput) {
+      tokenSaveBtn.addEventListener('click', function () {
+        var t = tokenInput.value.trim();
+        if (t && window.GitHubAPI) {
+          GitHubAPI.setToken(t);
+          showSaveStatus('Token 已保存');
+          loadFromGitHub();
+          loadNotes();
+        }
       });
     }
   }
 
   function openSidebar(node) {
     var sidebar = document.getElementById('sidebar');
-    var title = document.getElementById('sidebar-title');
-    var detail = document.getElementById('sidebar-detail');
-    if (!sidebar || !title || !detail) return;
-    title.textContent = node.label;
-    detail.textContent = node.detail || '';
+    if (!sidebar) return;
+    editingNode = node;
+
+    var labelInput = document.getElementById('edit-label');
+    var detailInput = document.getElementById('edit-detail');
+    var insightInput = document.getElementById('edit-insight');
+    var insightList = document.getElementById('insight-list');
+    var tokenSetup = document.getElementById('mm-token-setup');
+
+    if (labelInput) labelInput.value = node.label || '';
+    if (detailInput) detailInput.value = node.detail || '';
+
+    // 感悟 / 发现
+    var savedInsight = '';
+    if (mmNotes.nodeEdits && mmNotes.nodeEdits[node.id]) {
+      savedInsight = mmNotes.nodeEdits[node.id];
+    }
+    if (insightInput) insightInput.value = savedInsight;
+
+    // 渲染历史感悟列表
+    if (insightList) {
+      insightList.innerHTML = '';
+      var notes = mmNotes.nodeNotes ? (mmNotes.nodeNotes[node.id] || []) : [];
+      if (typeof notes === 'string') notes = [notes];
+      if (savedInsight) {
+        notes = notes.slice();
+        notes.push(savedInsight);
+      }
+      if (notes.length === 0) {
+        insightList.innerHTML = '<div class="insight-item">暂无感悟</div>';
+      } else {
+        notes.forEach(function (note) {
+          var div = document.createElement('div');
+          div.className = 'insight-item';
+          div.textContent = note;
+          insightList.appendChild(div);
+        });
+      }
+    }
+
+    // 显示 Token 设置（如果没有）
+    if (tokenSetup) {
+      tokenSetup.style.display = (window.GitHubAPI && GitHubAPI.hasToken()) ? 'none' : 'block';
+    }
+
     sidebar.classList.add('open');
   }
 
@@ -881,6 +1028,225 @@
     var sidebar = document.getElementById('sidebar');
     if (sidebar) {
       sidebar.classList.remove('open');
+    }
+    editingNode = null;
+  }
+
+  function showSaveStatus(msg) {
+    var el = document.getElementById('save-status');
+    if (el) {
+      el.textContent = msg;
+      setTimeout(function () { el.textContent = ''; }, 2500);
+    }
+  }
+
+  function syncMmDataFromNodes() {
+    if (!mmData || !mmData.clusters) return;
+    // 将 nodes 数组中的改动同步回 mmData
+    mmData.clusters.forEach(function (cl) {
+      cl.nodes.forEach(function (n) {
+        var live = nodes.find(function (nd) { return nd.id === n.id; });
+        if (live) {
+          n.label = live.label;
+          n.detail = live.detail;
+        }
+      });
+    });
+    // 同步 edges
+    mmData.edges = edges.map(function (e) {
+      return { from: e.from, to: e.to, label: e.label || '' };
+    });
+  }
+
+  function saveNodeEdit() {
+    if (!editingNode || !mmData) return;
+    syncMmDataFromNodes();
+
+    // 同时保存感悟为正式 note
+    var insightInput = document.getElementById('edit-insight');
+    if (insightInput && insightInput.value.trim()) {
+      if (!mmNotes.nodeNotes) mmNotes.nodeNotes = {};
+      var notes = mmNotes.nodeNotes[editingNode.id];
+      if (!notes) notes = [];
+      if (typeof notes === 'string') notes = [notes];
+      notes.push(insightInput.value.trim());
+      mmNotes.nodeNotes[editingNode.id] = notes;
+      mmNotes.nodeEdits[editingNode.id] = '';
+      insightInput.value = '';
+    }
+
+    // 写回 GitHub
+    if (window.GitHubAPI && GitHubAPI.hasToken()) {
+      Promise.resolve()
+        .then(function () {
+          return GitHubAPI.writeFile('data/mindmap-data.json', mmData, mmSha, 'Update mindmap data');
+        })
+        .then(function (res) {
+          if (res && res.content && res.content.sha) mmSha = res.content.sha;
+          showSaveStatus('脑图数据已保存');
+          return GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, notesSha, 'Update mindmap notes');
+        })
+        .then(function (res) {
+          if (res && res.content && res.content.sha) notesSha = res.content.sha;
+          showSaveStatus('脑图与笔记已保存');
+          if (editingNode) openSidebar(editingNode);
+        })
+        .catch(function (err) {
+          console.error(err);
+          showSaveStatus('保存失败: ' + (err.message || err));
+        });
+    } else {
+      showSaveStatus('已更新（无 GitHub Token，未同步）');
+    }
+  }
+
+  function deleteNode() {
+    if (!editingNode || !mmData) return;
+    if (!confirm('确定要删除节点 "' + editingNode.label + '" 吗？')) return;
+
+    var nodeId = editingNode.id;
+
+    // 从 mmData.clusters 中删除
+    mmData.clusters.forEach(function (cl) {
+      cl.nodes = cl.nodes.filter(function (n) { return n.id !== nodeId; });
+    });
+    // 从 mmData.edges 中删除相关边
+    mmData.edges = mmData.edges.filter(function (e) {
+      return e.from !== nodeId && e.to !== nodeId;
+    });
+
+    // 从运行时数组删除
+    nodes = nodes.filter(function (n) { return n.id !== nodeId; });
+    edges = edges.filter(function (e) {
+      return e.from !== nodeId && e.to !== nodeId;
+    });
+    // 清理 cluster nodes 引用
+    for (var cid in clusters) {
+      if (clusters.hasOwnProperty(cid)) {
+        clusters[cid].nodes = clusters[cid].nodes.filter(function (n) { return n.id !== nodeId; });
+      }
+    }
+
+    closeSidebar();
+    selectedNode = null;
+    editingNode = null;
+
+    if (window.GitHubAPI && GitHubAPI.hasToken()) {
+      GitHubAPI.writeFile('data/mindmap-data.json', mmData, mmSha, 'Delete node')
+        .then(function (res) {
+          if (res && res.content && res.content.sha) mmSha = res.content.sha;
+        })
+        .catch(function (err) {
+          console.error(err);
+          showSaveStatus('删除保存失败: ' + (err.message || err));
+        });
+    }
+  }
+
+  function addChildNode() {
+    if (!editingNode || !mmData) return;
+    var name = prompt('请输入子节点名称：');
+    if (!name || !name.trim()) return;
+
+    var newId = 'node_' + Date.now();
+    var parentCluster = editingNode.cluster;
+
+    var newNodeData = {
+      id: newId,
+      label: name.trim(),
+      detail: ''
+    };
+
+    // 添加到 mmData
+    var cluster = mmData.clusters.find(function (c) { return c.id === parentCluster; });
+    if (cluster) {
+      cluster.nodes.push(newNodeData);
+    } else {
+      // fallback: 添加到第一个 cluster
+      mmData.clusters[0].nodes.push(newNodeData);
+    }
+    mmData.edges.push({ from: editingNode.id, to: newId, label: '' });
+
+    // 添加到运行时
+    var liveNode = {
+      id: newId,
+      label: newNodeData.label,
+      detail: '',
+      cluster: parentCluster || mmData.clusters[0].id,
+      color: cluster ? cluster.color : mmData.clusters[0].color,
+      x: editingNode.x + (Math.random() - 0.5) * 60,
+      y: editingNode.y + (Math.random() - 0.5) * 60,
+      targetX: editingNode.x + (Math.random() - 0.5) * 120,
+      targetY: editingNode.y + (Math.random() - 0.5) * 120,
+      vx: 0,
+      vy: 0,
+      radius: CONFIG.nodeRadius,
+      pinned: false,
+      highlighted: false
+    };
+    nodes.push(liveNode);
+    if (cluster) {
+      clusters[cluster.id].nodes.push(liveNode);
+    } else {
+      clusters[mmData.clusters[0].id].nodes.push(liveNode);
+    }
+
+    edges.push({
+      from: editingNode.id,
+      to: newId,
+      label: '',
+      sourceNode: editingNode,
+      targetNode: liveNode,
+      particles: [{
+        t: Math.random(),
+        dir: Math.random() > 0.5 ? 1 : -1,
+        speed: CONFIG.particleSpeedMin + Math.random() * (CONFIG.particleSpeedMax - CONFIG.particleSpeedMin)
+      }]
+    });
+
+    if (window.GitHubAPI && GitHubAPI.hasToken()) {
+      GitHubAPI.writeFile('data/mindmap-data.json', mmData, mmSha, 'Add child node')
+        .then(function (res) {
+          if (res && res.content && res.content.sha) mmSha = res.content.sha;
+          showSaveStatus('子节点已添加');
+        })
+        .catch(function (err) {
+          console.error(err);
+          showSaveStatus('保存失败: ' + (err.message || err));
+        });
+    } else {
+      showSaveStatus('子节点已添加（未同步到 GitHub）');
+    }
+  }
+
+  function saveNodeNote() {
+    if (!editingNode) return;
+    var insightInput = document.getElementById('edit-insight');
+    if (!insightInput || !insightInput.value.trim()) return;
+
+    if (!mmNotes.nodeNotes) mmNotes.nodeNotes = {};
+    var notes = mmNotes.nodeNotes[editingNode.id];
+    if (!notes) notes = [];
+    if (typeof notes === 'string') notes = [notes];
+    notes.push(insightInput.value.trim());
+    mmNotes.nodeNotes[editingNode.id] = notes;
+    mmNotes.nodeEdits[editingNode.id] = '';
+    insightInput.value = '';
+
+    if (window.GitHubAPI && GitHubAPI.hasToken()) {
+      GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, notesSha, 'Update mindmap notes')
+        .then(function (res) {
+          if (res && res.content && res.content.sha) notesSha = res.content.sha;
+          showSaveStatus('感悟已保存');
+          if (editingNode) openSidebar(editingNode);
+        })
+        .catch(function (err) {
+          console.error(err);
+          showSaveStatus('保存失败: ' + (err.message || err));
+        });
+    } else {
+      showSaveStatus('感悟已保存（未同步到 GitHub）');
+      if (editingNode) openSidebar(editingNode);
     }
   }
 

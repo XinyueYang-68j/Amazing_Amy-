@@ -37,6 +37,7 @@
     </section>
   </main>
 
+  <script src="./_shared/js/github-api.js"></script>
   <script src="./_shared/js/common.js"></script>
   <script src="./_shared/js/echarts.min.js"></script>
   <script>
@@ -117,10 +118,228 @@
           card.appendChild(caseP);
           container.appendChild(card);
         });
+
+        // --- Modal Logic ---
+        var currentDimension = '';
+
+        var modal = document.getElementById('radar-modal');
+        var modalTitle = document.getElementById('modal-dimension-title');
+        var tokenSetup = document.getElementById('token-setup');
+        var noteStatus = document.getElementById('note-status');
+
+        function openModal(dimensionName) {
+          currentDimension = dimensionName;
+          modalTitle.textContent = dimensionName;
+          noteStatus.textContent = '';
+          document.getElementById('note-input').value = '';
+
+          if (!GitHubAPI.hasToken()) {
+            tokenSetup.style.display = 'block';
+          } else {
+            tokenSetup.style.display = 'none';
+          }
+
+          loadRecommendations(dimensionName);
+          loadHistory(dimensionName);
+
+          modal.classList.add('active');
+        }
+
+        function closeModal() {
+          modal.classList.remove('active');
+          currentDimension = '';
+        }
+
+        function loadRecommendations(dimName) {
+          fetch('./data/growth-data.json')
+            .then(function (r) { return r.json(); })
+            .then(function (growthData) {
+              var influencer = null;
+              var dimLower = dimName.toLowerCase();
+
+              if (dimLower.indexOf('教学式') !== -1 || dimLower.indexOf('概念还原') !== -1) {
+                influencer = growthData.influencers.find(function (i) { return i.name === '罗翔'; });
+              } else if (dimLower.indexOf('类比') !== -1 || dimLower.indexOf('迁移') !== -1) {
+                influencer = growthData.influencers.find(function (i) { return i.name === '混知（陈磊）'; });
+              } else if (dimLower.indexOf('序列化') !== -1 || dimLower.indexOf('节奏') !== -1) {
+                influencer = growthData.influencers.find(function (i) { return i.name === '杨天真'; });
+              } else if (dimLower.indexOf('元认知') !== -1) {
+                influencer = growthData.influencers.find(function (i) { return i.name === '董宇辉'; });
+              } else if (dimLower.indexOf('系统') !== -1 || dimLower.indexOf('思维') !== -1) {
+                influencer = growthData.influencers.find(function (i) { return i.name === '刘润'; });
+              }
+
+              if (!influencer) {
+                influencer = growthData.influencers[Math.floor(Math.random() * growthData.influencers.length)];
+              }
+
+              var allBooks = [];
+              Object.keys(growthData.books).forEach(function (cat) {
+                growthData.books[cat].forEach(function (b) {
+                  if (b.status === '待读') allBooks.push(b);
+                });
+              });
+
+              var book = allBooks.length > 0 ? allBooks[Math.floor(Math.random() * allBooks.length)] : null;
+
+              document.getElementById('rec-book').textContent = book ? ('《' + book.title + '》' + (book.author ? ' — ' + book.author : '')) : '暂无推荐书籍';
+              document.getElementById('rec-video').textContent = influencer ? (influencer.name + ' — ' + influencer.ability) : '暂无推荐';
+              var videoLink = document.getElementById('rec-video-link');
+              if (influencer && influencer.videos && influencer.videos.length > 0) {
+                videoLink.href = influencer.videos[0];
+                videoLink.style.display = 'inline';
+              } else {
+                videoLink.style.display = 'none';
+              }
+            })
+            .catch(function (err) {
+              console.error('Failed to load recommendations:', err);
+            });
+        }
+
+        function loadHistory(dimName) {
+          var list = document.getElementById('note-history-list');
+          list.innerHTML = '';
+
+          fetch('./data/radar-notes.json')
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              var notes = data.notes.filter(function (n) { return n.dimension === dimName; });
+              notes.sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+
+              if (notes.length === 0) {
+                list.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">暂无笔记</p>';
+                return;
+              }
+
+              notes.forEach(function (n) {
+                var item = document.createElement('div');
+                item.className = 'history-item';
+                var dateDiv = document.createElement('div');
+                dateDiv.className = 'history-date';
+                dateDiv.textContent = n.date;
+                var textDiv = document.createElement('div');
+                textDiv.className = 'history-text';
+                textDiv.textContent = n.text;
+                item.appendChild(dateDiv);
+                item.appendChild(textDiv);
+                list.appendChild(item);
+              });
+            })
+            .catch(function (err) {
+              list.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">暂无笔记</p>';
+              console.error('Failed to load history:', err);
+            });
+        }
+
+        function saveNote() {
+          var text = document.getElementById('note-input').value.trim();
+          if (!text) {
+            noteStatus.textContent = '请输入内容';
+            return;
+          }
+
+          if (!GitHubAPI.hasToken()) {
+            noteStatus.textContent = '请先设置 GitHub Token';
+            tokenSetup.style.display = 'block';
+            return;
+          }
+
+          noteStatus.textContent = '保存中...';
+
+          GitHubAPI.readFile('data/radar-notes.json')
+            .then(function (fileData) {
+              var data = fileData.content;
+              data.notes.push({
+                dimension: currentDimension,
+                text: text,
+                date: new Date().toISOString().slice(0, 10)
+              });
+              return GitHubAPI.writeFile('data/radar-notes.json', data, fileData.sha, 'Add radar note for ' + currentDimension);
+            })
+            .then(function () {
+              noteStatus.textContent = '保存成功';
+              document.getElementById('note-input').value = '';
+              loadHistory(currentDimension);
+            })
+            .catch(function (err) {
+              noteStatus.textContent = '保存失败: ' + err.message;
+              console.error(err);
+            });
+        }
+
+        // Card click listeners
+        document.querySelectorAll('.dimension-card').forEach(function (card) {
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', function () {
+            var dimName = card.querySelector('h3').textContent;
+            openModal(dimName);
+          });
+        });
+
+        // Modal close
+        document.querySelector('.modal-close').addEventListener('click', closeModal);
+        document.querySelector('.modal-overlay').addEventListener('click', closeModal);
+
+        // Save token
+        document.getElementById('gh-token-save').addEventListener('click', function () {
+          var token = document.getElementById('gh-token-input').value.trim();
+          if (token) {
+            GitHubAPI.setToken(token);
+            tokenSetup.style.display = 'none';
+            noteStatus.textContent = 'Token 已保存';
+          }
+        });
+
+        // Save note
+        document.getElementById('note-save').addEventListener('click', saveNote);
       } catch (err) {
         console.error('Failed to load radar data:', err);
       }
     });
   </script>
+
+  <div id="radar-modal" class="glass-modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close">&times;</button>
+      <h3 id="modal-dimension-title"></h3>
+
+      <!-- Token 设置（如果未设置） -->
+      <div id="token-setup" style="display:none;">
+        <p>需要 GitHub Token 才能保存笔记</p>
+        <input type="password" id="gh-token-input" placeholder="粘贴你的 GitHub Personal Access Token">
+        <button id="gh-token-save">保存 Token</button>
+        <p class="token-hint">在 GitHub Settings → Developer settings → Personal access tokens 生成，勾选 repo 权限</p>
+      </div>
+
+      <!-- 推荐区 -->
+      <div class="rec-section">
+        <div class="rec-card">
+          <h4>今日推荐书籍</h4>
+          <p id="rec-book"></p>
+        </div>
+        <div class="rec-card">
+          <h4>今日推荐 Cut</h4>
+          <p id="rec-video"></p>
+          <a id="rec-video-link" href="#" target="_blank" rel="noopener">观看视频</a>
+        </div>
+      </div>
+
+      <!-- 笔记输入 -->
+      <div class="note-section">
+        <h4>观后感 / 读书笔记</h4>
+        <textarea id="note-input" placeholder="写下今天的感悟..."></textarea>
+        <button id="note-save" class="gold-btn">保存笔记</button>
+        <span id="note-status"></span>
+      </div>
+
+      <!-- 历史笔记 -->
+      <div class="history-section">
+        <h4>历史笔记</h4>
+        <div id="note-history-list"></div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
