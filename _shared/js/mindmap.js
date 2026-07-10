@@ -1077,8 +1077,22 @@
 
     // 写回 GitHub
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
+      showSaveStatus('正在保存...');
       Promise.resolve()
         .then(function () {
+          // 先读取两个文件的最新 SHA，避免 SHA 过期
+          return Promise.all([
+            GitHubAPI.readFile('data/mindmap-data.json').catch(function () { return null; }),
+            GitHubAPI.readFile('data/mindmap-notes.json').catch(function () { return null; })
+          ]);
+        })
+        .then(function (results) {
+          if (results[0]) { mmData = results[0].content; mmSha = results[0].sha; }
+          if (results[1]) { mmNotes = results[1].content; notesSha = results[1].sha; }
+        })
+        .then(function () {
+          // 重新同步用户编辑到 mmData（因为上面可能覆盖了）
+          syncMmDataFromNodes();
           return GitHubAPI.writeFile('data/mindmap-data.json', mmData, mmSha, 'Update mindmap data');
         })
         .then(function (res) {
