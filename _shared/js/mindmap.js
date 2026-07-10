@@ -1088,7 +1088,8 @@
         })
         .then(function (results) {
           if (results[0]) { mmData = results[0].content; mmSha = results[0].sha; }
-          if (results[1]) { mmNotes = results[1].content; notesSha = results[1].sha; }
+          if (results[1]) { notesSha = results[1].sha; }
+          // 注意：不覆盖 mmNotes，因为感悟已在本地写入
         })
         .then(function () {
           // 重新同步用户编辑到 mmData（因为上面可能覆盖了）
