@@ -45,8 +45,10 @@
 
     /* ---------- Read file via Contents API ---------- */
     readFile: function (path) {
+      // 正确编码路径：将路径按 / 分段，分别编码每个段
+      var encodedPath = path.split('/').map(function (seg) { return encodeURIComponent(seg); }).join('/');
       return fetch(
-        this._baseUrl() + '/contents/' + encodeURIComponent(path) + '?ref=' + CONFIG.branch,
+        this._baseUrl() + '/contents/' + encodedPath + '?ref=' + CONFIG.branch,
         { headers: this._headers() }
       ).then(function (res) {
         if (!res.ok) throw new Error('Read failed: ' + res.status);

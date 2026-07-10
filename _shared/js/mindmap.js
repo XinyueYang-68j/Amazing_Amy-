@@ -205,13 +205,23 @@
 
   function loadNotes() {
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
-      GitHubAPI.ensureFile('data/mindmap-notes.json', { nodeNotes: {}, nodeEdits: {} })
+      GitHubAPI.readFile('data/mindmap-notes.json')
         .then(function (result) {
           mmNotes = result.content;
+          console.log('[mindmap] Notes loaded from GitHub:', Object.keys(mmNotes.nodeNotes || {}).length, 'nodes with notes');
           if (editingNode) openSidebar(editingNode);
         })
         .catch(function (err) {
-          console.error('[mindmap] Failed to load notes from GitHub:', err);
+          console.warn('[mindmap] Failed to load notes from GitHub, using local fallback:', err.message);
+          fetch('./data/mindmap-notes.json')
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+              mmNotes = data;
+              if (editingNode) openSidebar(editingNode);
+            })
+            .catch(function () {
+              mmNotes = { nodeNotes: {}, nodeEdits: {} };
+            });
         });
     } else {
       fetch('./data/mindmap-notes.json')
