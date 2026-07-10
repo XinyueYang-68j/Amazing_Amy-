@@ -958,6 +958,9 @@
     if (btnDelete) btnDelete.addEventListener('click', deleteNode);
     if (btnAddChild) btnAddChild.addEventListener('click', addChildNode);
 
+    var btnSaveNoteOnly = document.getElementById('btn-save-note-only');
+    if (btnSaveNoteOnly) btnSaveNoteOnly.addEventListener('click', saveNodeNote);
+
     // Token 设置
     var tokenSaveBtn = document.getElementById('mm-token-save');
     var tokenInput = document.getElementById('mm-gh-token');
@@ -1073,6 +1076,9 @@
       mmNotes.nodeNotes[editingNode.id] = notes;
       mmNotes.nodeEdits[editingNode.id] = '';
       insightInput.value = '';
+      console.log('[saveNodeEdit] Insight saved to mmNotes for node', editingNode.id, ':', notes);
+    } else {
+      console.log('[saveNodeEdit] No insight to save');
     }
 
     // 写回 GitHub
@@ -1237,7 +1243,10 @@
   function saveNodeNote() {
     if (!editingNode) return;
     var insightInput = document.getElementById('edit-insight');
-    if (!insightInput || !insightInput.value.trim()) return;
+    if (!insightInput || !insightInput.value.trim()) {
+      showSaveStatus('笔记内容为空');
+      return;
+    }
 
     if (!mmNotes.nodeNotes) mmNotes.nodeNotes = {};
     var notes = mmNotes.nodeNotes[editingNode.id];
@@ -1248,19 +1257,27 @@
     mmNotes.nodeEdits[editingNode.id] = '';
     insightInput.value = '';
 
+    console.log('[saveNodeNote] Saved insight for node', editingNode.id, '. Total notes:', notes.length, 'mmNotes:', JSON.parse(JSON.stringify(mmNotes)));
+
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
-      GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, notesSha, 'Update mindmap notes')
+      showSaveStatus('正在保存笔记...');
+      GitHubAPI.readFile('data/mindmap-notes.json')
+        .then(function (fresh) {
+          notesSha = fresh.sha;
+          return GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, notesSha, 'Update mindmap notes');
+        })
         .then(function (res) {
           if (res && res.content && res.content.sha) notesSha = res.content.sha;
-          showSaveStatus('感悟已保存');
+          console.log('[saveNodeNote] GitHub write success. notesSha updated.');
+          showSaveStatus('笔记已保存（' + notes.length + '条）');
           if (editingNode) openSidebar(editingNode);
         })
         .catch(function (err) {
-          console.error(err);
+          console.error('[saveNodeNote] Error:', err);
           showSaveStatus('保存失败: ' + (err.message || err));
         });
     } else {
-      showSaveStatus('感悟已保存（未同步到 GitHub）');
+      showSaveStatus('已更新（无 GitHub Token，未同步）');
       if (editingNode) openSidebar(editingNode);
     }
   }
