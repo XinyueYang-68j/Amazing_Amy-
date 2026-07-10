@@ -1,49 +1,103 @@
 /* ============================================================
-   mindmap.js — Canvas 力导向脑图引擎（零依赖）
+   mindmap.js — Obsidian Graph View 风格的力导向脑图引擎
+   零依赖，纯 Canvas 2D API | L'Oreal 黑金主题
    ============================================================ */
 
 (function () {
   'use strict';
 
-  /* ---------- Configuration ---------- */
+  /* ============================================================
+     Configuration
+     ============================================================ */
   var CONFIG = {
-    repulsion: 8000,        // 节点间斥力系数
-    attraction: 0.008,      // 连线引力系数
-    damping: 0.88,          // 速度衰减
-    centerGravity: 0.02,    // 中心引力
-    nodeRadius: 24,          // 节点半径
-    clusterRadius: 30,      // cluster 标签节点半径
-    fontSize: 13,            // 节点文字大小
-    clusterFontSize: 14,     // cluster 标签文字大小
-    edgeLabelFontSize: 11,   // 连线标签文字大小
-    maxSpeed: 12,            // 速度上限
-    padding: 80,            // 初始散布半径
-    animationFrames: 90,     // 初始动画帧数
-    zoomMin: 0.2,
-    zoomMax: 4,
-    highlightGlow: 18       // 搜索高亮光晕半径
+    // Force parameters
+    repulsion: 6000,           // 节点间斥力系数
+    attraction: 0.005,         // 连线引力系数
+    damping: 0.85,             // 速度衰减
+    centerGravity: 0.015,      // 中心引力
+    maxSpeed: 10,              // 单帧速度上限
+    minDist: 30,               // 最小距离（防止力爆炸）
+
+    // Node appearance
+    nodeRadius: 22,            // 节点半径
+    nodeFillAlpha: 0.25,       // 节点填充透明度
+    nodeStrokeWidth: 2,        // 节点边框宽度
+    nodeGlowRadius: 6,         // 节点发光半径
+    nodeGlowAlpha: 0.15,       // 节点发光透明度
+
+    // Labels
+    nodeFontSize: 12,          // 节点标签字号
+    clusterFontSize: 13,       // Cluster 标签字号
+    edgeLabelFontSize: 11,     // 连线标签字号
+
+    // Edge particles
+    particleCount: 2,          // 每条线默认粒子数
+    particleCountLow: 1,       // 节点多时每条线粒子数
+    particleSize: 2,           // 粒子大小
+    particleSpeedMin: 0.002,   // 粒子最小速度
+    particleSpeedMax: 0.005,   // 粒子最大速度
+    particleColor: '#D4AF37',  // 粒子颜色
+    particleGlow: 4,           // 粒子发光半径
+    highNodeThreshold: 50,     // 节点阈值（超过此数降低粒子）
+
+    // Zoom
+    zoomMin: 0.15,
+    zoomMax: 5,
+    zoomStep: 0.1,            // 滚轮缩放步进因子
+
+    // Gold theme
+    goldColor: '#D4AF37',
+    edgeColor: 'rgba(255,255,255,0.08)',
+    edgeWidth: 1,
+    bgColor: '#000000',
+
+    // Animation
+    initialAnimFrames: 80,     // 初始展开动画帧数
+    spreadRadius: 300,         // 初始散布半径
+
+    // Sidebar
+    sidebarWidth: 320,
+
+    // Pulse animation
+    pulseSpeed: 0.06,          // 脉冲速度
+    pulseMinAlpha: 0.3,
+    pulseMaxAlpha: 0.8,
   };
 
-  /* ---------- State ---------- */
-  var canvas, ctx;
-  var nodes = [];        // { id, label, detail, cluster, x, y, vx, vy, radius, color, highlighted }
-  var edges = [];        // { from, to, label, sourceNode, targetNode }
-  var clusters = {};     // { id: { name, color, nodes: [] } }
-  var clusterMeta = [];  // [{ id, name, color, cx, cy }] -- cluster center for label rendering
+  /* ============================================================
+     State
+     ============================================================ */
+  var canvas, ctx, dpr;
+  var nodes = [];              // { id, label, detail, cluster, x, y, vx, vy, radius, color, pinned, highlighted }
+  var edges = [];              // { from, to, label, sourceNode, targetNode, particles: [{t, dir, speed}] }
+  var clusters = {};           // { id: { name, color, nodes:[] } }
+  var clusterMeta = [];        // [{ id, name, color, cx, cy }]
 
-  // Camera / interaction
+  // Camera
   var camera = { x: 0, y: 0, zoom: 1 };
+
+  // Interaction
   var dragNode = null;
+  var dragStartX = 0;
+  var dragStartY = 0;
+  var dragMoved = false;
   var isPanning = false;
   var panStart = { x: 0, y: 0 };
   var hoveredNode = null;
   var selectedNode = null;
 
   // Animation
-  var animProgress = 0;  // 0→1 for initial expand animation
+  var animProgress = 0;
   var animating = true;
+  var frameTime = 0;
+  var rafId = null;
 
-  /* ---------- Init ---------- */
+  // Search
+  var searchQuery = '';
+
+  /* ============================================================
+     Initialization
+     ============================================================ */
   document.addEventListener('DOMContentLoaded', function () {
     setupCanvas();
     setupSidebar();
@@ -53,36 +107,52 @@
 
   function setupCanvas() {
     var container = document.getElementById('mindmap-container');
+    if (!container) {
+      console.error('[mindmap] #mindmap-container not found');
+      return;
+    }
     canvas = document.createElement('canvas');
+    canvas.style.display = 'block';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
     container.appendChild(canvas);
     ctx = canvas.getContext('2d');
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('resize', debounce(resizeCanvas, 150));
 
     // Mouse events
     canvas.addEventListener('mousedown', onMouseDown);
-    canvas.addEventListener('mousemove', onMouseMove);
-    canvas.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
     canvas.addEventListener('wheel', onWheel, { passive: false });
     canvas.addEventListener('dblclick', onDblClick);
+    canvas.addEventListener('click', onClick);
 
     // Touch events
     canvas.addEventListener('touchstart', onTouchStart, { passive: false });
     canvas.addEventListener('touchmove', onTouchMove, { passive: false });
     canvas.addEventListener('touchend', onTouchEnd);
+
+    // Default cursor
+    canvas.style.cursor = 'grab';
   }
 
   function resizeCanvas() {
     var container = document.getElementById('mindmap-container');
-    var dpr = window.devicePixelRatio || 1;
+    if (!container) return;
+    dpr = window.devicePixelRatio || 1;
     canvas.width = container.clientWidth * dpr;
     canvas.height = container.clientHeight * dpr;
     canvas.style.width = container.clientWidth + 'px';
     canvas.style.height = container.clientHeight + 'px';
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (!animating && animProgress === 0) {
+      // Initial camera not yet set
+    }
   }
 
-  /* ---------- Data Loading ---------- */
+  /* ============================================================
+     Data Loading & Graph Construction
+     ============================================================ */
   function loadData() {
     fetch('./data/mindmap-data.json')
       .then(function (res) { return res.json(); })
@@ -90,97 +160,126 @@
         buildGraph(data);
         buildLegend(data.clusters);
         // Center camera
-        camera.x = canvas.clientWidth / 2;
-        camera.y = canvas.clientHeight / 2;
-        // Start simulation
-        requestAnimationFrame(simulate);
+        camera.x = (canvas.clientWidth / 2) || 400;
+        camera.y = (canvas.clientHeight / 2) || 300;
+        camera.zoom = 1;
+        // Start simulation loop
+        frameTime = performance.now();
+        rafId = requestAnimationFrame(simulate);
       })
       .catch(function (err) {
-        console.error('Failed to load mindmap data:', err);
+        console.error('[mindmap] Failed to load data:', err);
       });
   }
 
   function buildGraph(data) {
     // Build cluster map
+    clusters = {};
     data.clusters.forEach(function (cl) {
       clusters[cl.id] = { name: cl.name, color: cl.color, nodes: [] };
     });
 
-    // Create nodes — start at center for animation
+    // Create nodes — all start at origin (0,0) for initial animation
+    nodes = [];
     var centerX = 0;
     var centerY = 0;
+    var totalNodes = 0;
+    data.clusters.forEach(function (cl) { totalNodes += cl.nodes.length; });
+
+    var nodeIndex = 0;
     data.clusters.forEach(function (cl) {
       var angle = (Math.PI * 2 * data.clusters.indexOf(cl)) / data.clusters.length;
-      var spread = CONFIG.padding * 1.5;
-      cl.nodes.forEach(function (n, i) {
+      var spread = CONFIG.spreadRadius;
+      cl.nodes.forEach(function (n) {
         var node = {
           id: n.id,
           label: n.label,
-          detail: n.detail,
+          detail: n.detail || '',
           cluster: cl.id,
           color: cl.color,
           x: centerX,
           y: centerY,
-          targetX: centerX + Math.cos(angle) * spread + (Math.random() - 0.5) * 100,
-          targetY: centerY + Math.sin(angle) * spread + (Math.random() - 0.5) * 100,
+          // Target is the final spread position
+          targetX: centerX + Math.cos(angle) * spread + (Math.random() - 0.5) * 120,
+          targetY: centerY + Math.sin(angle) * spread + (Math.random() - 0.5) * 120,
           vx: 0,
           vy: 0,
           radius: CONFIG.nodeRadius,
+          pinned: false,
           highlighted: false
         };
         nodes.push(node);
         clusters[cl.id].nodes.push(node);
+        nodeIndex++;
       });
     });
 
     // Create edges
+    edges = [];
     var nodeMap = {};
     nodes.forEach(function (n) { nodeMap[n.id] = n; });
+
+    var useLowParticles = nodes.length > CONFIG.highNodeThreshold;
+    var particleCount = useLowParticles ? CONFIG.particleCountLow : CONFIG.particleCount;
+
     data.edges.forEach(function (e) {
-      var edge = {
+      var src = nodeMap[e.from];
+      var tgt = nodeMap[e.to];
+      if (!src || !tgt) return;
+      // Generate particles
+      var particles = [];
+      var count = 1 + Math.floor(Math.random() * particleCount);
+      for (var i = 0; i < count; i++) {
+        particles.push({
+          t: Math.random(),                       // 0..1 在线段上的位置
+          dir: Math.random() > 0.5 ? 1 : -1,      // 移动方向
+          speed: CONFIG.particleSpeedMin + Math.random() * (CONFIG.particleSpeedMax - CONFIG.particleSpeedMin)
+        });
+      }
+      edges.push({
         from: e.from,
         to: e.to,
         label: e.label || '',
-        sourceNode: nodeMap[e.from] || null,
-        targetNode: nodeMap[e.to] || null
-      };
-      if (edge.sourceNode && edge.targetNode) {
-        edges.push(edge);
-      }
+        sourceNode: src,
+        targetNode: tgt,
+        particles: particles
+      });
     });
 
-    // Compute cluster centers
-    clusterMeta = data.clusters.map(function (cl) {
-      var clNodes = clusters[cl.id].nodes;
-      var cx = 0, cy = 0;
-      clNodes.forEach(function (n) { cx += n.x; cy += n.y; });
-      cx /= clNodes.length || 1;
-      cy /= clNodes.length || 1;
-      return { id: cl.id, name: cl.name, color: cl.color, cx: cx, cy: cy };
-    });
+    // Compute initial cluster centers
+    updateClusterCenters();
   }
 
-  /* ---------- Force Simulation ---------- */
-  function simulate() {
+  /* ============================================================
+     Force Simulation
+     ============================================================ */
+  function simulate(now) {
+    var dt = Math.min((now - frameTime) / 16.667, 3); // cap at 3x to avoid spiral
+    frameTime = now;
+
     var width = canvas.clientWidth;
     var height = canvas.clientHeight;
 
     // Initial expand animation
     if (animating) {
-      animProgress += 1 / CONFIG.animationFrames;
+      animProgress += 1 / CONFIG.initialAnimFrames;
       if (animProgress >= 1) {
         animProgress = 1;
         animating = false;
       }
       var t = easeOutCubic(animProgress);
-      nodes.forEach(function (n) {
-        n.x = n.x + (n.targetX - n.x) * t * 0.08;
-        n.y = n.y + (n.targetY - n.y) * t * 0.08;
-      });
+      for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i];
+        n.x += (n.targetX - n.x) * t * 0.1;
+        n.y += (n.targetY - n.y) * t * 0.1;
+      }
     } else {
       // Apply forces
-      applyForces(width, height);
+      applyForces(width, height, dt);
     }
+
+    // Update particles
+    updateParticles();
 
     // Update cluster centers
     updateClusterCenters();
@@ -188,14 +287,10 @@
     // Render
     render(width, height);
 
-    requestAnimationFrame(simulate);
+    rafId = requestAnimationFrame(simulate);
   }
 
-  function easeOutCubic(t) {
-    return 1 - Math.pow(1 - t, 3);
-  }
-
-  function applyForces(width, height) {
+  function applyForces(width, height, dt) {
     var i, j, dx, dy, dist, force, nodeA, nodeB;
 
     // Repulsion between all nodes
@@ -205,14 +300,13 @@
         nodeB = nodes[j];
         dx = nodeA.x - nodeB.x;
         dy = nodeA.y - nodeB.y;
-        dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONFIG.minDist) dist = CONFIG.minDist;
         force = CONFIG.repulsion / (dist * dist);
         var fx = (dx / dist) * force;
         var fy = (dy / dist) * force;
-        nodeA.vx += fx;
-        nodeA.vy += fy;
-        nodeB.vx -= fx;
-        nodeB.vy -= fy;
+        if (!nodeA.pinned) { nodeA.vx += fx; nodeA.vy += fy; }
+        if (!nodeB.pinned) { nodeB.vx -= fx; nodeB.vy -= fy; }
       }
     }
 
@@ -223,55 +317,79 @@
       nodeB = edge.targetNode;
       dx = nodeB.x - nodeA.x;
       dy = nodeB.y - nodeA.y;
-      dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < CONFIG.minDist) dist = CONFIG.minDist;
       force = dist * CONFIG.attraction;
       var ax = (dx / dist) * force;
       var ay = (dy / dist) * force;
-      nodeA.vx += ax;
-      nodeA.vy += ay;
-      nodeB.vx -= ax;
-      nodeB.vy -= ay;
+      if (!nodeA.pinned) { nodeA.vx += ax; nodeA.vy += ay; }
+      if (!nodeB.pinned) { nodeB.vx -= ax; nodeB.vy -= ay; }
     }
 
     // Center gravity
     for (i = 0; i < nodes.length; i++) {
       var n = nodes[i];
+      if (n.pinned) continue;
       n.vx -= n.x * CONFIG.centerGravity;
       n.vy -= n.y * CONFIG.centerGravity;
     }
 
-    // Update positions & damping
+    // Update positions with damping
     for (i = 0; i < nodes.length; i++) {
       var n = nodes[i];
-      if (n === dragNode) continue;
+      if (n.pinned) { n.vx = 0; n.vy = 0; continue; }
       n.vx *= CONFIG.damping;
       n.vy *= CONFIG.damping;
-      // Clamp speed
       var speed = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
       if (speed > CONFIG.maxSpeed) {
         n.vx = (n.vx / speed) * CONFIG.maxSpeed;
         n.vy = (n.vy / speed) * CONFIG.maxSpeed;
       }
-      n.x += n.vx;
-      n.y += n.vy;
+      n.x += n.vx * dt;
+      n.y += n.vy * dt;
+    }
+  }
+
+  function updateParticles() {
+    for (var i = 0; i < edges.length; i++) {
+      var edge = edges[i];
+      if (!edge.sourceNode || !edge.targetNode) continue;
+      for (var j = 0; j < edge.particles.length; j++) {
+        var p = edge.particles[j];
+        p.t += p.speed * p.dir;
+        if (p.t > 1) { p.t = 1; p.dir = -1; }
+        if (p.t < 0) { p.t = 0; p.dir = 1; }
+      }
     }
   }
 
   function updateClusterCenters() {
-    clusterMeta.forEach(function (cm) {
-      var clNodes = clusters[cm.id].nodes;
-      if (clNodes.length === 0) return;
+    clusterMeta = [];
+    for (var id in clusters) {
+      if (!clusters.hasOwnProperty(id)) continue;
+      var cl = clusters[id];
+      var clNodes = cl.nodes;
+      if (clNodes.length === 0) continue;
       var cx = 0, cy = 0;
-      clNodes.forEach(function (n) { cx += n.x; cy += n.y; });
-      cm.cx = cx / clNodes.length;
-      cm.cy = cy / clNodes.length;
-    });
+      for (var i = 0; i < clNodes.length; i++) {
+        cx += clNodes[i].x;
+        cy += clNodes[i].y;
+      }
+      cx /= clNodes.length;
+      cy /= clNodes.length;
+      clusterMeta.push({ id: id, name: cl.name, color: cl.color, cx: cx, cy: cy });
+    }
   }
 
-  /* ---------- Rendering ---------- */
+  /* ============================================================
+     Rendering
+     ============================================================ */
   function render(width, height) {
-    ctx.clearRect(0, 0, width, height);
+    // Clear & fill background
     ctx.save();
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = CONFIG.bgColor;
+    ctx.fillRect(0, 0, width, height);
 
     // Apply camera transform
     ctx.translate(camera.x, camera.y);
@@ -279,6 +397,9 @@
 
     // Draw edges
     drawEdges();
+
+    // Draw edge labels
+    drawEdgeLabels();
 
     // Draw cluster labels
     drawClusterLabels();
@@ -289,8 +410,13 @@
     ctx.restore();
   }
 
+  /* ---- Edges ---- */
   function drawEdges() {
-    edges.forEach(function (edge) {
+    ctx.lineWidth = CONFIG.edgeWidth / camera.zoom;
+    ctx.strokeStyle = CONFIG.edgeColor;
+
+    for (var i = 0; i < edges.length; i++) {
+      var edge = edges[i];
       var sx = edge.sourceNode.x;
       var sy = edge.sourceNode.y;
       var tx = edge.targetNode.x;
@@ -300,124 +426,207 @@
       ctx.beginPath();
       ctx.moveTo(sx, sy);
       ctx.lineTo(tx, ty);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-      ctx.lineWidth = 1.5 / camera.zoom;
       ctx.stroke();
 
-      // Edge label at midpoint
-      if (edge.label) {
-        var mx = (sx + tx) / 2;
-        var my = (sy + ty) / 2;
-        ctx.save();
-        ctx.font = CONFIG.edgeLabelFontSize + 'px "PingFang SC", "Microsoft YaHei", sans-serif';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
-        // Background pill for label
-        var textW = ctx.measureText(edge.label).width + 10;
-        ctx.fillStyle = 'rgba(15, 17, 23, 0.8)';
-        ctx.beginPath();
-        var pillH = 18 / camera.zoom;
-        var pillR = 4 / camera.zoom;
-        roundRect(ctx, mx - textW / 2, my - pillH / 2, textW, pillH, pillR);
-        ctx.fill();
-
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.fillText(edge.label, mx, my);
-        ctx.restore();
-      }
-    });
+      // Gold particles
+      drawEdgeParticles(edge, sx, sy, tx, ty);
+    }
   }
 
-  function drawClusterLabels() {
-    clusterMeta.forEach(function (cm) {
+  function drawEdgeParticles(edge, sx, sy, tx, ty) {
+    var dx = tx - sx;
+    var dy = ty - sy;
+    var particleSize = CONFIG.particleSize / camera.zoom;
+    var glowSize = CONFIG.particleGlow / camera.zoom;
+
+    for (var i = 0; i < edge.particles.length; i++) {
+      var p = edge.particles[i];
+      var px = sx + dx * p.t;
+      var py = sy + dy * p.t;
+
+      // Glow
+      ctx.beginPath();
+      ctx.arc(px, py, glowSize, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(212,175,55,0.15)';
+      ctx.fill();
+
+      // Core particle
+      ctx.beginPath();
+      ctx.arc(px, py, particleSize, 0, Math.PI * 2);
+      ctx.fillStyle = CONFIG.particleColor;
+      ctx.fill();
+    }
+  }
+
+  /* ---- Edge Labels ---- */
+  function drawEdgeLabels() {
+    for (var i = 0; i < edges.length; i++) {
+      var edge = edges[i];
+      if (!edge.label) continue;
+      var sx = edge.sourceNode.x;
+      var sy = edge.sourceNode.y;
+      var tx = edge.targetNode.x;
+      var ty = edge.targetNode.y;
+      var mx = (sx + tx) / 2;
+      var my = (sy + ty) / 2;
+
       ctx.save();
-      ctx.font = '600 ' + CONFIG.clusterFontSize + 'px "PingFang SC", "Microsoft YaHei", sans-serif';
+      var fontSize = CONFIG.edgeLabelFontSize / camera.zoom;
+      ctx.font = fontSize + 'px "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Compute bounding box of cluster nodes
+      var textW = ctx.measureText(edge.label).width + 12;
+      var pillH = 18 / camera.zoom;
+      var pillR = 4 / camera.zoom;
+
+      // Pill background
+      ctx.fillStyle = 'rgba(15,17,23,0.85)';
+      ctx.beginPath();
+      roundRect(ctx, mx - textW / 2, my - pillH / 2, textW, pillH, pillR);
+      ctx.fill();
+
+      // Pill border
+      ctx.strokeStyle = 'rgba(212,175,55,0.25)';
+      ctx.lineWidth = 0.5 / camera.zoom;
+      ctx.stroke();
+
+      // Text
+      ctx.fillStyle = CONFIG.goldColor;
+      ctx.fillText(edge.label, mx, my);
+      ctx.restore();
+    }
+  }
+
+  /* ---- Cluster Labels ---- */
+  function drawClusterLabels() {
+    for (var i = 0; i < clusterMeta.length; i++) {
+      var cm = clusterMeta[i];
       var clNodes = clusters[cm.id].nodes;
-      if (clNodes.length < 2) return;
+      if (clNodes.length < 2) continue;
 
-      // Find topmost node
+      // Find topmost node of this cluster
       var topY = Infinity;
-      clNodes.forEach(function (n) { if (n.y < topY) topY = n.y; });
-
-      var labelY = topY - CONFIG.clusterRadius - 10;
+      for (var j = 0; j < clNodes.length; j++) {
+        if (clNodes[j].y < topY) topY = clNodes[j].y;
+      }
+      var labelY = topY - CONFIG.nodeRadius - 14;
       var labelX = cm.cx;
 
-      // Background
+      ctx.save();
+      var fontSize = CONFIG.clusterFontSize / camera.zoom;
+      ctx.font = '600 ' + fontSize + 'px "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
       var textW = ctx.measureText(cm.name).width + 20;
-      ctx.fillStyle = hexToRgba(cm.color, 0.15);
+      var bgH = 26 / camera.zoom;
+      var bgR = 6 / camera.zoom;
+
+      // Background
+      ctx.fillStyle = hexToRgba(cm.color, 0.12);
       ctx.beginPath();
-      roundRect(ctx, labelX - textW / 2, labelY - 12, textW, 24, 6);
+      roundRect(ctx, labelX - textW / 2, labelY - bgH / 2, textW, bgH, bgR);
       ctx.fill();
 
       // Border
-      ctx.strokeStyle = hexToRgba(cm.color, 0.4);
+      ctx.strokeStyle = hexToRgba(cm.color, 0.35);
       ctx.lineWidth = 1 / camera.zoom;
-      ctx.beginPath();
-      roundRect(ctx, labelX - textW / 2, labelY - 12, textW, 24, 6);
       ctx.stroke();
 
       // Text
       ctx.fillStyle = cm.color;
       ctx.fillText(cm.name, labelX, labelY);
       ctx.restore();
-    });
+    }
   }
 
+  /* ---- Nodes ---- */
   function drawNodes() {
-    nodes.forEach(function (node) {
+    var pulsePhase = performance.now() * CONFIG.pulseSpeed * 0.001;
+
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i];
       var r = node.radius / camera.zoom;
-      r = Math.max(r, 2); // minimum visible size
+      r = Math.max(r, 3); // minimum visible size
 
-      // Highlight glow
-      if (node.highlighted) {
-        ctx.save();
+      var isSelected = (node === selectedNode);
+      var isHovered = (node === hoveredNode);
+      var isHighlighted = node.highlighted;
+
+      // ---- Search highlight: gold pulse glow ----
+      if (isHighlighted) {
+        var pulseAlpha = CONFIG.pulseMinAlpha + (CONFIG.pulseMaxAlpha - CONFIG.pulseMinAlpha) * (0.5 + 0.5 * Math.sin(pulsePhase + i));
+        var pulseR = r + 14 / camera.zoom;
         ctx.beginPath();
-        ctx.arc(node.x, node.y, r + CONFIG.highlightGlow / camera.zoom, 0, Math.PI * 2);
-        ctx.fillStyle = hexToRgba(node.color, 0.25);
+        ctx.arc(node.x, node.y, pulseR, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(212,175,55,' + pulseAlpha + ')';
         ctx.fill();
-        ctx.restore();
-      }
 
-      // Hover / selected ring
-      if (node === hoveredNode || node === selectedNode) {
-        ctx.save();
+        // Second ring
         ctx.beginPath();
-        ctx.arc(node.x, node.y, r + 4 / camera.zoom, 0, Math.PI * 2);
-        ctx.strokeStyle = hexToRgba(node.color, 0.6);
+        ctx.arc(node.x, node.y, r + 6 / camera.zoom, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(212,175,55,' + (pulseAlpha * 0.8) + ')';
         ctx.lineWidth = 2 / camera.zoom;
         ctx.stroke();
-        ctx.restore();
       }
 
-      // Node circle
-      ctx.save();
+      // ---- Selected/Hovered: gold ring ----
+      if (isSelected || isHovered) {
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, r + 4 / camera.zoom, 0, Math.PI * 2);
+        ctx.strokeStyle = CONFIG.goldColor;
+        ctx.lineWidth = 2.5 / camera.zoom;
+        ctx.stroke();
+
+        if (isSelected) {
+          // Outer glow for selected
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, r + 8 / camera.zoom, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(212,175,55,0.3)';
+          ctx.lineWidth = 1.5 / camera.zoom;
+          ctx.stroke();
+        }
+      }
+
+      // ---- Node glow ----
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, r + CONFIG.nodeGlowRadius / camera.zoom, 0, Math.PI * 2);
+      ctx.fillStyle = hexToRgba(node.color, CONFIG.nodeGlowAlpha);
+      ctx.fill();
+
+      // ---- Node circle ----
       ctx.beginPath();
       ctx.arc(node.x, node.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = hexToRgba(node.color, 0.18);
+      ctx.fillStyle = hexToRgba(node.color, CONFIG.nodeFillAlpha);
       ctx.fill();
-      ctx.strokeStyle = node.color;
-      ctx.lineWidth = 2 / camera.zoom;
+      ctx.strokeStyle = isSelected || isHovered ? CONFIG.goldColor : node.color;
+      ctx.lineWidth = CONFIG.nodeStrokeWidth / camera.zoom;
       ctx.stroke();
-      ctx.restore();
 
-      // Node label
+      // ---- Pinned indicator (small dot) ----
+      if (node.pinned) {
+        ctx.beginPath();
+        ctx.arc(node.x, node.y - r - 3 / camera.zoom, 2.5 / camera.zoom, 0, Math.PI * 2);
+        ctx.fillStyle = CONFIG.goldColor;
+        ctx.fill();
+      }
+
+      // ---- Node label ----
       ctx.save();
-      ctx.font = '500 ' + CONFIG.fontSize + 'px "PingFang SC", "Microsoft YaHei", sans-serif';
+      var fontSize = CONFIG.nodeFontSize / camera.zoom;
+      ctx.font = '500 ' + fontSize + 'px "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
       ctx.fillStyle = '#F9FAFB';
       ctx.fillText(node.label, node.x, node.y + r + 4 / camera.zoom);
       ctx.restore();
-    });
+    }
   }
 
-  /* ---------- Interaction: Mouse ---------- */
+  /* ============================================================
+     Interaction: Mouse
+     ============================================================ */
   function screenToWorld(sx, sy) {
     return {
       x: (sx - camera.x) / camera.zoom,
@@ -426,12 +635,11 @@
   }
 
   function getNodeAt(wx, wy) {
-    // Check in reverse order (top nodes first)
     for (var i = nodes.length - 1; i >= 0; i--) {
       var n = nodes[i];
       var dx = wx - n.x;
       var dy = wy - n.y;
-      var r = n.radius / camera.zoom + 6; // small tolerance
+      var r = n.radius / camera.zoom + 6; // tolerance
       if (dx * dx + dy * dy <= r * r) return n;
     }
     return null;
@@ -446,13 +654,17 @@
 
     if (node) {
       dragNode = node;
-      dragNode.vx = 0;
-      dragNode.vy = 0;
+      dragStartX = node.x;
+      dragStartY = node.y;
+      dragMoved = false;
+      node.vx = 0;
+      node.vy = 0;
+      node.pinned = true;
       canvas.style.cursor = 'grabbing';
     } else {
       isPanning = true;
-      panStart.x = sx - camera.x;
-      panStart.y = sy - camera.y;
+      panStart.x = e.clientX - camera.x;
+      panStart.y = e.clientY - camera.y;
       canvas.style.cursor = 'grabbing';
     }
   }
@@ -464,25 +676,30 @@
 
     if (dragNode) {
       var w = screenToWorld(sx, sy);
+      var movedDist = Math.sqrt(
+        (w.x - dragStartX) * (w.x - dragStartX) +
+        (w.y - dragStartY) * (w.y - dragStartY)
+      );
+      if (movedDist > 3) dragMoved = true;
       dragNode.x = w.x;
       dragNode.y = w.y;
       dragNode.vx = 0;
       dragNode.vy = 0;
     } else if (isPanning) {
-      camera.x = sx - panStart.x;
-      camera.y = sy - panStart.y;
+      camera.x = e.clientX - panStart.x;
+      camera.y = e.clientY - panStart.y;
     } else {
-      // Hover detection
       var w = screenToWorld(sx, sy);
       var node = getNodeAt(w.x, w.y);
-      hoveredNode = node;
-      canvas.style.cursor = node ? 'pointer' : 'grab';
+      if (hoveredNode !== node) {
+        hoveredNode = node;
+        canvas.style.cursor = node ? 'pointer' : 'grab';
+      }
     }
   }
 
   function onMouseUp(e) {
     if (dragNode) {
-      // If barely moved, treat as click
       canvas.style.cursor = hoveredNode ? 'pointer' : 'grab';
       dragNode = null;
     }
@@ -492,14 +709,40 @@
     }
   }
 
-  function onDblClick(e) {
+  function onClick(e) {
+    if (dragMoved) {
+      dragMoved = false;
+      return;
+    }
     var rect = canvas.getBoundingClientRect();
     var sx = e.clientX - rect.left;
     var sy = e.clientY - rect.top;
     var w = screenToWorld(sx, sy);
     var node = getNodeAt(w.x, w.y);
     if (node) {
-      openSidebar(node);
+      if (selectedNode !== node) {
+        selectedNode = node;
+        openSidebar(node);
+      }
+    } else {
+      // Click on empty space: deselect
+      if (selectedNode) {
+        closeSidebar();
+        selectedNode = null;
+      }
+    }
+  }
+
+  function onDblClick(e) {
+    var rect = canvas.getBoundingClientRect();
+    var sx = e.clientX - rect.left;
+    var sy = e.clientY - rect.top;
+    var w = screenToWorld(sx, sy);
+    var node = getNodeAt(w.x, w.y);
+    if (node && node.pinned) {
+      node.pinned = false;
+      node.vx = 0;
+      node.vy = 0;
     }
   }
 
@@ -509,11 +752,11 @@
     var sx = e.clientX - rect.left;
     var sy = e.clientY - rect.top;
 
-    var delta = e.deltaY > 0 ? 0.9 : 1.1;
+    var delta = e.deltaY > 0 ? (1 - CONFIG.zoomStep) : (1 + CONFIG.zoomStep);
     var newZoom = camera.zoom * delta;
     newZoom = Math.max(CONFIG.zoomMin, Math.min(CONFIG.zoomMax, newZoom));
 
-    // Zoom towards cursor
+    // Zoom centered on cursor
     var wx = (sx - camera.x) / camera.zoom;
     var wy = (sy - camera.y) / camera.zoom;
     camera.zoom = newZoom;
@@ -521,7 +764,9 @@
     camera.y = sy - wy * camera.zoom;
   }
 
-  /* ---------- Touch Support ---------- */
+  /* ============================================================
+     Interaction: Touch
+     ============================================================ */
   var lastTouchDist = 0;
   var lastTouchCenter = null;
 
@@ -536,12 +781,16 @@
       var node = getNodeAt(w.x, w.y);
       if (node) {
         dragNode = node;
-        dragNode.vx = 0;
-        dragNode.vy = 0;
+        dragStartX = node.x;
+        dragStartY = node.y;
+        dragMoved = false;
+        node.vx = 0;
+        node.vy = 0;
+        node.pinned = true;
       } else {
         isPanning = true;
-        panStart.x = sx - camera.x;
-        panStart.y = sy - camera.y;
+        panStart.x = touch.clientX - camera.x;
+        panStart.y = touch.clientY - camera.y;
       }
     } else if (e.touches.length === 2) {
       var dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -551,6 +800,8 @@
         x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
         y: (e.touches[0].clientY + e.touches[1].clientY) / 2
       };
+      isPanning = false;
+      dragNode = null;
     }
   }
 
@@ -563,11 +814,16 @@
       var sy = touch.clientY - rect.top;
       if (dragNode) {
         var w = screenToWorld(sx, sy);
+        var movedDist = Math.sqrt(
+          (w.x - dragStartX) * (w.x - dragStartX) +
+          (w.y - dragStartY) * (w.y - dragStartY)
+        );
+        if (movedDist > 3) dragMoved = true;
         dragNode.x = w.x;
         dragNode.y = w.y;
       } else if (isPanning) {
-        camera.x = sx - panStart.x;
-        camera.y = sy - panStart.y;
+        camera.x = touch.clientX - panStart.x;
+        camera.y = touch.clientY - panStart.y;
       }
     } else if (e.touches.length === 2 && lastTouchDist > 0) {
       var dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -588,7 +844,9 @@
   }
 
   function onTouchEnd(e) {
-    dragNode = null;
+    if (dragNode) {
+      dragNode = null;
+    }
     isPanning = false;
     if (e.touches.length < 2) {
       lastTouchDist = 0;
@@ -596,44 +854,57 @@
     }
   }
 
-  /* ---------- Sidebar ---------- */
+  /* ============================================================
+     Sidebar
+     ============================================================ */
   function setupSidebar() {
     var closeBtn = document.getElementById('sidebar-close');
-    closeBtn.addEventListener('click', closeSidebar);
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        closeSidebar();
+        selectedNode = null;
+      });
+    }
   }
 
   function openSidebar(node) {
-    selectedNode = node;
     var sidebar = document.getElementById('sidebar');
-    document.getElementById('sidebar-title').textContent = node.label;
-    document.getElementById('sidebar-detail').textContent = node.detail || '';
+    var title = document.getElementById('sidebar-title');
+    var detail = document.getElementById('sidebar-detail');
+    if (!sidebar || !title || !detail) return;
+    title.textContent = node.label;
+    detail.textContent = node.detail || '';
     sidebar.classList.add('open');
   }
 
   function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-    selectedNode = null;
+    var sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+      sidebar.classList.remove('open');
+    }
   }
 
-  /* ---------- Search ---------- */
+  /* ============================================================
+     Search
+     ============================================================ */
   function setupSearch() {
     var input = document.getElementById('search-input');
     var results = document.getElementById('search-results');
+    if (!input || !results) return;
 
     input.addEventListener('input', function () {
-      var query = input.value.trim().toLowerCase();
-      // Clear highlights
+      searchQuery = input.value.trim().toLowerCase();
       nodes.forEach(function (n) { n.highlighted = false; });
 
-      if (!query) {
+      if (!searchQuery) {
         results.classList.remove('visible');
         results.innerHTML = '';
         return;
       }
 
       var matches = nodes.filter(function (n) {
-        return n.label.toLowerCase().indexOf(query) !== -1 ||
-               (n.detail && n.detail.toLowerCase().indexOf(query) !== -1);
+        return n.label.toLowerCase().indexOf(searchQuery) !== -1 ||
+               (n.detail && n.detail.toLowerCase().indexOf(searchQuery) !== -1);
       });
 
       matches.forEach(function (n) { n.highlighted = true; });
@@ -644,36 +915,44 @@
           var item = document.createElement('div');
           item.className = 'result-item';
           var clusterName = clusters[n.cluster] ? clusters[n.cluster].name : '';
-          item.innerHTML = n.label + '<span class="result-cluster">' + clusterName + '</span>';
+          item.innerHTML = '<span class="result-label">' + n.label + '</span>' +
+                           '<span class="result-cluster">' + clusterName + '</span>';
           item.addEventListener('click', function () {
-            // Pan camera to center on node
+            // Center camera on node
             camera.x = canvas.clientWidth / 2 - n.x * camera.zoom;
             camera.y = canvas.clientHeight / 2 - n.y * camera.zoom;
+            selectedNode = n;
             openSidebar(n);
             results.classList.remove('visible');
             input.value = '';
+            searchQuery = '';
             nodes.forEach(function (nd) { nd.highlighted = false; });
           });
           results.appendChild(item);
         });
         results.classList.add('visible');
       } else {
-        results.innerHTML = '<div class="result-item" style="color:#6B7280;">未找到匹配节点</div>';
+        results.innerHTML = '<div class="result-item result-empty">No matching nodes</div>';
         results.classList.add('visible');
       }
     });
 
-    // Close results on outside click
+    // Close on outside click
     document.addEventListener('click', function (e) {
-      if (!document.getElementById('search-box').contains(e.target)) {
+      var searchBox = document.getElementById('search-box');
+      if (searchBox && !searchBox.contains(e.target)) {
         results.classList.remove('visible');
       }
     });
   }
 
-  /* ---------- Legend ---------- */
+  /* ============================================================
+     Legend
+     ============================================================ */
   function buildLegend(clustersData) {
     var legend = document.getElementById('cluster-legend');
+    if (!legend) return;
+    legend.innerHTML = '';
     clustersData.forEach(function (cl) {
       var item = document.createElement('div');
       item.className = 'legend-item';
@@ -682,7 +961,9 @@
     });
   }
 
-  /* ---------- Helpers ---------- */
+  /* ============================================================
+     Helpers
+     ============================================================ */
   function hexToRgba(hex, alpha) {
     var r = parseInt(hex.slice(1, 3), 16);
     var g = parseInt(hex.slice(3, 5), 16);
@@ -691,6 +972,7 @@
   }
 
   function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
     ctx.moveTo(x + r, y);
     ctx.lineTo(x + w - r, y);
     ctx.quadraticCurveTo(x + w, y, x + w, y + r);
@@ -701,6 +983,19 @@
     ctx.lineTo(x, y + r);
     ctx.quadraticCurveTo(x, y, x + r, y);
     ctx.closePath();
+  }
+
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function debounce(fn, delay) {
+    var timer = null;
+    return function () {
+      var ctx = this, args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function () { fn.apply(ctx, args); }, delay);
+    };
   }
 
 })();
