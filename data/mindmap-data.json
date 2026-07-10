@@ -5,9 +5,24 @@
       "name": "AI 赋能个人",
       "color": "#2563EB",
       "nodes": [
-        { "id": "p1", "label": "个人提效", "detail": "IDE/Agent 工具深度使用：Trae、Cursor、Codex 等，实现编码效率、文档生成、方案设计的个人级 AI 加速", "cluster": "personal" },
-        { "id": "p2", "label": "知识管理", "detail": "通过 Harness 定义标准化工作流程，通过 Skill.md 封装可复用的 AI 能力流程，形成个人知识资产", "cluster": "personal" },
-        { "id": "p3", "label": "能力外化", "detail": "将个人能力封装为 MCP Server，让 AI Agent（如 Trae）可以直接调用你的专业能力", "cluster": "personal" }
+        {
+          "id": "p1",
+          "label": "个人提效",
+          "detail": "IDE/Agent 工具深度使用：Trae、Cursor、Codex 等，实现编码效率、文档生成、方案设计的个人级 AI 加速",
+          "cluster": "personal"
+        },
+        {
+          "id": "p2",
+          "label": "知识管理",
+          "detail": "通过 Harness 定义标准化工作流程，通过 Skill.md 封装可复用的 AI 能力流程，形成个人知识资产",
+          "cluster": "personal"
+        },
+        {
+          "id": "p3",
+          "label": "能力外化",
+          "detail": "将个人能力封装为 MCP Server，让 AI Agent（如 Trae）可以直接调用你的专业能力",
+          "cluster": "personal"
+        }
       ]
     },
     {
@@ -15,9 +30,24 @@
       "name": "AI 赋能组织",
       "color": "#7C3AED",
       "nodes": [
-        { "id": "o1", "label": "知识载体", "detail": "五类载体：文档、数据、案例、流程、模型。组织能力沉淀的核心形式，是 AI 赋能的'原材料'", "cluster": "org" },
-        { "id": "o2", "label": "交付形式", "detail": "四种形式：Git 仓库（自服务）/ 内部 AI 平台（托管）/ MCP 公共服务（接口）/ 嵌入工作流（无缝）", "cluster": "org" },
-        { "id": "o3", "label": "组织即毛细血管", "detail": "AI 赋能组织是 AI 赋能企业的执行单元。组织级能力的沉淀和交付，决定了企业级系统的注入效果", "cluster": "org" }
+        {
+          "id": "o1",
+          "label": "知识载体",
+          "detail": "五类载体：文档、数据、案例、流程、模型。组织能力沉淀的核心形式，是 AI 赋能的'原材料'",
+          "cluster": "org"
+        },
+        {
+          "id": "o2",
+          "label": "交付形式",
+          "detail": "四种形式：Git 仓库（自服务）/ 内部 AI 平台（托管）/ MCP 公共服务（接口）/ 嵌入工作流（无缝）",
+          "cluster": "org"
+        },
+        {
+          "id": "o3",
+          "label": "组织即毛细血管",
+          "detail": "AI 赋能组织是 AI 赋能企业的执行单元。组织级能力的沉淀和交付，决定了企业级系统的注入效果",
+          "cluster": "org"
+        }
       ]
     },
     {
@@ -25,10 +55,30 @@
       "name": "AI 赋能企业",
       "color": "#059669",
       "nodes": [
-        { "id": "e1", "label": "毛细血管效应", "detail": "现有系统增强：在现有业务系统中嵌入 AI 能力点，如同毛细血管渗透到组织各处，而非推翻重建", "cluster": "enterprise" },
-        { "id": "e2", "label": "系统重构", "detail": "推翻重建：当现有系统架构无法承载 AI 能力时，进行系统级的架构重构", "cluster": "enterprise" },
-        { "id": "e3", "label": "新系统创造", "detail": "Greenfield：从零开始构建全新的 AI 原生系统，如企业级 Agent 平台", "cluster": "enterprise" },
-        { "id": "e4", "label": "出海 Agent 交付", "detail": "基于核心算法推荐能力，绑定企业级 Agent 平台。Harness & Skill 沉淀可适配不同客户技术栈。策略：标准化核心 + 可配置适配层", "cluster": "enterprise" }
+        {
+          "id": "e1",
+          "label": "毛细血管效应",
+          "detail": "现有系统增强：在现有业务系统中嵌入 AI 能力点，如同毛细血管渗透到组织各处，而非推翻重建",
+          "cluster": "enterprise"
+        },
+        {
+          "id": "e2",
+          "label": "系统重构",
+          "detail": "推翻重建：当现有系统架构无法承载 AI 能力时，进行系统级的架构重构",
+          "cluster": "enterprise"
+        },
+        {
+          "id": "e3",
+          "label": "新系统创造",
+          "detail": "Greenfield：从零开始构建全新的 AI 原生系统，如企业级 Agent 平台",
+          "cluster": "enterprise"
+        },
+        {
+          "id": "e4",
+          "label": "出海 Agent 交付",
+          "detail": "基于核心算法推荐能力，绑定企业级 Agent 平台。Harness & Skill 沉淀可适配不同客户技术栈。策略：标准化核心 + 可配置适配层",
+          "cluster": "enterprise"
+        }
       ]
     },
     {
@@ -36,15 +86,60 @@
       "name": "团队边界与角色定位",
       "color": "#EA580C",
       "nodes": [
-        { "id": "t1", "label": "算法工程师核心", "detail": "定义'什么是正确的'（模型质量标准、业务指标定义）；设计 AI 能力的上限；沉淀 Harness/Skill 作为组织知识资产", "cluster": "team" },
-        { "id": "t2", "label": "开发核心", "detail": "构建持久化服务、系统集成、运维保障。将算法能力工程化、产品化", "cluster": "team" },
-        { "id": "t3", "label": "产品核心", "detail": "需求定义、用户体验、商业逻辑。将 AI 能力翻译为业务价值", "cluster": "team" },
-        { "id": "t4", "label": "灰色地带", "detail": "Agent 流程编排（与产品共享）、MCP Server 框架（与开发共享）、AI 方案成本估算（与产品+Tech Lead 共享）。精进建议：在灰色地带建立影响力而非争夺所有权", "cluster": "team" },
-        { "id": "t5", "label": "应止步的边界", "detail": "前端实现细节、后端架构选型、DevOps 流水线、产品定价策略、客户合同条款", "cluster": "team" },
-        { "id": "t6", "label": "1人 POC", "detail": "全栈自己来：模型选型、Prompt 设计、Harness 定义、MCP Server 手写、评估指标、部署方式", "cluster": "team" },
-        { "id": "t7", "label": "5人团队", "detail": "掌控模型质量/Harness核心/评估标准；参与部署脚本/MCP框架/反馈收集；不碰前端UI/权限/数据库", "cluster": "team" },
-        { "id": "t8", "label": "20人部门", "detail": "掌控模型版本管理/效果评估体系/资产沉淀；参与Agent平台选型/MCP公共服务化；不碰DevOps/SLA", "cluster": "team" },
-        { "id": "t9", "label": "100人+企业级", "detail": "掌控核心算法定义/验收规范/资产可迁移性设计；参与平台架构/适配层/培训布道；不碰运维/商务合同/对方IT架构", "cluster": "team" }
+        {
+          "id": "t1",
+          "label": "算法工程师核心",
+          "detail": "定义'什么是正确的'（模型质量标准、业务指标定义）；设计 AI 能力的上限；沉淀 Harness/Skill 作为组织知识资产",
+          "cluster": "team"
+        },
+        {
+          "id": "t2",
+          "label": "基于个人能力",
+          "detail": "构建持久化服务、系统集成、运维保障。将算法能力工程化、产品化",
+          "cluster": "team"
+        },
+        {
+          "id": "t3",
+          "label": "产品核心",
+          "detail": "需求定义、用户体验、商业逻辑。将 AI 能力翻译为业务价值",
+          "cluster": "team"
+        },
+        {
+          "id": "t4",
+          "label": "灰色地带",
+          "detail": "Agent 流程编排（与产品共享）、MCP Server 框架（与开发共享）、AI 方案成本估算（与产品+Tech Lead 共享）。精进建议：在灰色地带建立影响力而非争夺所有权",
+          "cluster": "team"
+        },
+        {
+          "id": "t5",
+          "label": "应止步的边界",
+          "detail": "前端实现细节、后端架构选型、DevOps 流水线、产品定价策略、客户合同条款",
+          "cluster": "team"
+        },
+        {
+          "id": "t6",
+          "label": "1人 POC",
+          "detail": "全栈自己来：模型选型、Prompt 设计、Harness 定义、MCP Server 手写、评估指标、部署方式",
+          "cluster": "team"
+        },
+        {
+          "id": "t7",
+          "label": "5人团队",
+          "detail": "掌控模型质量/Harness核心/评估标准；参与部署脚本/MCP框架/反馈收集；不碰前端UI/权限/数据库",
+          "cluster": "team"
+        },
+        {
+          "id": "t8",
+          "label": "20人部门",
+          "detail": "掌控模型版本管理/效果评估体系/资产沉淀；参与Agent平台选型/MCP公共服务化；不碰DevOps/SLA",
+          "cluster": "team"
+        },
+        {
+          "id": "t9",
+          "label": "100人+企业级",
+          "detail": "掌控核心算法定义/验收规范/资产可迁移性设计；参与平台架构/适配层/培训布道；不碰运维/商务合同/对方IT架构",
+          "cluster": "team"
+        }
       ]
     },
     {
@@ -52,33 +147,134 @@
       "name": "算法工程师角色进化",
       "color": "#D97706",
       "nodes": [
-        { "id": "v1", "label": "AI 产品完善者", "detail": "基于业务理解，完善 AI 产品的能力边界和质量标准，让产品'能用、好用'", "cluster": "evolution" },
-        { "id": "v2", "label": "能力布道者", "detail": "将个人掌握的 AI 方法论通过 Harness/Skill/MCP 等形式传递给组织和团队", "cluster": "evolution" },
-        { "id": "v3", "label": "业务系统 AI 重构者", "detail": "识别现有业务系统中可以注入 AI 能力的节点，推动毛细血管式改造", "cluster": "evolution" },
-        { "id": "v4", "label": "组织 AI 策略顾问", "detail": "从个人实践上升到组织级 AI 战略规划，定义 AI 能力的组织沉淀路径", "cluster": "evolution" },
-        { "id": "v5", "label": "出海 Agent 交付专家", "detail": "将核心算法能力打包为可适配不同客户环境的 Agent 解决方案，实现知识资产的跨组织交付", "cluster": "evolution" }
+        {
+          "id": "v1",
+          "label": "AI 产品完善者",
+          "detail": "基于业务理解，完善 AI 产品的能力边界和质量标准，让产品'能用、好用'",
+          "cluster": "evolution"
+        },
+        {
+          "id": "v2",
+          "label": "能力布道者",
+          "detail": "将个人掌握的 AI 方法论通过 Harness/Skill/MCP 等形式传递给组织和团队",
+          "cluster": "evolution"
+        },
+        {
+          "id": "v3",
+          "label": "业务系统 AI 重构者",
+          "detail": "识别现有业务系统中可以注入 AI 能力的节点，推动毛细血管式改造",
+          "cluster": "evolution"
+        },
+        {
+          "id": "v4",
+          "label": "组织 AI 策略顾问",
+          "detail": "从个人实践上升到组织级 AI 战略规划，定义 AI 能力的组织沉淀路径",
+          "cluster": "evolution"
+        },
+        {
+          "id": "v5",
+          "label": "出海 Agent 交付专家",
+          "detail": "将核心算法能力打包为可适配不同客户环境的 Agent 解决方案，实现知识资产的跨组织交付",
+          "cluster": "evolution"
+        }
       ]
     }
   ],
   "edges": [
-    { "from": "p2", "to": "o1", "label": "沉淀为" },
-    { "from": "p3", "to": "o2", "label": "封装为" },
-    { "from": "o1", "to": "e1", "label": "注入到" },
-    { "from": "o2", "to": "e2", "label": "承载于" },
-    { "from": "o2", "to": "e3", "label": "支撑" },
-    { "from": "o3", "to": "e1", "label": "执行单元" },
-    { "from": "t4", "to": "t1", "label": "灰色地带" },
-    { "from": "t4", "to": "t2", "label": "灰色地带" },
-    { "from": "t6", "to": "t7", "label": "扩展到" },
-    { "from": "t7", "to": "t8", "label": "扩展到" },
-    { "from": "t8", "to": "t9", "label": "扩展到" },
-    { "from": "v1", "to": "v2", "label": "进而" },
-    { "from": "v2", "to": "v3", "label": "推动" },
-    { "from": "v3", "to": "v4", "label": "上升为" },
-    { "from": "v4", "to": "v5", "label": "延伸至" },
-    { "from": "e4", "to": "v5", "label": "对应角色" },
-    { "from": "p1", "to": "p2", "label": "流程化" },
-    { "from": "p2", "to": "p3", "label": "外化" },
-    { "from": "t1", "to": "v1", "label": "角色起点" }
+    {
+      "from": "p2",
+      "to": "o1",
+      "label": "沉淀为"
+    },
+    {
+      "from": "p3",
+      "to": "o2",
+      "label": "封装为"
+    },
+    {
+      "from": "o1",
+      "to": "e1",
+      "label": "注入到"
+    },
+    {
+      "from": "o2",
+      "to": "e2",
+      "label": "承载于"
+    },
+    {
+      "from": "o2",
+      "to": "e3",
+      "label": "支撑"
+    },
+    {
+      "from": "o3",
+      "to": "e1",
+      "label": "执行单元"
+    },
+    {
+      "from": "t4",
+      "to": "t1",
+      "label": "灰色地带"
+    },
+    {
+      "from": "t4",
+      "to": "t2",
+      "label": "灰色地带"
+    },
+    {
+      "from": "t6",
+      "to": "t7",
+      "label": "扩展到"
+    },
+    {
+      "from": "t7",
+      "to": "t8",
+      "label": "扩展到"
+    },
+    {
+      "from": "t8",
+      "to": "t9",
+      "label": "扩展到"
+    },
+    {
+      "from": "v1",
+      "to": "v2",
+      "label": "进而"
+    },
+    {
+      "from": "v2",
+      "to": "v3",
+      "label": "推动"
+    },
+    {
+      "from": "v3",
+      "to": "v4",
+      "label": "上升为"
+    },
+    {
+      "from": "v4",
+      "to": "v5",
+      "label": "延伸至"
+    },
+    {
+      "from": "e4",
+      "to": "v5",
+      "label": "对应角色"
+    },
+    {
+      "from": "p1",
+      "to": "p2",
+      "label": "流程化"
+    },
+    {
+      "from": "p2",
+      "to": "p3",
+      "label": "外化"
+    },
+    {
+      "from": "t1",
+      "to": "v1",
+      "label": "角色起点"
+    }
   ]
 }
