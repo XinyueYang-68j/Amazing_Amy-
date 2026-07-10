@@ -186,14 +186,18 @@
           })
           .then(function ([headSha, treeSha]) {
             return Promise.all([
+              Promise.resolve(headSha),
               Promise.resolve(treeSha),
               self.createBlob(contentStr)
             ]);
           })
-          .then(function ([treeSha, blobSha]) {
-            return self.createTree(treeSha, path, blobSha);
+          .then(function ([headSha, treeSha, blobSha]) {
+            return Promise.all([
+              Promise.resolve(headSha),
+              self.createTree(treeSha, path, blobSha)
+            ]);
           })
-          .then(function (newTreeSha) {
+          .then(function ([headSha, newTreeSha]) {
             return self.createCommit(newTreeSha, headSha, message || ('Update ' + path));
           })
           .then(function (newCommitSha) {
