@@ -223,11 +223,17 @@
   var raycaster, mouse;
   var clock;
   var isDragging = false;
+  var isRotating = false;
   var dragStartX = 0;
+  var dragStartY = 0;
   var currentX = 0;    // 当前相机 X 位置
   var targetX = 0;     // 目标相机 X 位置
   var currentZoom = 1; // 当前缩放
   var targetZoom = 1;  // 目标缩放
+  var currentAngleH = Math.PI / 6;  // 水平旋转角度（弧度）
+  var targetAngleH = Math.PI / 6;
+  var currentAngleV = 0.65;        // 垂直俯仰角度（0=平视, 1=正上方）
+  var targetAngleV = 0.65;
   var buildingMeshes = [];
   var npcObjects = [];
   var npcSprites = [];
@@ -295,11 +301,19 @@
   }
 
   /* ============================================================
-   * 等距相机定位
+   * 球坐标相机定位（支持360°旋转 + 俯仰）
    * ============================================================ */
   function updateCameraPosition() {
-    var d = 120 / currentZoom; // 缩放时调整距离
-    camera.position.set(currentX, d * 0.85, d * 0.55);
+    var d = 120 / currentZoom;
+    // 垂直角度限制：0.15（接近平视）到 1.45（接近正上方）
+    var vAngle = currentAngleV * (Math.PI / 2);
+    var hAngle = currentAngleH;
+
+    var x = currentX + d * Math.cos(vAngle) * Math.sin(hAngle);
+    var y = d * Math.sin(vAngle);
+    var z = d * Math.cos(vAngle) * Math.cos(hAngle);
+
+    camera.position.set(x, y, z);
     camera.lookAt(currentX, 0, 0);
   }
 
@@ -2126,7 +2140,7 @@
       'z-index: 100',
       'pointer-events: none',
     ].join(';');
-    hint.textContent = '滚轮平移 | Shift+滚轮缩放 | 点击牛马查看角色';
+    hint.textContent = '左键拖拽平移 | 右键拖拽360°旋转 | 滚轮平移 | Shift+滚轮缩放';
     document.body.appendChild(hint);
   }
 
@@ -2288,24 +2302,52 @@
       }
     }, { passive: false });
 
-    // 拖拽平移
+    // 左键拖拽平移
     domElement.addEventListener('mousedown', function (e) {
-      isDragging = true;
-      dragStartX = e.clientX;
-      domElement.style.cursor = 'grabbing';
+      if (e.button === 0) { // 左键
+        isDragging = true;
+        dragStartX = e.clientX;
+        domElement.style.cursor = 'grabbing';
+      } else if (e.button === 2) { // 右键
+        isRotating = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        domElement.style.cursor = 'move';
+      }
     });
 
     window.addEventListener('mousemove', function (e) {
-      if (!isDragging) return;
-      var dx = (e.clientX - dragStartX) * CONFIG.DRAG_SPEED;
-      targetX -= dx;
-      targetX = Math.max(CONFIG.MIN_X, Math.min(CONFIG.MAX_X, targetX));
-      dragStartX = e.clientX;
+      if (isDragging) {
+        var dx = (e.clientX - dragStartX) * CONFIG.DRAG_SPEED;
+        targetX -= dx;
+        targetX = Math.max(CONFIG.MIN_X, Math.min(CONFIG.MAX_X, targetX));
+        dragStartX = e.clientX;
+      }
+      if (isRotating) {
+        // 水平拖拽：旋转角度
+        targetAngleH += (e.clientX - dragStartX) * 0.005;
+        // 垂直拖拽：俯仰角度
+        targetAngleV += (e.clientY - dragStartY) * 0.005;
+        targetAngleV = Math.max(0.15, Math.min(1.45, targetAngleV));
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+      }
     });
 
-    window.addEventListener('mouseup', function () {
-      isDragging = false;
-      domElement.style.cursor = 'grab';
+    window.addEventListener('mouseup', function (e) {
+      if (e.button === 0 && isDragging) {
+        isDragging = false;
+        domElement.style.cursor = 'grab';
+      }
+      if (e.button === 2 && isRotating) {
+        isRotating = false;
+        domElement.style.cursor = 'grab';
+      }
+    });
+
+    // 禁止右键菜单
+    domElement.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
     });
 
     domElement.style.cursor = 'grab';
@@ -2375,9 +2417,11 @@
     var delta = clock.getDelta();
     var elapsed = clock.getElapsedTime();
 
-    // 相机平滑移动 + 缩放平滑
+    // 相机平滑移动 + 缩放平滑 + 旋转平滑
     currentX += (targetX - currentX) * 0.05;
     currentZoom += (targetZoom - currentZoom) * 0.08;
+    currentAngleH += (targetAngleH - currentAngleH) * 0.08;
+    currentAngleV += (targetAngleV - currentAngleV) * 0.08;
     updateCameraPosition();
 
     // NPC 移动
