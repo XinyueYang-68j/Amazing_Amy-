@@ -53,6 +53,12 @@
     MIN_X:            -100,
     MAX_X:            500,
 
+    // 缩放
+    ZOOM_SPEED:       0.04,
+    MIN_ZOOM:         0.4,
+    MAX_ZOOM:         2.5,
+    INIT_ZOOM:        1.0,
+
     // 初始视角位置（区域3 - 城邦）
     INIT_X:           220,
 
@@ -220,6 +226,8 @@
   var dragStartX = 0;
   var currentX = 0;    // 当前相机 X 位置
   var targetX = 0;     // 目标相机 X 位置
+  var currentZoom = 1; // 当前缩放
+  var targetZoom = 1;  // 目标缩放
   var buildingMeshes = [];
   var npcObjects = [];
   var npcSprites = [];
@@ -290,7 +298,7 @@
    * 等距相机定位
    * ============================================================ */
   function updateCameraPosition() {
-    var d = 120;
+    var d = 120 / currentZoom; // 缩放时调整距离
     camera.position.set(currentX, d * 0.85, d * 0.55);
     camera.lookAt(currentX, 0, 0);
   }
@@ -1833,40 +1841,16 @@
    * ============================================================ */
   function createNPCs() {
     NPC_DATA.forEach(function (npc) {
-      // 光点球体
-      var sphereGeo = new THREE.SphereGeometry(0.6, 8, 8);
       var colorVal = CONFIG.NPC_COLORS[npc.color];
-      var sphereMat = new THREE.MeshBasicMaterial({
-        color: colorVal,
-        transparent: true,
-        opacity: 0.9,
-      });
-      var sphere = new THREE.Mesh(sphereGeo, sphereMat);
-      sphere.position.set(npc.x, 2, npc.z);
+      var colorHex = '#' + colorVal.toString(16).padStart(6, '0');
 
-      // 发光外圈
-      var glowGeo = new THREE.SphereGeometry(1.0, 8, 8);
-      var glowMat = new THREE.MeshBasicMaterial({
-        color: colorVal,
-        transparent: true,
-        opacity: 0.3,
-      });
-      var glow = new THREE.Mesh(glowGeo, glowMat);
-      sphere.add(glow);
+      // 马赛克牛马（像素风方块组合体）
+      var animal = createMosaicAnimal(npc.color, colorVal, colorHex);
 
-      // 底部光柱
-      var pillarGeo = new THREE.CylinderGeometry(0.05, 0.3, 2, 6);
-      var pillarMat = new THREE.MeshBasicMaterial({
-        color: colorVal,
-        transparent: true,
-        opacity: 0.2,
-      });
-      var pillar = new THREE.Mesh(pillarGeo, pillarMat);
-      pillar.position.y = -1;
-      sphere.add(pillar);
+      animal.position.set(npc.x, 0.5, npc.z);
 
       // 存储NPC数据到 mesh
-      sphere.userData = {
+      animal.userData = {
         type: 'npc',
         npcData: npc,
         patrolIndex: 0,
@@ -1875,12 +1859,120 @@
 
       // 名字标签
       var nameSprite = createNameSprite(npc.name, npc.color);
-      nameSprite.position.set(0, 2.5, 0);
-      sphere.add(nameSprite);
+      nameSprite.position.set(0, 4.5, 0);
+      animal.add(nameSprite);
 
-      scene.add(sphere);
-      npcObjects.push(sphere);
+      scene.add(animal);
+      npcObjects.push(animal);
     });
+  }
+
+  /* ============================================================
+   * 马赛克风格牛马（像素方块组合）
+   * 用多个小方块组成一个抽象的牛马形态
+   * ============================================================ */
+  function createMosaicAnimal(colorKey, colorVal, colorHex) {
+    var group = new THREE.Group();
+    var blockSize = 0.45;
+
+    // 基础颜色材质
+    var mat = new THREE.MeshBasicMaterial({
+      color: colorVal,
+      transparent: true,
+      opacity: 0.85,
+    });
+
+    // 暗色材质（阴影面）
+    var darkVal = new THREE.Color(colorVal).multiplyScalar(0.5);
+    var darkMat = new THREE.MeshBasicMaterial({
+      color: darkVal,
+      transparent: true,
+      opacity: 0.7,
+    });
+
+    // 亮色材质（高光面）
+    var brightVal = new THREE.Color(colorVal).multiplyScalar(1.4);
+    var brightMat = new THREE.MeshBasicMaterial({
+      color: brightVal,
+      transparent: true,
+      opacity: 0.9,
+    });
+
+    // 创建单个像素方块的辅助函数
+    function block(x, y, z, material) {
+      var geo = new THREE.BoxGeometry(blockSize * 0.95, blockSize * 0.95, blockSize * 0.95);
+      var mesh = new THREE.Mesh(geo, material || mat);
+      mesh.position.set(x * blockSize, y * blockSize + blockSize / 2, z * blockSize);
+      return mesh;
+    }
+
+    // 牛马像素图案 (7宽 x 6高 x 3深)
+    // 每层是 [z][y][x] 的图案, 1=主色 2=暗色 3=亮色 0=空
+    var body = [
+      // 身体层 z=0（中）— 牛马的身体轮廓
+      [
+        [0,0,1,1,1,1,0],
+        [0,1,1,3,3,1,1],
+        [1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1],
+        [1,1,1,1,1,1,1],
+        [0,1,1,0,1,1,0],
+      ],
+      // 前层 z=-1（头）
+      [
+        [0,0,1,1,1,0,0],
+        [0,1,3,3,3,1,0],
+        [0,1,1,2,1,1,0],
+        [0,1,2,1,1,1,0],
+        [0,0,1,1,1,0,0],
+        [0,0,0,1,0,0,0],
+      ],
+      // 后层 z=1（尾）
+      [
+        [0,0,0,1,1,0,0],
+        [0,0,1,1,1,1,0],
+        [0,0,1,1,1,1,0],
+        [0,1,1,1,1,1,0],
+        [0,1,1,1,1,0,0],
+        [0,1,1,0,0,0,0],
+      ],
+    ];
+
+    for (var z = 0; z < body.length; z++) {
+      for (var y = 0; y < body[z].length; y++) {
+        for (var x = 0; x < body[z][y].length; x++) {
+          var v = body[z][y][x];
+          if (v === 0) continue;
+          var material = v === 2 ? darkMat : v === 3 ? brightMat : mat;
+          var bz = (z === 1) ? -1 : (z === 2) ? 1 : 0;
+          group.add(block(x - 3, y - 3, bz, material));
+        }
+      }
+    }
+
+    // 发光光晕效果
+    var glowGeo = new THREE.SphereGeometry(2.2, 8, 8);
+    var glowMat = new THREE.MeshBasicMaterial({
+      color: colorVal,
+      transparent: true,
+      opacity: 0.12,
+    });
+    var glow = new THREE.Mesh(glowGeo, glowMat);
+    glow.position.y = 1.5;
+    group.add(glow);
+
+    // 底部发光垫
+    var padGeo = new THREE.BoxGeometry(4, 0.1, 2);
+    var padMat = new THREE.MeshBasicMaterial({
+      color: colorVal,
+      transparent: true,
+      opacity: 0.25,
+    });
+    var pad = new THREE.Mesh(padGeo, padMat);
+    pad.position.y = 0.05;
+    group.add(pad);
+
+    return group;
   }
 
   /* ============================================================
@@ -1960,7 +2052,7 @@
       }
 
       // 上下浮动
-      npc.position.y = 2 + Math.sin(Date.now() * 0.003 + npc.position.x) * 0.3;
+      npc.position.y = 0.5 + Math.sin(Date.now() * 0.003 + npc.position.x) * 0.25;
     });
   }
 
@@ -2034,7 +2126,7 @@
       'z-index: 100',
       'pointer-events: none',
     ].join(';');
-    hint.textContent = '鼠标滚轮 / 拖拽平移 | 点击光点查看角色信息';
+    hint.textContent = '滚轮平移 | Shift+滚轮缩放 | 点击牛马查看角色';
     document.body.appendChild(hint);
   }
 
@@ -2182,11 +2274,18 @@
   function bindEvents() {
     var domElement = renderer.domElement;
 
-    // 鼠标滚轮平移
+    // 鼠标滚轮：Shift+滚轮缩放，普通滚轮水平平移
     domElement.addEventListener('wheel', function (e) {
       e.preventDefault();
-      targetX += e.deltaY * CONFIG.SCROLL_SPEED;
-      targetX = Math.max(CONFIG.MIN_X, Math.min(CONFIG.MAX_X, targetX));
+      if (e.shiftKey) {
+        // Shift+滚轮：缩放
+        targetZoom -= e.deltaY * CONFIG.ZOOM_SPEED;
+        targetZoom = Math.max(CONFIG.MIN_ZOOM, Math.min(CONFIG.MAX_ZOOM, targetZoom));
+      } else {
+        // 普通滚轮：水平平移
+        targetX += e.deltaY * CONFIG.SCROLL_SPEED;
+        targetX = Math.max(CONFIG.MIN_X, Math.min(CONFIG.MAX_X, targetX));
+      }
     }, { passive: false });
 
     // 拖拽平移
@@ -2276,8 +2375,9 @@
     var delta = clock.getDelta();
     var elapsed = clock.getElapsedTime();
 
-    // 相机平滑移动
+    // 相机平滑移动 + 缩放平滑
     currentX += (targetX - currentX) * 0.05;
+    currentZoom += (targetZoom - currentZoom) * 0.08;
     updateCameraPosition();
 
     // NPC 移动
