@@ -784,6 +784,26 @@
     .tag-ops { color:#F59E0B; border-color:rgba(245,158,11,0.3); }
     .tag-insight { color:#06B6D4; border-color:rgba(6,182,212,0.3); }
     .tag-agent { color:#EC4899; border-color:rgba(236,72,153,0.3); }
+.tag-cloud { color:#FF6A00; border-color:rgba(255,106,0,0.3); }
+.tag-legal { color:#8B5CF6; border-color:rgba(139,92,246,0.3); }
+.tag-finance { color:#14B8A6; border-color:rgba(20,184,166,0.3); }
+
+.industry-sub-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.ic-model {
+  font-size: 0.7rem;
+  color: rgba(212,175,55,0.7);
+  background: rgba(212,175,55,0.05);
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  font-family: monospace;
+}
 
     .ic-body {
       font-size: 0.8rem;
@@ -1788,45 +1808,87 @@
       </div>
 
       <div class="industry-tabs" style="margin-top:2rem;">
-        <div class="industry-tab-label">B类：桌面Agent / 执行型AI（垂直生态）</div>
+        <div class="industry-tab-label">B类：基于开源Agent框架的垂直订阅产品</div>
+        <p class="industry-sub-label">基于 OpenClaw / WorkBuddy / 百度文心Agent 等通用Agent框架，开发出面向特定行业的可订阅式AI数字员工产品</p>
         <div class="industry-cards">
+
           <div class="industry-card">
             <div class="ic-header">
-              <span class="ic-name">OpenClaw（龙虾）</span>
-              <span class="ic-tag tag-agent">开源Agent</span>
+              <span class="ic-name">蝉妈妈 · 蝉龙虾</span>
+              <span class="ic-tag tag-agent">电商数字员工</span>
             </div>
             <div class="ic-body">
-              2025年底由奥地利开发者Peter Steinberger创建，GitHub 21.5万+星标。本地优先、开源的AI执行型智能体，让大模型直接操作电脑完成实际任务（文件管理、浏览器控制、任务自动化）。从"对话时代"迈向"执行时代"的标志性产品。衍生出腾讯云龙虾、GClaw、Molili等生态。
+              基于 OpenClaw（龙虾）框架开发的电商垂直Agent。自动执行抖音/小红书/淘宝数据采集、竞品监控、爆款分析、投放策略生成等电商运营全链路任务。可订阅制，电商运营人员的"AI助理"——替代人工重复操作浏览器、下载数据、整理报表的日常工作。
             </div>
-            <a class="ic-link" href="https://github.com/openclaw" target="_blank" rel="noopener">github.com/openclaw</a>
+            <div class="ic-model">底层：OpenClaw（开源Agent框架） → 垂直封装：电商运营场景 → 商业模式：SaaS订阅</div>
+            <a class="ic-link" href="https://www.chanmama.com" target="_blank" rel="noopener">chanmama.com</a>
           </div>
 
           <div class="industry-card">
             <div class="ic-header">
-              <span class="ic-name">腾讯 WorkBuddy</span>
-              <span class="ic-tag tag-agent">桌面智能体</span>
+              <span class="ic-name">Molili</span>
+              <span class="ic-tag tag-agent">办公自动化</span>
             </div>
             <div class="ic-body">
-              腾讯官方自研的桌面级AI智能体（"官方正版小龙虾"），全场景AI智能体工作台。不仅能理解指令，还能直接操控电脑完成实际操作——自动处理Excel、生成PPT、清洗数据、写报告。v5.0版本已发布。
+              基于 OpenClaw 的办公自动化Agent。自动处理Excel报表生成、邮件分类回复、会议纪要整理、数据录入等日常办公任务。面向中小企业，订阅制定价，"雇佣"一个AI助理每月数百元。
             </div>
-            <a class="ic-link" href="https://workbuddy.tencent.com" target="_blank" rel="noopener">workbuddy.tencent.com</a>
+            <div class="ic-model">底层：OpenClaw → 垂直封装：办公自动化 → 商业模式：月度订阅（￥99-299/月）</div>
+            <a class="ic-link" href="https://molili.ai" target="_blank" rel="noopener">molili.ai</a>
           </div>
 
           <div class="industry-card">
             <div class="ic-header">
-              <span class="ic-name">神州控股 · 小金</span>
-              <span class="ic-tag tag-agent">供应链Agent</span>
+              <span class="ic-name">GClaw</span>
+              <span class="ic-tag tag-agent">全球电商Agent</span>
             </div>
             <div class="ic-body">
-              2025年推出的企业级供应链智能体，"AI for Process"理念为核心，"3+N"技术架构。直击通用大模型在企业级应用"用不起来、难见回报"的痛点。覆盖消费电子、快消美妆、耐用消费品等。
+              基于 OpenClaw 的跨境电商Agent。自动操作亚马逊/Shopify后台，执行选品分析、Listing优化、库存管理、客服自动回复、多语言翻译等跨境电商全流程任务。面向跨境卖家，按店铺规模订阅。
             </div>
-            <a class="ic-link" href="https://www.dcits.com" target="_blank" rel="noopener">dcits.com</a>
+            <div class="ic-model">底层：OpenClaw → 垂直封装：跨境电商运营 → 商业模式：按店铺规模分层订阅</div>
+            <a class="ic-link" href="https://gclaw.ai" target="_blank" rel="noopener">gclaw.ai</a>
           </div>
+
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">腾讯云龙虾</span>
+              <span class="ic-tag tag-cloud">云服务Agent</span>
+            </div>
+            <div class="ic-body">
+              腾讯云基于 OpenClaw 推出的云端Agent托管服务。提供开箱即用的Agent运行环境 + 行业Agent模板（客服、运维、财务），企业无需自建Agent基础设施，按调用量/月订阅。B端产品的"Agent即服务"模式。
+            </div>
+            <div class="ic-model">底层：OpenClaw（腾讯深度合作版） → 垂直封装：多行业模板 → 商业模式：云服务订阅（按调用量计费）</div>
+            <a class="ic-link" href="https://cloud.tencent.com/product/claw" target="_blank" rel="noopener">cloud.tencent.com/product/claw</a>
+          </div>
+
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">律政 Agent（法律AI）</span>
+              <span class="ic-tag tag-legal">法律行业</span>
+            </div>
+            <div class="ic-body">
+              基于通用Agent框架的法律垂直产品。自动执行合同审查、法规检索、风险条款标注、法律文书起草等任务。面向律所/法务团队，按案件量或席位订阅。代表：幂律智能（基于Agent的合同审查产品）。
+            </div>
+            <div class="ic-model">底层：通用LLM + Agent → 垂直封装：法律场景 → 商业模式：按席位/案件订阅</div>
+            <a class="ic-link" href="https://www.milvul.com" target="_blank" rel="noopener">milvul.com（幂律智能）</a>
+          </div>
+
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">财务 Agent（RPA+AI）</span>
+              <span class="ic-tag tag-finance">财务行业</span>
+            </div>
+            <div class="ic-body">
+              基于Agent框架的财务自动化产品。自动执行发票识别录入、银行对账、费用报销审核、税务申报准备等财务全流程任务。代表：UiPath + AI Agent集成、每刻报销（智能报销Agent）、用友（财务智能助理）。
+            </div>
+            <div class="ic-model">底层：RPA + Agent框架 → 垂直封装：财务场景 → 商业模式：按模块/席位订阅</div>
+            <a class="ic-link" href="https://www.meiqike.com" target="_blank" rel="noopener">meiqike.com（每刻）</a>
+          </div>
+
         </div>
       </div>
 
       <div class="industry-insight">
-        <strong>关键发现：</strong>A类玩家卖的是"预测结果"（黑盒或半黑盒），B类玩家卖的是"执行能力"（Agent操作电脑）。你的定位——"AI能力产品化"——恰好站在两类玩家的交叉点：你不只卖预测结果，你卖的是<strong>预测能力本身</strong>（可蒸馏、可标准化、可被不同数据成熟度的客户采纳）。这是你和菜鸟/观远的核心差异。
+        <strong>关键发现：</strong>B类玩家的商业模式已清晰——<strong>通用Agent框架 + 垂直场景封装 = 可订阅的AI数字员工</strong>。蝉龙虾就是典型：用OpenClaw的"操作电脑"能力，封装成电商运营的专属Agent，按月订阅收费。这个模式的核心壁垒不是Agent框架本身（开源的），而是<strong>对垂直场景的理解深度</strong>——知道电商运营每天要点击什么、输入什么、输出什么。这恰好印证了你的"场景理解深度"竞争壁垒。
       </div>
     </section>
 
