@@ -131,7 +131,7 @@
         {
           "id": "role-ops",
           "label": "运维/知识经理",
-          "detail": "保证每次能力被调用后的新反馈和超出现有能力的需求被积累，等待下一次能力跃升。",
+          "detail": "保证每次能力被调用后的新反馈和超出现有能力需求被积累，等待下一次能力跃升。",
           "cluster": "roles"
         },
         {
@@ -227,6 +227,92 @@
           "cluster": "moat"
         }
       ]
+    },
+    {
+      "id": "anchors",
+      "name": "新职业锚定义",
+      "color": "#EC4899",
+      "nodes": [
+        {
+          "id": "anchor-pm",
+          "label": "AI产品经理的职业锚",
+          "detail": "用户的需求应该如何被满足？AI的能力被嵌入在哪里效率最高又不是脱缰的野马？核心命题是：在AI能力无限膨胀的时代，定义能力的边界和嵌入点。",
+          "cluster": "anchors"
+        },
+        {
+          "id": "anchor-algo",
+          "label": "AI算法工程师的职业锚",
+          "detail": "什么能力可以被标准化？什么能力必须人把关？如何设计流程和知识让AI回答正确？如何设计AI自检流程？如何保证AI输出结果正确可靠？核心命题是：AI能力的质量守门人。",
+          "cluster": "anchors"
+        },
+        {
+          "id": "anchor-da",
+          "label": "AI数据分析的职业锚",
+          "detail": "如何设定日常分析需求？如何提供更具流程化、体系化的分析思路？如何一步直达决策前置要求？核心命题是：把分析能力从'被调用'升级为'主动决策支持'。",
+          "cluster": "anchors"
+        },
+        {
+          "id": "anchor-ops",
+          "label": "AI运维的职业锚",
+          "detail": "如何体系化过去的运维Case？如何自动发现问题、自动预警？如何让人工决策解决方案？核心命题是：从被动修bug到主动预测和知识沉淀。",
+          "cluster": "anchors"
+        },
+        {
+          "id": "anchor-overseas",
+          "label": "AI出海算法的职业锚",
+          "detail": "除了场内算法能力，所有流程叠加：如何设计适配于不同预算、不同数据基建能力的甲方公司？核心命题是：一套标准化的能力，如何变成可贩卖的产品包。",
+          "cluster": "anchors"
+        }
+      ]
+    },
+    {
+      "id": "growth",
+      "name": "成长路径与试炼场",
+      "color": "#06B6D4",
+      "nodes": [
+        {
+          "id": "growth-pm-path",
+          "label": "AI产品经理成长路径",
+          "detail": "初级：需求文档 → 中级：AI场景拆解+边界定义 → 高级：AI产品体系设计+能力编排 → 专家：跨行业AI产品方法论输出。试炼场：百胜内部AI工具产品设计、预估小管家。",
+          "cluster": "growth"
+        },
+        {
+          "id": "growth-algo-path",
+          "label": "AI算法工程师成长路径",
+          "detail": "初级：模型调参 → 中级：标准化能力设计+自检流程 → 高级：多场景能力迁移+评估体系 → 专家：AI能力产品化+跨行业赋能。试炼场：百胜SKU预测、对等店0-1交付、联合利华推荐。",
+          "cluster": "growth"
+        },
+        {
+          "id": "growth-da-path",
+          "label": "AI数据分析成长路径",
+          "detail": "初级：日常报表 → 中级：体系化分析框架 → 高级：决策前置分析+自动化看板 → 专家：AI驱动的自主分析体系设计。试炼场：百胜各BU日常分析需求、预估结果解读。",
+          "cluster": "growth"
+        },
+        {
+          "id": "growth-ops-path",
+          "label": "AI运维成长路径",
+          "detail": "初级：监控报警 → 中级：Case体系化+自动预警 → 高级：知识库自动化+主动预防 → 专家：AI运维Agent设计+跨环境部署。试炼场：百胜预估模型运维、知了系统运维。",
+          "cluster": "growth"
+        },
+        {
+          "id": "growth-overseas-path",
+          "label": "AI出海算法成长路径",
+          "detail": "初级：场内能力复刻 → 中级：客户数据诊断+L0-L3分层交付 → 高级：标准化产品包设计+成本模型 → 专家：AI能力跨国/跨行业产品化方法论。试炼场：九阳预测需求、联合利华场景复刻。",
+          "cluster": "growth"
+        },
+        {
+          "id": "growth-inner",
+          "label": "场内试炼场",
+          "detail": "百胜中国：SKU预测（已验证）、对等店0-1（已验证）、知了系统（已验证）、预估小管家（进行中）。价值：真实业务场景、真实数据、真实反馈闭环。",
+          "cluster": "growth"
+        },
+        {
+          "id": "growth-outer",
+          "label": "场外试炼场",
+          "detail": "九阳（快消零食）：数据诊断+预测需求。联合利华场景复刻。未来更多L1-L2层级客户。价值：验证能力可迁移性、积累跨行业know-how。",
+          "cluster": "growth"
+        }
+      ]
     }
   ],
   "edges": [
@@ -314,6 +400,106 @@
       "from": "paradigm-logic",
       "to": "future-product",
       "label": "决定未来产品形态"
+    },
+    {
+      "from": "role-pm",
+      "to": "anchor-pm",
+      "label": "角色→职业锚"
+    },
+    {
+      "from": "role-algo",
+      "to": "anchor-algo",
+      "label": "角色→职业锚"
+    },
+    {
+      "from": "role-ops",
+      "to": "anchor-ops",
+      "label": "角色→职业锚"
+    },
+    {
+      "from": "anchor-overseas",
+      "to": "role-sales",
+      "label": "出海锚→贩卖者"
+    },
+    {
+      "from": "anchor-pm",
+      "to": "growth-pm-path",
+      "label": "锚定成长路径"
+    },
+    {
+      "from": "anchor-algo",
+      "to": "growth-algo-path",
+      "label": "锚定成长路径"
+    },
+    {
+      "from": "anchor-da",
+      "to": "growth-da-path",
+      "label": "锚定成长路径"
+    },
+    {
+      "from": "anchor-ops",
+      "to": "growth-ops-path",
+      "label": "锚定成长路径"
+    },
+    {
+      "from": "anchor-overseas",
+      "to": "growth-overseas-path",
+      "label": "锚定成长路径"
+    },
+    {
+      "from": "growth-algo-path",
+      "to": "growth-inner",
+      "label": "场内试炼"
+    },
+    {
+      "from": "growth-algo-path",
+      "to": "growth-outer",
+      "label": "场外试炼"
+    },
+    {
+      "from": "growth-overseas-path",
+      "to": "growth-outer",
+      "label": "场外试炼"
+    },
+    {
+      "from": "growth-da-path",
+      "to": "growth-inner",
+      "label": "场内试炼"
+    },
+    {
+      "from": "growth-ops-path",
+      "to": "growth-inner",
+      "label": "场内试炼"
+    },
+    {
+      "from": "growth-pm-path",
+      "to": "growth-inner",
+      "label": "场内试炼"
+    },
+    {
+      "from": "moat-boundary",
+      "to": "anchor-algo",
+      "label": "边界判断→算法职业锚"
+    },
+    {
+      "from": "moat-package",
+      "to": "anchor-overseas",
+      "label": "产品化→出海职业锚"
+    },
+    {
+      "from": "anchor-da",
+      "to": "role-biz",
+      "label": "DA锚→武装业务方"
+    },
+    {
+      "from": "loop-upgrade",
+      "to": "growth-algo-path",
+      "label": "能力跃升需要成长路径支撑"
+    },
+    {
+      "from": "loop-feedback",
+      "to": "growth-ops-path",
+      "label": "反馈积累需要运维成长路径支撑"
     }
   ]
 }
