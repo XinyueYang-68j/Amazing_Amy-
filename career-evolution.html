@@ -667,6 +667,155 @@
       color: var(--ink);
     }
 
+    /* ---- 风险分析 ---- */
+    .risk-section {
+      background: linear-gradient(180deg, #0a0a0a 0%, #0d0505 50%, #0a0a0a 100%);
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .risk-card {
+      background: var(--bg2);
+      border: 1px solid var(--rule);
+      border-left: 4px solid #EF4444;
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      position: relative;
+    }
+
+    .risk-num {
+      position: absolute;
+      top: 0.75rem;
+      right: 1rem;
+      font-size: 2rem;
+      font-weight: 800;
+      color: rgba(255,255,255,0.05);
+      line-height: 1;
+    }
+
+    .risk-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #E5E7EB;
+      margin-bottom: 0.5rem;
+    }
+
+    .risk-desc {
+      font-size: 0.82rem;
+      color: #9CA3AF;
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+
+    .risk-question {
+      font-size: 0.78rem;
+      color: var(--gold);
+      padding: 0.5rem 0.75rem;
+      background: rgba(212,175,55,0.06);
+      border-radius: 6px;
+      border-left: 2px solid rgba(212,175,55,0.3);
+    }
+
+    /* ---- 行业观察 ---- */
+    .industry-section {
+      background: linear-gradient(180deg, #0a0a0a 0%, #050a0d 50%, #0a0a0a 100%);
+    }
+
+    .industry-tabs {
+      margin-bottom: 1.5rem;
+    }
+
+    .industry-tab-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(212,175,55,0.2);
+    }
+
+    .industry-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .industry-card {
+      background: var(--bg2);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+
+    .industry-card:hover {
+      border-color: rgba(212,175,55,0.3);
+    }
+
+    .ic-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .ic-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .ic-tag {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      border: 1px solid;
+    }
+
+    .tag-cainiao { color:#FF6A00; border-color:rgba(255,106,0,0.3); }
+    .tag-retail { color:#3B82F6; border-color:rgba(59,130,246,0.3); }
+    .tag-global { color:#10B981; border-color:rgba(16,185,129,0.3); }
+    .tag-predict { color:#A855F7; border-color:rgba(168,85,247,0.3); }
+    .tag-ops { color:#F59E0B; border-color:rgba(245,158,11,0.3); }
+    .tag-insight { color:#06B6D4; border-color:rgba(6,182,212,0.3); }
+    .tag-agent { color:#EC4899; border-color:rgba(236,72,153,0.3); }
+
+    .ic-body {
+      font-size: 0.8rem;
+      color: #9CA3AF;
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+
+    .ic-link {
+      font-size: 0.75rem;
+      color: var(--gold);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .ic-link:hover { opacity: 0.7; }
+
+    .industry-insight {
+      margin-top: 1.5rem;
+      padding: 1rem 1.25rem;
+      background: rgba(212,175,55,0.04);
+      border: 1px solid rgba(212,175,55,0.15);
+      border-radius: 10px;
+      font-size: 0.82rem;
+      color: #D1D5DB;
+      line-height: 1.7;
+    }
+
+    .industry-insight strong {
+      color: var(--gold);
+    }
+
     /* ---- 千里马原型 ---- */
     .tianma-section {
       background: linear-gradient(180deg, #000 0%, #0a0a12 50%, #000 100%);
@@ -1044,7 +1193,6 @@
         <li><a href="./index.html">CV</a></li>
         <li><a href="./radar.html">雷达图</a></li>
         <li><a href="./growth.html">提高方向</a></li>
-        <li><a href="./ai-mindmap.html">AI脑图</a></li>
         <li><a href="./cyber-universe.html">赛博宇宙</a></li>
         <li><a href="./career-ecosystem.html">职业生态</a></li>
         <li><a href="./career-evolution.html" class="active">职业演化</a></li>
@@ -1510,6 +1658,175 @@
           <div class="anchor-item-title">AI出海锚</div>
           <div class="anchor-item-desc">贩卖能力，让验证过的价值流向更广阔的市场</div>
         </div>
+      </div>
+    </section>
+
+    <!-- ============ Section: 风险分析 ============ -->
+    <section class="ev-section risk-section">
+      <h2 class="ev-section-title" style="color:#EF4444;">风险分析 — 向下看</h2>
+      <p class="ev-section-desc">千里马跑得快，但路上可能有坑。以下是必须正视的风险。</p>
+
+      <div class="risk-grid">
+        <div class="risk-card" style="border-left-color:#EF4444;">
+          <div class="risk-num">01</div>
+          <h3 class="risk-title">组织架构风险</h3>
+          <div class="risk-desc">如果百胜内部组织架构调整，AI中心被裁撤或降级？你的"场内试炼场"可能一夜之间消失。</div>
+          <div class="risk-question">应对思考：你的能力是否可以脱离百胜的平台独立存在？还是高度依赖内部数据管道？</div>
+        </div>
+
+        <div class="risk-card" style="border-left-color:#F59E0B;">
+          <div class="risk-num">02</div>
+          <h3 class="risk-title">技术替代风险</h3>
+          <div class="risk-desc">如果GPT-5级别的大模型让中层算法工程师完全可替代？"定义标准化能力"这件事本身被AI自动化了。</div>
+          <div class="risk-question">应对思考：你的不可替代性是"做模型"还是"知道模型该用在哪里"？</div>
+        </div>
+
+        <div class="risk-card" style="border-left-color:#A855F7;">
+          <div class="risk-num">03</div>
+          <h3 class="risk-title">速度风险</h3>
+          <div class="risk-desc">AI能力商品化的速度可能超过你的产品化速度。等你把在百胜验证的能力打包成产品，市场可能已经有了更便宜的替代品。</div>
+          <div class="risk-question">应对思考：你的MVP（最小可行产品）是什么？能不能在1个月内交付第一个外部客户？</div>
+        </div>
+
+        <div class="risk-card" style="border-left-color:#06B6D4;">
+          <div class="risk-num">04</div>
+          <h3 class="risk-title">IP归属风险</h3>
+          <div class="risk-desc">你在百胜积累的方法论、模型、评估体系，IP归属是谁？如果你出去卖能力，百胜的法务部门会怎么看？</div>
+          <div class="risk-question">应对思考：哪些是你的个人能力（可带走），哪些是公司资产（不可带走）？</div>
+        </div>
+
+        <div class="risk-card" style="border-left-color:#10B981;">
+          <div class="risk-num">05</div>
+          <h3 class="risk-title">客户获取风险</h3>
+          <div class="risk-desc">九阳或联合利华为什么会买你的能力？是因为你在百胜的名声？还是因为一个具体的POC已经打动了他们？</div>
+          <div class="risk-question">应对思考：第一个外部客户的获取路径是什么？内部关系引荐？行业会议？还是最小POC演示？</div>
+        </div>
+
+        <div class="risk-card" style="border-left-color:#EC4899;">
+          <div class="risk-num">06</div>
+          <h3 class="risk-title">竞争风险</h3>
+          <div class="risk-desc">菜鸟、观远、RELEX等公司已经在卖标准化的预测能力，他们的产品更成熟、团队更大、资源更多。你的差异化到底在哪里？</div>
+          <div class="risk-question">应对思考：你和他们的区别是什么？"在百胜跑通过"够不够作为竞争壁垒？</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Section: 行业观察 ============ -->
+    <section class="ev-section industry-section">
+      <h2 class="ev-section-title" style="color:#06B6D4;">行业观察 — 谁在做类似的事</h2>
+      <p class="ev-section-desc">两条赛道上的玩家：A类卖预测能力，B类卖Agent执行能力。</p>
+
+      <div class="industry-tabs">
+        <div class="industry-tab-label">A类：贩卖标准化预测能力的公司</div>
+        <div class="industry-cards">
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">菜鸟 · 预测宝</span>
+              <span class="ic-tag tag-cainiao">电商物流</span>
+            </div>
+            <div class="ic-body">
+              CPFR协同预测服务，精准到by仓维度销量预测、补货建议、库存健康诊断。包裹量预测准确率80%，GMV提升5%+，存货成本降低20%+。
+            </div>
+            <a class="ic-link" href="https://market.cainiao.com/cn_market/shuzhi-PChome" target="_blank" rel="noopener">market.cainiao.com</a>
+          </div>
+
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">观远数据</span>
+              <span class="ic-tag tag-retail">零售快消</span>
+            </div>
+            <div class="ic-body">
+              AI+BI一体化智能分析平台，1000+企业客户。SKU级预测准确率提升37%，7天销量预测准确率达92%（快时尚品牌）。覆盖需求预测、智能补货、智能分货。
+            </div>
+            <a class="ic-link" href="https://www.guandata.com" target="_blank" rel="noopener">guandata.com</a>
+          </div>
+
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">RELEX Solutions</span>
+              <span class="ic-tag tag-global">全球零售</span>
+            </div>
+            <div class="ic-body">
+              芬兰AI原生零售供应链计划平台。需求预测+补货+生鲜优化+空间计划，端到端集成。已合作比优特（100+门店）、ADUSA、Dollar Tree等全球客户。2026年进入中国市场加速。
+            </div>
+            <a class="ic-link" href="https://www.relexsolutions.com.cn" target="_blank" rel="noopener">relexsolutions.com.cn</a>
+          </div>
+
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">预见科技 · 4See</span>
+              <span class="ic-tag tag-predict">智能预测</span>
+            </div>
+            <div class="ic-body">
+              AI智能销售预测系统，MOE架构预测引擎，覆盖智能销售预测、智能库存管理、智能安全库存。6大系统功能模块和3大预测场景。
+            </div>
+            <a class="ic-link" href="https://www.4see.tech" target="_blank" rel="noopener">4see.tech</a>
+          </div>
+
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">OptiMax AI</span>
+              <span class="ic-tag tag-ops">企业经营决策</span>
+            </div>
+            <div class="ic-body">
+              企业级私有供应链AI决策大脑，AI+OR技术，覆盖经营风险管理、采购智能化、生产排程、库存与物流优化。已围绕TCL、中国移动推进合作。
+            </div>
+            <a class="ic-link" href="https://optimax.hk" target="_blank" rel="noopener">optimax.hk</a>
+          </div>
+
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">尼尔森IQ (NielsenIQ)</span>
+              <span class="ic-tag tag-insight">市场监测</span>
+            </div>
+            <div class="ic-body">
+              全球零售监测+品类销售预测模型，90组+专属分析模型。渠道判定、铺货策略优化、NPI产品洞察（2.7万项结构化产品属性）。偏市场洞察而非纯预测执行。
+            </div>
+            <a class="ic-link" href="https://www.nielsen.com" target="_blank" rel="noopener">nielsen.com</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-tabs" style="margin-top:2rem;">
+        <div class="industry-tab-label">B类：桌面Agent / 执行型AI（垂直生态）</div>
+        <div class="industry-cards">
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">OpenClaw（龙虾）</span>
+              <span class="ic-tag tag-agent">开源Agent</span>
+            </div>
+            <div class="ic-body">
+              2025年底由奥地利开发者Peter Steinberger创建，GitHub 21.5万+星标。本地优先、开源的AI执行型智能体，让大模型直接操作电脑完成实际任务（文件管理、浏览器控制、任务自动化）。从"对话时代"迈向"执行时代"的标志性产品。衍生出腾讯云龙虾、GClaw、Molili等生态。
+            </div>
+            <a class="ic-link" href="https://github.com/openclaw" target="_blank" rel="noopener">github.com/openclaw</a>
+          </div>
+
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">腾讯 WorkBuddy</span>
+              <span class="ic-tag tag-agent">桌面智能体</span>
+            </div>
+            <div class="ic-body">
+              腾讯官方自研的桌面级AI智能体（"官方正版小龙虾"），全场景AI智能体工作台。不仅能理解指令，还能直接操控电脑完成实际操作——自动处理Excel、生成PPT、清洗数据、写报告。v5.0版本已发布。
+            </div>
+            <a class="ic-link" href="https://workbuddy.tencent.com" target="_blank" rel="noopener">workbuddy.tencent.com</a>
+          </div>
+
+          <div class="industry-card">
+            <div class="ic-header">
+              <span class="ic-name">神州控股 · 小金</span>
+              <span class="ic-tag tag-agent">供应链Agent</span>
+            </div>
+            <div class="ic-body">
+              2025年推出的企业级供应链智能体，"AI for Process"理念为核心，"3+N"技术架构。直击通用大模型在企业级应用"用不起来、难见回报"的痛点。覆盖消费电子、快消美妆、耐用消费品等。
+            </div>
+            <a class="ic-link" href="https://www.dcits.com" target="_blank" rel="noopener">dcits.com</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="industry-insight">
+        <strong>关键发现：</strong>A类玩家卖的是"预测结果"（黑盒或半黑盒），B类玩家卖的是"执行能力"（Agent操作电脑）。你的定位——"AI能力产品化"——恰好站在两类玩家的交叉点：你不只卖预测结果，你卖的是<strong>预测能力本身</strong>（可蒸馏、可标准化、可被不同数据成熟度的客户采纳）。这是你和菜鸟/观远的核心差异。
       </div>
     </section>
 
