@@ -692,237 +692,59 @@
       display: block;
     }
 
-    /* 角色标签通用 */
-    .tianma-tag {
-      position: absolute;
-      background: rgba(0,0,0,0.88);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(212,175,55,0.35);
-      border-radius: 10px;
-      padding: 0.6rem 0.9rem;
-      color: #E5E7EB;
-      cursor: pointer;
-      transition: all 0.3s;
-      z-index: 10;
-      min-width: 120px;
-    }
-
-    .tianma-tag:hover {
-      border-color: var(--gold);
-      background: rgba(212,175,55,0.1);
-      transform: scale(1.05);
-    }
-
-    .tianma-tag .tag-icon {
-      font-size: 1.3rem;
-      margin-right: 0.3rem;
-    }
-
-    .tianma-tag .tag-text {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #fff;
-      display: block;
-    }
-
-    .tianma-tag .tag-text small {
-      font-weight: 400;
-      color: var(--gold);
-      font-size: 0.75rem;
-    }
-
-    .tianma-tag .tag-desc {
-      font-size: 0.72rem;
-      color: #9CA3AF;
-      margin-top: 0.3rem;
-      display: none;
-      line-height: 1.5;
-    }
-
-    .tianma-tag:hover .tag-desc,
-    .tianma-tag.active .tag-desc {
-      display: block;
-    }
-
-    .tianma-tag.active {
-      border-color: var(--gold);
-      box-shadow: 0 0 20px rgba(212,175,55,0.2);
-    }
-
-    /* 缰绳 */
-    .tianma-harness {
-      position: absolute;
-      top: 18%;
-      left: 8%;
-      width: 55%;
-      height: 60px;
-      z-index: 5;
-    }
-
-    .harness-svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    .harness-tag {
-      top: -30px;
-      left: 40%;
-      border-color: rgba(236,72,153,0.5);
-    }
-
-    .harness-tag:hover,
-    .harness-tag.active {
-      border-color: #EC4899;
-      box-shadow: 0 0 20px rgba(236,72,153,0.3);
-    }
-
-    /* 千里马 */
-    .tianma-horse {
-      position: absolute;
-      top: 10%;
-      left: 5%;
-      width: 55%;
-      height: 65%;
-      z-index: 3;
-    }
-
-    .horse-tag {
-      top: 10%;
-      left: 20%;
-      border-color: rgba(212,175,55,0.5);
-    }
-
-    /* 马的粒子效果 */
-    .horse-particles {
-      position: absolute;
-      top: 20%;
-      left: 10%;
-      width: 80%;
-      height: 60%;
-      pointer-events: none;
-    }
-
-    .horse-particles span {
-      position: absolute;
-      width: 3px;
-      height: 3px;
-      background: var(--gold);
-      border-radius: 50%;
-      opacity: 0;
-      animation: particleFloat 4s infinite;
-    }
-
-    .horse-particles span:nth-child(1) { left:20%; top:30%; animation-delay:0s; }
-    .horse-particles span:nth-child(2) { left:40%; top:60%; animation-delay:0.5s; }
-    .horse-particles span:nth-child(3) { left:60%; top:20%; animation-delay:1s; }
-    .horse-particles span:nth-child(4) { left:80%; top:50%; animation-delay:1.5s; }
-    .horse-particles span:nth-child(5) { left:30%; top:80%; animation-delay:2s; }
-    .horse-particles span:nth-child(6) { left:70%; top:70%; animation-delay:2.5s; }
-    .horse-particles span:nth-child(7) { left:50%; top:40%; animation-delay:3s; }
-    .horse-particles span:nth-child(8) { left:15%; top:55%; animation-delay:3.5s; }
-
-    @keyframes particleFloat {
-      0% { opacity:0; transform:translateY(0) scale(0.5); }
-      20% { opacity:0.8; transform:translateY(-10px) scale(1); }
-      80% { opacity:0.4; transform:translateY(-30px) scale(0.8); }
-      100% { opacity:0; transform:translateY(-50px) scale(0.3); }
-    }
-
-    /* 马车 */
-    .tianma-cart {
-      position: absolute;
-      top: 20%;
-      right: 5%;
-      width: 35%;
-      height: 55%;
-      z-index: 4;
-    }
-
-    .cart-tag {
-      top: 40%;
-      left: 10%;
-      border-color: rgba(6,182,212,0.5);
-    }
-
-    .cart-tag:hover,
-    .cart-tag.active {
-      border-color: #06B6D4;
-      box-shadow: 0 0 20px rgba(6,182,212,0.3);
-    }
-
-    /* 车上乘客 */
-    .tianma-passengers {
+    /* SVG 勾勒层 */
+    .tianma-svg {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 6;
-      pointer-events: none;
+      z-index: 5;
     }
 
-    .passenger {
+    /* SVG 区域 hover 效果 */
+    .tianma-zone {
+      cursor: pointer;
+      transition: opacity 0.3s, stroke-width 0.3s;
+    }
+
+    .tianma-zone:hover {
+      opacity: 1 !important;
+      stroke-width: 1.2;
+    }
+
+    /* Tooltip */
+    .tianma-tooltip {
       position: absolute;
-      pointer-events: auto;
-    }
-
-    .mini-tag {
-      padding: 0.4rem 0.6rem;
-      min-width: 80px;
-    }
-
-    .mini-tag .tag-icon { font-size: 1rem; }
-    .mini-tag .tag-text { font-size: 0.75rem; }
-    .mini-tag .tag-desc { font-size: 0.68rem; }
-
-    /* 路边角色 */
-    .tianma-roadside {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 6;
+      z-index: 50;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(212,175,55,0.4);
+      border-radius: 10px;
+      padding: 0.7rem 1rem;
+      max-width: 280px;
       pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.25s, transform 0.25s;
     }
 
-    .roadside-tag {
-      pointer-events: auto;
-      border-color: rgba(16,185,129,0.4);
+    .tianma-tooltip.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
 
-    .roadside-tag:hover,
-    .roadside-tag.active {
-      border-color: #10B981;
-      box-shadow: 0 0 20px rgba(16,185,129,0.3);
+    .tianma-tooltip .tooltip-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.3rem;
     }
 
-    /* 图例 */
-    .tianma-legend {
-      max-width: 1100px;
-      margin: 1.5rem auto 0;
-    }
-
-    .legend-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.2rem;
-      justify-content: center;
-    }
-
-    .tianma-legend .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
+    .tianma-tooltip .tooltip-desc {
       font-size: 0.75rem;
-      color: rgba(255,255,255,0.5);
-    }
-
-    .tianma-legend .legend-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
+      color: #9CA3AF;
+      line-height: 1.5;
     }
 
     /* 角色详情面板 */
@@ -995,8 +817,6 @@
     /* 响应式 */
     @media (max-width: 768px) {
       .tianma-prototype { aspect-ratio: 4/3; }
-      .tianma-tag .tag-desc { display: block; }
-      .harness-tag { top: -20px; left: 10%; }
     }
 
     /* ---- Footer ---- */
@@ -1144,21 +964,55 @@
     var panelHeader = document.getElementById('panel-header');
     var panelBody = document.getElementById('panel-body');
     var panelClose = document.getElementById('panel-close');
-    var activeTag = null;
+    var svg = document.querySelector('.tianma-svg');
+    var tooltip = document.getElementById('tianma-tooltip');
+    var tooltipTitle = tooltip.querySelector('.tooltip-title');
+    var tooltipDesc = tooltip.querySelector('.tooltip-desc');
+    var prototype = document.getElementById('tianma-prototype');
 
-    // 绑定所有标签点击
-    document.querySelectorAll('.tianma-tag[data-role]').forEach(function(tag) {
-      tag.addEventListener('click', function(e) {
+    // 将 ai-body 映射到 ai 角色数据
+    var ROLE_MAP = {
+      algo: 'algo',
+      ai: 'ai',
+      'ai-body': 'ai',
+      dev: 'dev',
+      'dev-cart': 'dev',
+      passengers: 'biz',
+      ops: 'ops',
+      overseas: 'overseas'
+    };
+
+    // SVG zone hover → tooltip
+    svg.querySelectorAll('.tianma-zone').forEach(function(zone) {
+      zone.addEventListener('mouseenter', function(e) {
+        var title = this.getAttribute('data-title') || '';
+        var desc = this.getAttribute('data-desc') || '';
+        tooltipTitle.textContent = title;
+        tooltipDesc.textContent = desc;
+        tooltip.classList.add('visible');
+      });
+
+      zone.addEventListener('mousemove', function(e) {
+        var rect = prototype.getBoundingClientRect();
+        var x = e.clientX - rect.left + 15;
+        var y = e.clientY - rect.top - 10;
+        // 防止溢出右边
+        if (x + 280 > rect.width) x = x - 295;
+        if (y + 100 > rect.height) y = y - 80;
+        tooltip.style.left = x + 'px';
+        tooltip.style.top = y + 'px';
+      });
+
+      zone.addEventListener('mouseleave', function() {
+        tooltip.classList.remove('visible');
+      });
+
+      // 点击 → 详情面板
+      zone.addEventListener('click', function(e) {
         e.stopPropagation();
-        var role = this.getAttribute('data-role');
+        var role = ROLE_MAP[this.getAttribute('data-role')] || this.getAttribute('data-role');
         var data = ROLES[role];
         if (!data) return;
-
-        // 切换active
-        if (activeTag) activeTag.classList.remove('active');
-        this.classList.add('active');
-        activeTag = this;
-
         panelHeader.innerHTML = data.title;
         panelBody.innerHTML = data.body;
         panel.classList.add('visible');
@@ -1168,14 +1022,11 @@
     // 关闭面板
     panelClose.addEventListener('click', function() {
       panel.classList.remove('visible');
-      if (activeTag) { activeTag.classList.remove('active'); activeTag = null; }
     });
 
-    // 点击空白关闭
-    document.getElementById('tianma-prototype').addEventListener('click', function(e) {
+    prototype.addEventListener('click', function(e) {
       if (e.target === this || e.target.classList.contains('tianma-img')) {
         panel.classList.remove('visible');
-        if (activeTag) { activeTag.classList.remove('active'); activeTag = null; }
       }
     });
   })();
@@ -1410,99 +1261,91 @@
         <!-- 底图 -->
         <img src="./assets/tianma-base.jpg" alt="千里马原型" class="tianma-img">
 
-        <!-- 缰绳 — 算法工程师 (AI ver.) -->
-        <div class="tianma-harness" id="harness" data-role="algo">
-          <svg class="harness-svg" viewBox="0 0 120 40" preserveAspectRatio="none">
-            <path d="M10,20 Q30,10 60,15 Q90,20 110,18" stroke="#D4AF37" stroke-width="2.5" fill="none" stroke-linecap="round">
-              <animate attributeName="d" dur="3s" repeatCount="indefinite"
-                values="M10,20 Q30,10 60,15 Q90,20 110,18;
-                        M10,20 Q30,28 60,22 Q90,15 110,18;
-                        M10,20 Q30,10 60,15 Q90,20 110,18" />
-            </path>
-            <path d="M10,20 Q30,10 60,15 Q90,20 110,18" stroke="#D4AF37" stroke-width="1" fill="none" opacity="0.3" stroke-linecap="round" filter="url(#glow)">
-              <animate attributeName="d" dur="3s" repeatCount="indefinite"
-                values="M10,20 Q30,10 60,15 Q90,20 110,18;
-                        M10,20 Q30,28 60,22 Q90,15 110,18;
-                        M10,20 Q30,10 60,15 Q90,20 110,18" />
-            </path>
-            <defs>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="2" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-          </svg>
-          <!-- 缰绳上的角色标签 -->
-          <div class="tianma-tag harness-tag" id="tag-algo">
-            <span class="tag-icon">⬡</span>
-            <span class="tag-text">算法工程师 <small>(AI ver.)</small></span>
-            <span class="tag-desc">缰绳 — 控制方向，定义边界<br>让千里马跑对方向、不脱缰</span>
-          </div>
-        </div>
+        <!-- SVG 勾勒层 -->
+        <svg class="tianma-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            <!-- 金色发光滤镜 -->
+            <filter id="tianma-glow">
+              <feGaussianBlur stdDeviation="0.8" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <!-- 不同颜色的发光滤镜 -->
+            <filter id="glow-pink">
+              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#EC4899" flood-opacity="0.6"/>
+            </filter>
+            <filter id="glow-gold">
+              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#D4AF37" flood-opacity="0.6"/>
+            </filter>
+            <filter id="glow-cyan">
+              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#06B6D4" flood-opacity="0.6"/>
+            </filter>
+            <filter id="glow-purple">
+              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#A855F7" flood-opacity="0.6"/>
+            </filter>
+            <filter id="glow-green">
+              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#10B981" flood-opacity="0.6"/>
+            </filter>
+            <filter id="glow-orange">
+              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#F59E0B" flood-opacity="0.6"/>
+            </filter>
+          </defs>
 
-        <!-- 千里马 — AI能力 -->
-        <div class="tianma-horse" id="horse" data-role="ai">
-          <div class="tianma-tag horse-tag" id="tag-ai">
-            <span class="tag-icon">🐎</span>
-            <span class="tag-text">千里马 — AI能力</span>
-            <span class="tag-desc">干活的主力，原始力量<br>跑得快、力气大、不知疲倦</span>
-          </div>
-          <!-- 马身上的粒子效果 -->
-          <div class="horse-particles">
-            <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
-          </div>
-        </div>
+          <!-- 1. 缰绳 -->
+          <path class="tianma-zone" data-role="algo" data-title="算法工程师 (AI ver.) — 缰绳" data-desc="控制方向，定义边界，让千里马跑对方向不脱缰"
+            d="M20,16 Q25,12 32,14 Q38,16 45,15 Q50,14 55,18"
+            fill="none" stroke="#EC4899" stroke-width="0.6" stroke-linecap="round"
+            filter="url(#glow-pink)" opacity="0.7"/>
 
-        <!-- 马车 — 开发工程师 -->
-        <div class="tianma-cart" id="cart" data-role="dev">
-          <div class="tianma-tag cart-tag" id="tag-dev">
-            <span class="tag-icon">⚙</span>
-            <span class="tag-text">马车 — 开发工程师</span>
-            <span class="tag-desc">承载结构，持久化能力<br>让千里马的动力稳定输出给更多人</span>
-          </div>
-        </div>
+          <!-- 2. 马头+颈部 -->
+          <path class="tianma-zone" data-role="ai" data-title="千里马 — AI能力" data-desc="干活的主力，原始力量。跑得快、力气大、不知疲倦"
+            d="M12,10 Q14,8 18,9 Q22,8 24,12 Q25,16 24,22 Q23,28 20,32 Q18,36 16,38 Q14,40 12,38 Q10,35 10,30 Q10,25 11,20 Q11,14 12,10 Z"
+            fill="rgba(212,175,55,0.05)" stroke="#D4AF37" stroke-width="0.5"
+            filter="url(#glow-gold)" opacity="0.6"/>
 
-        <!-- 车上乘客们 -->
-        <div class="tianma-passengers">
-          <!-- 业务方 -->
-          <div class="passenger passenger-biz" data-role="biz" style="top:38%;left:62%;">
-            <div class="tianma-tag mini-tag" id="tag-biz">
-              <span class="tag-icon">👤</span>
-              <span class="tag-text">业务方</span>
-              <span class="tag-desc">乘客 — 提出需求<br>被AI武装的使用者</span>
-            </div>
-          </div>
-          <!-- 产品经理 -->
-          <div class="passenger passenger-pm" data-role="pm" style="top:50%;left:70%;">
-            <div class="tianma-tag mini-tag" id="tag-pm">
-              <span class="tag-icon">📋</span>
-              <span class="tag-text">产品经理</span>
-              <span class="tag-desc">导航员 — 翻译需求<br>定义能力嵌入点</span>
-            </div>
-          </div>
-          <!-- 数据分析 -->
-          <div class="passenger passenger-da" data-role="da" style="top:32%;left:75%;">
-            <div class="tianma-tag mini-tag" id="tag-da">
-              <span class="tag-icon">📊</span>
-              <span class="tag-text">数据分析</span>
-              <span class="tag-desc">瞭望手 — 体系化分析<br>决策前置支持</span>
-            </div>
-          </div>
-        </div>
+          <!-- 3. 马躯干 -->
+          <path class="tianma-zone" data-role="ai-body" data-title="千里马 — AI能力" data-desc="核心引擎，承载所有被标准化的能力模块"
+            d="M16,38 Q20,34 28,32 Q36,30 42,33 Q46,36 48,42 Q49,48 47,55 Q44,62 38,66 Q32,68 26,66 Q20,63 17,58 Q15,52 15,46 Q15,42 16,38 Z"
+            fill="rgba(212,175,55,0.04)" stroke="#D4AF37" stroke-width="0.5"
+            filter="url(#glow-gold)" opacity="0.5"/>
 
-        <!-- 路边的运维 -->
-        <div class="tianma-roadside">
-          <div class="tianma-tag roadside-tag" id="tag-ops" data-role="ops" style="bottom:12%;left:15%;">
-            <span class="tag-icon">🔧</span>
-            <span class="tag-text">运维 — 道路养护者</span>
-            <span class="tag-desc">修路、立路标、积累路况<br>让下一次跑得更顺</span>
-          </div>
-          <!-- 出海算法：路边驿站 -->
-          <div class="tianma-tag roadside-tag" id="tag-overseas" data-role="overseas" style="bottom:12%;right:10%;">
-            <span class="tag-icon">🏠</span>
-            <span class="tag-text">出海算法 — 驿站主人</span>
-            <span class="tag-desc">在不同城镇设驿站<br>把千里马+马车的能力卖给更多人</span>
-          </div>
+          <!-- 4. 辕杆 -->
+          <path class="tianma-zone" data-role="dev" data-title="开发工程师 — 辕杆" data-desc="承载结构，让千里马的动力变成可交付的产品"
+            d="M42,42 Q48,40 55,38 Q60,37 65,40 Q68,42 68,45"
+            fill="none" stroke="#06B6D4" stroke-width="0.6" stroke-linecap="round"
+            filter="url(#glow-cyan)" opacity="0.7"/>
+
+          <!-- 5. 马车厢体 -->
+          <path class="tianma-zone" data-role="dev-cart" data-title="开发工程师 — 马车" data-desc="持久化能力，保证稳定、低成本地被更多人使用"
+            d="M62,18 Q65,15 72,14 Q80,13 88,15 Q92,17 93,22 L94,52 Q93,58 88,60 Q80,62 72,62 Q65,62 62,58 L60,52 Z"
+            fill="rgba(6,182,212,0.04)" stroke="#06B6D4" stroke-width="0.5"
+            filter="url(#glow-cyan)" opacity="0.5"/>
+
+          <!-- 6. 车内乘客区 -->
+          <path class="tianma-zone" data-role="passengers" data-title="业务方 / PM / DA — 车上乘客" data-desc="被AI武装的使用者：业务方(乘客)、产品经理(导航员)、数据分析(瞭望手)"
+            d="M65,20 Q68,18 74,17 Q80,16 86,18 L88,30 Q87,45 84,48 Q78,50 72,48 Q68,45 66,30 Z"
+            fill="rgba(168,85,247,0.04)" stroke="#A855F7" stroke-width="0.5"
+            filter="url(#glow-purple)" opacity="0.5"/>
+
+          <!-- 7. 路面 -->
+          <path class="tianma-zone" data-role="ops" data-title="运维 — 道路养护者" data-desc="修路、立路标、积累路况，让下一次跑得更顺"
+            d="M5,72 Q30,70 50,71 Q70,72 90,70 Q95,71 98,72"
+            fill="none" stroke="#10B981" stroke-width="0.5" stroke-linecap="round"
+            filter="url(#glow-green)" opacity="0.6"/>
+
+          <!-- 8. 远处驿站 -->
+          <path class="tianma-zone" data-role="overseas" data-title="出海算法 — 驿站主人" data-desc="在不同城镇设驿站，把千里马+马车的能力卖给更多人"
+            d="M86,42 L92,38 L96,42 L96,65 L92,68 L88,68 L84,65 L84,42 Z"
+            fill="rgba(245,158,11,0.04)" stroke="#F59E0B" stroke-width="0.4"
+            filter="url(#glow-orange)" opacity="0.5"/>
+        </svg>
+
+        <!-- Tooltip -->
+        <div class="tianma-tooltip" id="tianma-tooltip">
+          <div class="tooltip-title"></div>
+          <div class="tooltip-desc"></div>
         </div>
 
         <!-- 点击展开的角色详情面板 -->
@@ -1510,17 +1353,6 @@
           <button class="panel-close" id="panel-close">&times;</button>
           <div class="panel-header" id="panel-header"></div>
           <div class="panel-body" id="panel-body"></div>
-        </div>
-      </div>
-
-      <!-- 图例 -->
-      <div class="tianma-legend">
-        <div class="legend-row">
-          <span class="legend-item"><span class="legend-dot" style="background:#D4AF37"></span>千里马 = AI能力</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#EC4899"></span>缰绳 = 算法工程师</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#06B6D4"></span>马车 = 开发工程师</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#A855F7"></span>车上乘客 = 业务方/PM/DA</span>
-          <span class="legend-item"><span class="legend-dot" style="background:#10B981"></span>路边 = 运维/出海</span>
         </div>
       </div>
     </section>
