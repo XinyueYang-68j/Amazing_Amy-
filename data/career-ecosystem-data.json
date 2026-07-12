@@ -1,0 +1,319 @@
+{
+  "clusters": [
+    {
+      "id": "anchor",
+      "name": "历史之锚（核心哲学）",
+      "color": "#D4AF37",
+      "nodes": [
+        {
+          "id": "anchor-demand",
+          "label": "不变的需求",
+          "detail": "时代长河中唯一不变的是需求。预估需求、推荐需求，自古至今未变，只是被更好的满足了。",
+          "cluster": "anchor"
+        },
+        {
+          "id": "anchor-form",
+          "label": "变化的形式",
+          "detail": "需求不变，但满足形式在演进：硬件→软件→服务→能力。科技让同样的需求以更高效率触达更多人。",
+          "cluster": "anchor"
+        },
+        {
+          "id": "anchor-better",
+          "label": "什么是更好",
+          "detail": "更强（能力本身更强）、更广（触达更多人/事）、更多（使用者门槛降低）。知了系统、预估小管家就是例证。",
+          "cluster": "anchor"
+        },
+        {
+          "id": "anchor-paradox",
+          "label": "变化的恒等式",
+          "detail": "抓住不变的历史之锚，才能抵御时代洪流。AI的本质是：提升单量、降低单价，让更多人拥有能力。",
+          "cluster": "anchor"
+        }
+      ]
+    },
+    {
+      "id": "past-future",
+      "name": "过去 vs 未来",
+      "color": "#3B82F6",
+      "nodes": [
+        {
+          "id": "past-product",
+          "label": "过去的产品形态",
+          "detail": "AI预估+看板运维 / 传统推荐+看板运维。产品被包装为具备AI能力的产品。",
+          "cluster": "past-future"
+        },
+        {
+          "id": "future-product",
+          "label": "未来的产品形态",
+          "detail": "稳定的AI预估 + 预估能力蒸馏赋予每一个人。能力深入到企业末端毛细血管。",
+          "cluster": "past-future"
+        },
+        {
+          "id": "past-team",
+          "label": "过去的团队成员",
+          "detail": "业务方 → PM → 数据分析 → 核心算法 → 运维人员。线性流水线。",
+          "cluster": "past-future"
+        },
+        {
+          "id": "future-team",
+          "label": "未来的团队成员",
+          "detail": "被AI知识武装的业务方、PM、数据分析、核心算法、运维人员。每个人都是AI使用者。",
+          "cluster": "past-future"
+        },
+        {
+          "id": "core-shift",
+          "label": "核心改变",
+          "detail": "AI/Agent Loop将原有流程标准化，使能力被终端用户直接调用。诞生更多围绕AI能力的产品。",
+          "cluster": "past-future"
+        }
+      ]
+    },
+    {
+      "id": "paradigm",
+      "name": "范式演变",
+      "color": "#10B981",
+      "nodes": [
+        {
+          "id": "paradigm-hardware",
+          "label": "售卖硬件",
+          "detail": "最早的时代，IBM大型机、PC。价值在于物理设备。",
+          "cluster": "paradigm"
+        },
+        {
+          "id": "paradigm-software",
+          "label": "售卖软件",
+          "detail": "微软Office、SAP。价值在于代码和License。",
+          "cluster": "paradigm"
+        },
+        {
+          "id": "paradigm-service",
+          "label": "售卖服务和人天",
+          "detail": "云计算、SaaS、咨询。价值取决于需求定制化程度。",
+          "cluster": "paradigm"
+        },
+        {
+          "id": "paradigm-ability",
+          "label": "售卖能力和人天",
+          "detail": "新时代范式。形式的多样化服务不同数据基础的用户。AI让门槛降低，付费人群扩大。",
+          "cluster": "paradigm"
+        },
+        {
+          "id": "paradigm-cashflow",
+          "label": "现金流公式",
+          "detail": "现金流 = #单数 × #单价。AI提升单量、降低单价。每个企业拥有AI能力的门槛降低，付费的人变多了。",
+          "cluster": "paradigm"
+        },
+        {
+          "id": "paradigm-logic",
+          "label": "范式演进逻辑",
+          "detail": "硬件→软件→服务→能力。每一层都让前一层的价值变得更容易获取、更便宜、更普及。",
+          "cluster": "paradigm"
+        }
+      ]
+    },
+    {
+      "id": "roles",
+      "name": "AI时代角色",
+      "color": "#A855F7",
+      "nodes": [
+        {
+          "id": "role-algo",
+          "label": "核心算法工程师",
+          "detail": "千里马的缰绳。通过定义标准化能力和步骤、AI自检逻辑，保证AI可用。核心脑力限于POC阶段。",
+          "cluster": "roles"
+        },
+        {
+          "id": "role-dev",
+          "label": "开发工程师",
+          "detail": "保证有缰绳的千里马可以稳定、低成本地被更多人使用。能力的持久化者。",
+          "cluster": "roles"
+        },
+        {
+          "id": "role-ops",
+          "label": "运维/知识经理",
+          "detail": "保证每次能力被调用后的新反馈和超出现有能力的需求被积累，等待下一次能力跃升。",
+          "cluster": "roles"
+        },
+        {
+          "id": "role-biz",
+          "label": "被AI武装的业务方",
+          "detail": "需求提出者+能力使用者。通过AI工具直接调用分析/预估能力，不再依赖专业团队。",
+          "cluster": "roles"
+        },
+        {
+          "id": "role-pm",
+          "label": "AI产品经理",
+          "detail": "翻译官。把积累的反馈和需求，翻译成下一次能力跃升的产品定义。",
+          "cluster": "roles"
+        },
+        {
+          "id": "role-sales",
+          "label": "AI能力贩卖者",
+          "detail": "诊断客户数据成熟度，匹配对应层级的能力方案。从卖产品到卖方案。",
+          "cluster": "roles"
+        }
+      ]
+    },
+    {
+      "id": "loop",
+      "name": "能力闭环",
+      "color": "#EF4444",
+      "nodes": [
+        {
+          "id": "loop-use",
+          "label": "能力被调用",
+          "detail": "终端用户（业务方）直接使用AI预估/分析能力。每一次调用都是一次验证。",
+          "cluster": "loop"
+        },
+        {
+          "id": "loop-feedback",
+          "label": "反馈被积累",
+          "detail": "用户的新需求、新场景、新反馈被运维/知识经理捕获和积累。",
+          "cluster": "loop"
+        },
+        {
+          "id": "loop-gap",
+          "label": "能力差距识别",
+          "detail": "从积累的反馈中识别出'超出现有能力'的需求，形成能力跃升的输入。",
+          "cluster": "loop"
+        },
+        {
+          "id": "loop-upgrade",
+          "label": "能力跃升",
+          "detail": "核心算法工程师根据差距定义新的标准化能力，升级AI能力。",
+          "cluster": "loop"
+        },
+        {
+          "id": "loop-empower",
+          "label": "能力蒸馏赋能",
+          "detail": "升级后的能力通过标准化产品赋予更多使用者，门槛进一步降低。",
+          "cluster": "loop"
+        }
+      ]
+    },
+    {
+      "id": "moat",
+      "name": "竞争壁垒",
+      "color": "#F59E0B",
+      "nodes": [
+        {
+          "id": "moat-verified",
+          "label": "被验证过的能力",
+          "detail": "在百胜实际落地过的预估/推荐能力，就是护城河。理论上的能力不值钱，跑通过的能力才值钱。",
+          "cluster": "moat"
+        },
+        {
+          "id": "moat-scenario",
+          "label": "场景理解深度",
+          "detail": "知道'这个能力在真实业务中怎么用'，比模型本身更重要。SKU预测、对等店都是验证。",
+          "cluster": "moat"
+        },
+        {
+          "id": "moat-adapt",
+          "label": "跨场景迁移力",
+          "detail": "餐饮→快消→零售，底层逻辑相似但数据特征不同。能快速迁移能力，市场就翻倍。",
+          "cluster": "moat"
+        },
+        {
+          "id": "moat-boundary",
+          "label": "AI能力边界判断",
+          "detail": "判断'什么能做、什么不能做、什么时候该用AI'的直觉。这是算法工程师的核心竞争力。",
+          "cluster": "moat"
+        },
+        {
+          "id": "moat-package",
+          "label": "能力产品化思维",
+          "detail": "同一能力适配L0-L4不同数据成熟度的客户。从Poc到产品，从产品到方案。",
+          "cluster": "moat"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "anchor-demand",
+      "to": "future-product",
+      "label": "需求驱动产品演进"
+    },
+    {
+      "from": "anchor-better",
+      "to": "paradigm-cashflow",
+      "label": "\"更好\"的定义即现金流逻辑"
+    },
+    {
+      "from": "past-product",
+      "to": "future-product",
+      "label": "过去→未来"
+    },
+    {
+      "from": "past-team",
+      "to": "future-team",
+      "label": "过去→未来"
+    },
+    {
+      "from": "core-shift",
+      "to": "role-algo",
+      "label": "核心改变要求角色转变"
+    },
+    {
+      "from": "paradigm-ability",
+      "to": "role-sales",
+      "label": "新范式催生贩卖者角色"
+    },
+    {
+      "from": "loop-use",
+      "to": "loop-feedback",
+      "label": "闭环第一步"
+    },
+    {
+      "from": "loop-feedback",
+      "to": "loop-gap",
+      "label": "闭环第二步"
+    },
+    {
+      "from": "loop-gap",
+      "to": "loop-upgrade",
+      "label": "闭环第三步"
+    },
+    {
+      "from": "loop-upgrade",
+      "to": "loop-empower",
+      "label": "闭环第四步"
+    },
+    {
+      "from": "loop-empower",
+      "to": "loop-use",
+      "label": "闭环闭合"
+    },
+    {
+      "from": "role-algo",
+      "to": "loop-upgrade",
+      "label": "负责能力跃升"
+    },
+    {
+      "from": "role-ops",
+      "to": "loop-feedback",
+      "label": "负责积累反馈"
+    },
+    {
+      "from": "role-biz",
+      "to": "loop-use",
+      "label": "能力使用者"
+    },
+    {
+      "from": "moat-verified",
+      "to": "role-algo",
+      "label": "算法工程师的底座"
+    },
+    {
+      "from": "moat-scenario",
+      "to": "anchor-demand",
+      "label": "源于对不变需求的洞察"
+    },
+    {
+      "from": "paradigm-logic",
+      "to": "future-product",
+      "label": "决定未来产品形态"
+    }
+  ]
+}

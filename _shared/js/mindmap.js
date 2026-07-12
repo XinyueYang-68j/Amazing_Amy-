@@ -64,8 +64,12 @@
     pulseMaxAlpha: 0.8,
   };
 
-  var GH_PATH = './data/mindmap-data.json';
-  var NOTES_PATH = './data/mindmap-notes.json';
+  // 数据路径：通过 data-path 和 notes-path 自定义，默认为原始脑图
+  var DATA_PATH = (document.getElementById('mindmap-container') || {}).getAttribute('data-path') || './data/mindmap-data.json';
+  var NOTES_PATH = (document.getElementById('mindmap-container') || {}).getAttribute('data-notes-path') || './data/mindmap-notes.json';
+  // GitHub API 需要仓库内相对路径（去掉 './' 前缀）
+  var GH_DATA_PATH = DATA_PATH.replace(/^\.\//, '');
+  var GH_NOTES_PATH = NOTES_PATH.replace(/^\.\//, '');
   var mmData = null;     // 原始 mindmap 数据
   var mmNotes = { nodeNotes: {}, nodeEdits: {} };
 
@@ -161,7 +165,7 @@
      ============================================================ */
   function loadData() {
     // 1. 先加载本地数据，保证正常展示
-    fetch('./data/mindmap-data.json')
+    fetch(DATA_PATH)
       .then(function (res) { return res.json(); })
       .then(function (data) {
         mmData = data;
@@ -192,7 +196,7 @@
   }
 
   function loadFromGitHub() {
-    GitHubAPI.readFile('data/mindmap-data.json')
+    GitHubAPI.readFile(GH_DATA_PATH)
       .then(function (result) {
         mmData = result.content;
         buildGraph(mmData);
@@ -205,7 +209,7 @@
 
   function loadNotes() {
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
-      GitHubAPI.readFile('data/mindmap-notes.json')
+      GitHubAPI.readFile(GH_NOTES_PATH)
         .then(function (result) {
           mmNotes = result.content;
           console.log('[mindmap] Notes loaded from GitHub:', Object.keys(mmNotes.nodeNotes || {}).length, 'nodes with notes');
@@ -213,7 +217,7 @@
         })
         .catch(function (err) {
           console.warn('[mindmap] Failed to load notes from GitHub, using local fallback:', err.message);
-          fetch('./data/mindmap-notes.json')
+          fetch(NOTES_PATH)
             .then(function (res) { return res.json(); })
             .then(function (data) {
               mmNotes = data;
@@ -224,7 +228,7 @@
             });
         });
     } else {
-      fetch('./data/mindmap-notes.json')
+      fetch(NOTES_PATH)
         .then(function (res) { return res.json(); })
         .then(function (data) {
           mmNotes = data;
@@ -1093,7 +1097,7 @@
     // 保存到 GitHub
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
       showSaveStatus('正在保存修改...');
-      GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, null, 'Edit note')
+      GitHubAPI.writeFile(GH_NOTES_PATH, mmNotes, null, 'Edit note')
         .then(function () {
           showSaveStatus('感悟已修改');
           if (editingNode && editingNode.id === nodeId) renderInsightList(nodeId);
@@ -1124,7 +1128,7 @@
     // 保存到 GitHub
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
       showSaveStatus('正在保存删除...');
-      GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, null, 'Delete note')
+      GitHubAPI.writeFile(GH_NOTES_PATH, mmNotes, null, 'Delete note')
         .then(function () {
           showSaveStatus('感悟已删除');
           if (editingNode && editingNode.id === nodeId) renderInsightList(nodeId);
@@ -1187,10 +1191,10 @@
     // 写回 GitHub
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
       showSaveStatus('正在保存...');
-      GitHubAPI.writeFile('data/mindmap-data.json', mmData, null, 'Update mindmap data')
+      GitHubAPI.writeFile(GH_DATA_PATH, mmData, null, 'Update mindmap data')
         .then(function () {
           showSaveStatus('脑图数据已保存');
-          return GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, null, 'Update mindmap notes');
+          return GitHubAPI.writeFile(GH_NOTES_PATH, mmNotes, null, 'Update mindmap notes');
         })
         .then(function () {
           showSaveStatus('脑图与笔记已保存');
@@ -1237,7 +1241,7 @@
     editingNode = null;
 
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
-      GitHubAPI.writeFile('data/mindmap-data.json', mmData, null, 'Delete node')
+      GitHubAPI.writeFile(GH_DATA_PATH, mmData, null, 'Delete node')
         .catch(function (err) {
           console.error(err);
           showSaveStatus('删除保存失败: ' + (err.message || err));
@@ -1307,7 +1311,7 @@
     });
 
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
-      GitHubAPI.writeFile('data/mindmap-data.json', mmData, null, 'Add child node')
+      GitHubAPI.writeFile(GH_DATA_PATH, mmData, null, 'Add child node')
         .then(function () {
           showSaveStatus('子节点已添加');
         })
@@ -1341,7 +1345,7 @@
 
     if (window.GitHubAPI && GitHubAPI.hasToken()) {
       showSaveStatus('正在保存笔记...');
-      GitHubAPI.writeFile('data/mindmap-notes.json', mmNotes, null, 'Update mindmap notes')
+      GitHubAPI.writeFile(GH_NOTES_PATH, mmNotes, null, 'Update mindmap notes')
         .then(function () {
           showSaveStatus('笔记已保存（' + notes.length + '条）');
           if (editingNode) openSidebar(editingNode);
