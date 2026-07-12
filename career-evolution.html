@@ -795,16 +795,6 @@
   line-height: 1.5;
 }
 
-.ic-model {
-  font-size: 0.7rem;
-  color: rgba(212,175,55,0.7);
-  background: rgba(212,175,55,0.05);
-  padding: 0.4rem 0.6rem;
-  border-radius: 6px;
-  margin-bottom: 0.75rem;
-  font-family: monospace;
-}
-
     .ic-body {
       font-size: 0.8rem;
       color: #9CA3AF;
@@ -820,6 +810,92 @@
     }
 
     .ic-link:hover { opacity: 0.7; }
+
+.ic-model {
+  font-size: 0.7rem;
+  color: rgba(212,175,55,0.7);
+  background: rgba(212,175,55,0.05);
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  font-family: monospace;
+}
+
+    /* ---- B类产品表格 ---- */
+    .bclass-table-wrap {
+      overflow-x: auto;
+      margin-top: 0.5rem;
+      border-radius: 10px;
+      border: 1px solid var(--rule);
+    }
+
+    .bclass-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+      color: #9CA3AF;
+      min-width: 900px;
+    }
+
+    .bclass-table thead {
+      background: rgba(212,175,55,0.08);
+    }
+
+    .bclass-table th {
+      padding: 0.7rem 0.8rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--gold);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--rule);
+      white-space: nowrap;
+    }
+
+    .bclass-table td {
+      padding: 0.7rem 0.8rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      vertical-align: top;
+      line-height: 1.6;
+    }
+
+    .bclass-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .bclass-table tr:hover td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    .bclass-table .bt-name {
+      color: #fff;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .bclass-table .bt-link {
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 0.72rem;
+      word-break: break-all;
+    }
+
+    .bclass-table .bt-link:hover { opacity: 0.7; text-decoration: underline; }
+
+    .bclass-table .bt-tag {
+      display: inline-block;
+      font-size: 0.62rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 10px;
+      margin-left: 0.4rem;
+      vertical-align: middle;
+    }
+
+    .bclass-table .bt-na {
+      color: #4B5563;
+      font-style: italic;
+    }
 
     .industry-insight {
       margin-top: 1.5rem;
@@ -1809,86 +1885,75 @@
 
       <div class="industry-tabs" style="margin-top:2rem;">
         <div class="industry-tab-label">B类：基于开源Agent框架的垂直订阅产品</div>
-        <p class="industry-sub-label">基于 OpenClaw / WorkBuddy / 百度文心Agent 等通用Agent框架，开发出面向特定行业的可订阅式AI数字员工产品</p>
-        <div class="industry-cards">
-
-          <div class="industry-card">
-            <div class="ic-header">
-              <span class="ic-name">蝉妈妈 · 蝉龙虾 (ChanClaw)</span>
-              <span class="ic-tag tag-agent">电商数字员工</span>
-            </div>
-            <div class="ic-body">
-              2026年5月13日由蝉妈妈正式发布，基于 OpenClaw 框架自研的电商垂直Agent。自动执行抖音/小红书/淘宝数据采集、竞品直播监控、爆款商品分析、千川策略解析等电商运营全链路任务。可订阅制，电商运营人员的"AI数字员工"——替代人工重复操作浏览器、下载数据、整理报表的日常工作。
-            </div>
-            <div class="ic-model">底层：OpenClaw（开源Agent框架） → 垂直封装：电商运营场景 → 商业模式：SaaS订阅</div>
-            <a class="ic-link" href="https://www.chanmama.com" target="_blank" rel="noopener">chanmama.com</a>
-          </div>
-
-          <div class="industry-card">
-            <div class="ic-header">
-              <span class="ic-name">当贝 Molili（莫哩哩）</span>
-              <span class="ic-tag tag-agent">办公自动化</span>
-            </div>
-            <div class="ic-body">
-              杭州当贝推出的国内首个 OpenClaw 中文版。自动处理Excel报表生成、邮件分类回复、会议纪要整理、数据录入等日常办公任务。支持微信、钉钉、飞书、Siri四大入口远程操控。安装包仅20M，内存占用小于100M。面向中小企业，"雇佣"一个AI数字员工。
-            </div>
-            <div class="ic-model">底层：OpenClaw（中文本土化版） → 垂直封装：办公自动化 → 商业模式：SaaS订阅（基础免费+高级订阅）</div>
-            <a class="ic-link" href="https://www.molili.com.cn" target="_blank" rel="noopener">molili.com.cn</a>
-          </div>
-
-          <div class="industry-card">
-            <div class="ic-header">
-              <span class="ic-name">阿里云 QClaw + 小鲸云</span>
-              <span class="ic-tag tag-agent">跨境电商Agent</span>
-            </div>
-            <div class="ic-body">
-              基于阿里云部署的 OpenClaw 跨境电商方案（QClaw为腾讯电脑管家团队出品，在阿里云上有生态玩家适配）。自动操作亚马逊/Shopify后台，执行选品分析、Listing优化、库存管理、客服自动回复、多语言翻译等跨境电商全流程任务。通过多Agent协作实现分工明确的"AI员工团队"。
-            </div>
-            <div class="ic-model">底层：OpenClaw（阿里云部署） → 垂直封装：跨境电商运营 → 商业模式：云服务 + 订阅</div>
-            <a class="ic-link" href="https://www.aliyun.com/product/openclaw" target="_blank" rel="noopener">aliyun.com/product/openclaw</a>
-          </div>
-
-          <div class="industry-card">
-            <div class="ic-header">
-              <span class="ic-name">腾讯云 ClawPro（企业版龙虾）</span>
-              <span class="ic-tag tag-cloud">云服务Agent</span>
-            </div>
-            <div class="ic-body">
-              腾讯云2026年4月推出的企业版OpenClaw——ClawPro，国内首个基于百万级用户验证的一站式企业AI智能体管控平台。提供专属Agent运行环境 + 行业Agent模板（客服、运维、财务），企业无需自建Agent基础设施，支持微信/企业微信/钉钉接入，按调用量订阅。
-            </div>
-            <div class="ic-model">底层：OpenClaw（腾讯深度合作版） → 垂直封装：多行业模板 → 商业模式：云服务订阅（按调用量计费）</div>
-            <a class="ic-link" href="https://cloud.tencent.com/act/pro/intl-openclaw" target="_blank" rel="noopener">cloud.tencent.com/act/pro/intl-openclaw</a>
-          </div>
-
-          <div class="industry-card">
-            <div class="ic-header">
-              <span class="ic-name">幂律智能 · MeCheck / 吾律AI</span>
-              <span class="ic-tag tag-legal">法律行业</span>
-            </div>
-            <div class="ic-body">
-              幂律智能推出的法律垂直AI产品。MeCheck：AI智能合同审查，100+类合同风险审查，1000+风险审查点，覆盖业务/法务/财务维度，60%时间节省。吾律AI律师：首款能交付真实法律任务的AI律师智能体，智能催款、起草律师函、劳动仲裁申请书、起诉状起草等。
-            </div>
-            <div class="ic-model">底层：PowerLawGLM 法律大模型 + Agent → 垂直封装：法律场景 → 商业模式：按席位/模块订阅</div>
-            <a class="ic-link" href="https://powerlaw.ai" target="_blank" rel="noopener">powerlaw.ai（幂律智能）</a>
-          </div>
-
-          <div class="industry-card">
-            <div class="ic-header">
-              <span class="ic-name">每刻科技 · AI费控智能体</span>
-              <span class="ic-tag tag-finance">财务行业</span>
-            </div>
-            <div class="ic-body">
-              国内领先的AI企业差旅及费用管理平台，2025年累计处理单据2亿+、费用5亿+笔。AI识票：单张票据识别1秒，准确率99.8%，识别100+种异常。AI自动报销：商旅订单费用自动回传，智能数字人自动生成报销单，人均报销耗时缩短90%。AI智能审核：替代80%重复审核工作。
-            </div>
-            <div class="ic-model">底层：AI大模型 + RPA → 垂直封装：财务费控场景 → 商业模式：按模块/席位订阅</div>
-            <a class="ic-link" href="https://www.maycur.com" target="_blank" rel="noopener">maycur.com（每刻科技）</a>
-          </div>
-
+        <p class="industry-sub-label">基于 OpenClaw 等通用Agent框架，面向特定行业的可订阅式AI数字员工产品。以下数据均来自各产品官网或权威媒体报道，标注"未公开"的表示未检索到可靠公开数据。</p>
+        <div class="bclass-table-wrap">
+          <table class="bclass-table">
+            <thead>
+              <tr>
+                <th>产品名</th>
+                <th>产品官网</th>
+                <th>垂直领域</th>
+                <th>主要护城河</th>
+                <th>成功案例</th>
+                <th>订阅费用</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bt-name">蝉龙虾 <span class="bt-tag" style="color:#EC4899;border:1px solid rgba(236,72,153,0.3);">电商</span></td>
+                <td><a class="bt-link" href="https://www.chanmama.com" target="_blank" rel="noopener">chanmama.com</a></td>
+                <td>电商运营（抖音/小红书/淘宝）</td>
+                <td>蝉妈妈多年积累的电商数据采集能力 + 60万+爆品、50万+达人、30万+商家数据资产；基于OpenClaw框架封装为自动执行Agent，替代人工重复操作浏览器、采集数据、整理报表</td>
+                <td>蝉妈妈平台已有30万+合作商家验证（蝉龙虾为蝉妈妈旗下产品，2026年5月13日发布）</td>
+                <td><span class="bt-na">未公开</span></td>
+              </tr>
+              <tr>
+                <td class="bt-name">Molili（莫哩哩）<span class="bt-tag" style="color:#EC4899;border:1px solid rgba(236,72,153,0.3);">办公</span></td>
+                <td><a class="bt-link" href="https://www.molili.com.cn" target="_blank" rel="noopener">molili.com.cn</a></td>
+                <td>办公自动化（通用）</td>
+                <td>当贝（2亿用户基数）官方出品；国内首个OpenClaw中文本土化版，安装包仅20M、内存&lt;100M；支持微信/钉钉/飞书/Siri四大入口远程操控；本地优先架构保障数据安全</td>
+                <td><span class="bt-na">未公开</span></td>
+                <td>免费下载使用，高级功能订阅制（具体价格未公开）</td>
+              </tr>
+              <tr>
+                <td class="bt-name">腾讯 QClaw <span class="bt-tag" style="color:#FF6A00;border:1px solid rgba(255,106,0,0.3);">通用</span></td>
+                <td><a class="bt-link" href="https://qclaw.qq.com" target="_blank" rel="noopener">qclaw.qq.com</a></td>
+                <td>个人AI桌面助手（通用）</td>
+                <td>腾讯电脑管家团队出品，基于OpenClaw封装；核心亮点"微信直连"远程操控电脑；5000+ Skills生态；本地优先架构；内置DeepSeek-V4/Hunyuan/Kimi等多款国产大模型；通过工信部首批"云端OpenClaw基线能力评估"</td>
+                <td>GitHub 315K+ Stars（OpenClaw生态验证）；2026年3月20日全量公测</td>
+                <td><span class="bt-na">未公开</span></td>
+              </tr>
+              <tr>
+                <td class="bt-name">腾讯云 ClawPro <span class="bt-tag" style="color:#FF6A00;border:1px solid rgba(255,106,0,0.3);">企业</span></td>
+                <td><a class="bt-link" href="https://cloud.tencent.com/act/pro/intl-openclaw" target="_blank" rel="noopener">cloud.tencent.com</a></td>
+                <td>企业级AI Agent管控（多行业）</td>
+                <td>融合腾讯轻量云百万级用户生产经验；百元级启动成本、1分钟开机；兼容企微/QQ/飞书/钉钉四大IM；四层纵深安全防护（VPC隔离+随机端口+安全组+审计）；三级配额管控（企业/部门/个人Token上限）</td>
+                <td>财税SaaS场景验证（多租户Token限流+配额管理）；国家级专精特新AI办公本端云协同案例；通过工信部首批"云端OpenClaw基线能力评估"</td>
+                <td>百元级启动成本，按需扩容（具体价格未公开）</td>
+              </tr>
+              <tr>
+                <td class="bt-name">幂律智能 MeCheck <span class="bt-tag" style="color:#8B5CF6;border:1px solid rgba(139,92,246,0.3);">法律</span></td>
+                <td><a class="bt-link" href="https://powerlaw.ai" target="_blank" rel="noopener">powerlaw.ai</a></td>
+                <td>法律行业（合同审查/法律文书）</td>
+                <td>自研千亿参数级PowerLawGLM法律大模型；100+类合同风险审查、1000+审查点；覆盖业务/法务/财务三维度；清华大学计算机系核心团队，30%+员工有法律背景；国家级高新技术企业，等保三级/ISO27001认证</td>
+                <td>广东中熙律所、南方电网、金拱门（麦当劳）中国、他山集等</td>
+                <td><span class="bt-na">未公开</span>（按席位/模块订阅）</td>
+              </tr>
+              <tr>
+                <td class="bt-name">每刻科技 <span class="bt-tag" style="color:#14B8A6;border:1px solid rgba(20,184,166,0.3);">财务</span></td>
+                <td><a class="bt-link" href="https://www.maycur.com" target="_blank" rel="noopener">maycur.com</a></td>
+                <td>财务费控（差旅/报销/档案）</td>
+                <td>4500+企业、500+上市公司服务验证；AI识票准确率99.8%、1秒/张；累计处理2亿+单据、5亿+笔费用；CMMI5国际最高级别认证；连接100+生态服务商（ERP/税务/银行）</td>
+                <td>浙江省机场集团（报销耗时降60%）；圣奥科技（审核降64%、年省86万）；天士力集团（审计效率提升65%、档案成本降80%）</td>
+                <td><span class="bt-na">未公开</span>（按模块/席位订阅）</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <div class="industry-insight">
-        <strong>关键发现：</strong>B类玩家的商业模式已清晰——<strong>通用Agent框架 + 垂直场景封装 = 可订阅的AI数字员工</strong>。蝉龙虾就是典型：用OpenClaw的"操作电脑"能力，封装成电商运营的专属Agent，按月订阅收费。这个模式的核心壁垒不是Agent框架本身（开源的），而是<strong>对垂直场景的理解深度</strong>——知道电商运营每天要点击什么、输入什么、输出什么。这恰好印证了你的"场景理解深度"竞争壁垒。
+        <strong>关键发现：</strong>B类玩家的商业模式已清晰——<strong>通用Agent框架 + 垂直场景封装 = 可订阅的AI数字员工</strong>。核心壁垒不是Agent框架本身（开源的），而是<strong>对垂直场景的理解深度</strong>——知道电商运营每天要点击什么、法律合同要审查哪些条款、财务报销要校验哪些异常。同时，腾讯QClaw和ClawPro代表了另一条路径：<strong>大厂基于OpenClaw生态做平台化管控</strong>，用百万级用户验证和云基础设施构建护城河。
       </div>
     </section>
 
