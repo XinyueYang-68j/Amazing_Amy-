@@ -922,79 +922,122 @@
       width: 100%;
       max-width: 1100px;
       margin: 2rem auto;
-      aspect-ratio: 16/9;
-      overflow: hidden;
+      padding: 2.5rem 3rem 2.5rem 3rem;
       border-radius: 16px;
       border: 1px solid rgba(212,175,55,0.15);
       background: #050508;
+    }
+
+    .tianma-img-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: 10px;
+      overflow: hidden;
     }
 
     .tianma-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0.6;
+      opacity: 0.92;
       display: block;
     }
 
-    /* SVG 勾勒层 */
-    .tianma-svg {
+    /* SVG 引导线层 —— 覆盖在 tianma-prototype 上（包含图片+外围空间） */
+    .tianma-lines-svg {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 5;
-    }
-
-    /* SVG 区域 hover 效果 */
-    .tianma-zone {
-      cursor: pointer;
-      transition: opacity 0.3s, stroke-width 0.3s;
-    }
-
-    .tianma-zone:hover {
-      opacity: 1 !important;
-      stroke-width: 1.2;
-    }
-
-    /* Tooltip */
-    .tianma-tooltip {
-      position: absolute;
-      z-index: 50;
-      background: rgba(0,0,0,0.92);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(212,175,55,0.4);
-      border-radius: 10px;
-      padding: 0.7rem 1rem;
-      max-width: 280px;
+      z-index: 10;
       pointer-events: none;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.25s, transform 0.25s;
     }
 
-    .tianma-tooltip.visible {
-      opacity: 1;
-      transform: translateY(0);
+    .tianma-lines-svg line,
+    .tianma-lines-svg path {
+      stroke-width: 0.8;
+      fill: none;
+      opacity: 0.45;
     }
 
-    .tianma-tooltip .tooltip-title {
-      font-size: 0.85rem;
-      font-weight: 700;
+    .tianma-lines-svg circle.anchor-dot {
+      r: 1.5;
+      opacity: 0.6;
+    }
+
+    /* 浮标标签 */
+    .tianma-float-labels {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .tianma-float {
+      position: absolute;
+      pointer-events: auto;
+      cursor: pointer;
+      padding: 0.35rem 0.65rem;
+      background: rgba(5,5,10,0.88);
+      backdrop-filter: blur(12px);
+      border-radius: 8px;
+      border: 1px solid rgba(212,175,55,0.25);
+      white-space: nowrap;
+      transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
+      font-size: 0.78rem;
+      color: #E5E7EB;
+      line-height: 1.4;
+    }
+
+    .tianma-float:hover {
+      border-color: rgba(212,175,55,0.7);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(212,175,55,0.12);
+    }
+
+    .tianma-float .float-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-right: 0.35rem;
+      vertical-align: middle;
+    }
+
+    .tianma-float .float-name {
+      font-weight: 600;
       color: #fff;
-      margin-bottom: 0.3rem;
     }
 
-    .tianma-tooltip .tooltip-desc {
-      font-size: 0.75rem;
+    .tianma-float .float-role {
+      font-size: 0.65rem;
       color: #9CA3AF;
+      margin-left: 0.3rem;
+    }
+
+    /* 浮标展开描述 */
+    .tianma-float .float-desc {
+      display: none;
+      font-size: 0.7rem;
+      color: #9CA3AF;
+      margin-top: 0.3rem;
       line-height: 1.5;
+      max-width: 220px;
+      white-space: normal;
+    }
+
+    .tianma-float:hover .float-desc {
+      display: block;
     }
 
     /* 角色详情面板 */
     .role-detail-panel {
-      position: absolute;
+      position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%,-50%) scale(0.9);
@@ -1005,7 +1048,7 @@
       border: 1px solid rgba(212,175,55,0.3);
       border-radius: 16px;
       padding: 1.5rem;
-      z-index: 100;
+      z-index: 1000;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s, transform 0.3s;
@@ -1059,9 +1102,35 @@
       margin-top: 0.15rem;
     }
 
+    /* 底部图例 */
+    .tianma-legend {
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      margin-top: 1.2rem;
+      font-size: 0.72rem;
+      color: #9CA3AF;
+    }
+
+    .tianma-legend span {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .tianma-legend i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
     /* 响应式 */
     @media (max-width: 768px) {
-      .tianma-prototype { aspect-ratio: 4/3; }
+      .tianma-img-wrap { aspect-ratio: 4/3; }
+      .tianma-prototype { padding: 1.5rem 1rem; }
+      .tianma-float { font-size: 0.7rem; padding: 0.25rem 0.5rem; }
     }
 
     /* ---- Footer ---- */
@@ -1209,51 +1278,21 @@
     var panelHeader = document.getElementById('panel-header');
     var panelBody = document.getElementById('panel-body');
     var panelClose = document.getElementById('panel-close');
-    var svg = document.querySelector('.tianma-svg');
-    var tooltip = document.getElementById('tianma-tooltip');
-    var tooltipTitle = tooltip.querySelector('.tooltip-title');
-    var tooltipDesc = tooltip.querySelector('.tooltip-desc');
     var prototype = document.getElementById('tianma-prototype');
 
-    // 将 ai-body 映射到 ai 角色数据
+    // 浮标 data-role → ROLES key 映射
     var ROLE_MAP = {
       algo: 'algo',
       ai: 'ai',
-      'ai-body': 'ai',
       dev: 'dev',
-      'dev-cart': 'dev',
       passengers: 'biz',
       ops: 'ops',
       overseas: 'overseas'
     };
 
-    // SVG zone hover → tooltip
-    svg.querySelectorAll('.tianma-zone').forEach(function(zone) {
-      zone.addEventListener('mouseenter', function(e) {
-        var title = this.getAttribute('data-title') || '';
-        var desc = this.getAttribute('data-desc') || '';
-        tooltipTitle.textContent = title;
-        tooltipDesc.textContent = desc;
-        tooltip.classList.add('visible');
-      });
-
-      zone.addEventListener('mousemove', function(e) {
-        var rect = prototype.getBoundingClientRect();
-        var x = e.clientX - rect.left + 15;
-        var y = e.clientY - rect.top - 10;
-        // 防止溢出右边
-        if (x + 280 > rect.width) x = x - 295;
-        if (y + 100 > rect.height) y = y - 80;
-        tooltip.style.left = x + 'px';
-        tooltip.style.top = y + 'px';
-      });
-
-      zone.addEventListener('mouseleave', function() {
-        tooltip.classList.remove('visible');
-      });
-
-      // 点击 → 详情面板
-      zone.addEventListener('click', function(e) {
+    // 浮标 click → 详情面板
+    prototype.querySelectorAll('.tianma-float').forEach(function(float) {
+      float.addEventListener('click', function(e) {
         e.stopPropagation();
         var role = ROLE_MAP[this.getAttribute('data-role')] || this.getAttribute('data-role');
         var data = ROLES[role];
@@ -1269,8 +1308,9 @@
       panel.classList.remove('visible');
     });
 
-    prototype.addEventListener('click', function(e) {
-      if (e.target === this || e.target.classList.contains('tianma-img')) {
+    // 点击面板外部关闭
+    document.addEventListener('click', function(e) {
+      if (!panel.contains(e.target) && !e.target.closest('.tianma-float')) {
         panel.classList.remove('visible');
       }
     });
@@ -1502,94 +1542,102 @@
       <p class="ev-section-desc">千里马是AI的原始力量，缰绳是算法工程师的方向控制，马车是开发工程师的承载结构。每个角色都有其不可替代的位置。</p>
 
       <div class="tianma-prototype" id="tianma-prototype">
-        <!-- 底图 -->
-        <img src="./assets/tianma-base.jpg" alt="千里马原型" class="tianma-img">
+        <!-- 底图（干净，无覆盖） -->
+        <div class="tianma-img-wrap">
+          <img src="./assets/tianma-base.jpg" alt="千里马原型" class="tianma-img">
+        </div>
 
-        <!-- SVG 勾勒层 -->
-        <svg class="tianma-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <!-- SVG 引导线层 —— 从浮标标签指向图片上的锚点 -->
+        <svg class="tianma-lines-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
           <defs>
-            <!-- 金色发光滤镜 -->
-            <filter id="tianma-glow">
-              <feGaussianBlur stdDeviation="0.8" result="blur"/>
-              <feMerge>
-                <feMergeNode in="blur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
+            <filter id="line-glow-pink">
+              <feDropShadow dx="0" dy="0" stdDeviation="0.6" flood-color="#EC4899" flood-opacity="0.4"/>
             </filter>
-            <!-- 不同颜色的发光滤镜 -->
-            <filter id="glow-pink">
-              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#EC4899" flood-opacity="0.6"/>
+            <filter id="line-glow-gold">
+              <feDropShadow dx="0" dy="0" stdDeviation="0.6" flood-color="#D4AF37" flood-opacity="0.4"/>
             </filter>
-            <filter id="glow-gold">
-              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#D4AF37" flood-opacity="0.6"/>
+            <filter id="line-glow-cyan">
+              <feDropShadow dx="0" dy="0" stdDeviation="0.6" flood-color="#06B6D4" flood-opacity="0.4"/>
             </filter>
-            <filter id="glow-cyan">
-              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#06B6D4" flood-opacity="0.6"/>
+            <filter id="line-glow-purple">
+              <feDropShadow dx="0" dy="0" stdDeviation="0.6" flood-color="#A855F7" flood-opacity="0.4"/>
             </filter>
-            <filter id="glow-purple">
-              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#A855F7" flood-opacity="0.6"/>
+            <filter id="line-glow-green">
+              <feDropShadow dx="0" dy="0" stdDeviation="0.6" flood-color="#10B981" flood-opacity="0.4"/>
             </filter>
-            <filter id="glow-green">
-              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#10B981" flood-opacity="0.6"/>
-            </filter>
-            <filter id="glow-orange">
-              <feDropShadow dx="0" dy="0" stdDeviation="1.2" flood-color="#F59E0B" flood-opacity="0.6"/>
+            <filter id="line-glow-orange">
+              <feDropShadow dx="0" dy="0" stdDeviation="0.6" flood-color="#F59E0B" flood-opacity="0.4"/>
             </filter>
           </defs>
 
-          <!-- 1. 缰绳 -->
-          <path class="tianma-zone" data-role="algo" data-title="算法工程师 (AI ver.) — 缰绳" data-desc="控制方向，定义边界，让千里马跑对方向不脱缰"
-            d="M20,16 Q25,12 32,14 Q38,16 45,15 Q50,14 55,18"
-            fill="none" stroke="#EC4899" stroke-width="0.6" stroke-linecap="round"
-            filter="url(#glow-pink)" opacity="0.7"/>
+          <!-- 缰绳：左上浮标 → 马头区域 -->
+          <line x1="4" y1="8" x2="18" y2="22" stroke="#EC4899" filter="url(#line-glow-pink)"/>
+          <circle class="anchor-dot" cx="18" cy="22" fill="#EC4899"/>
 
-          <!-- 2. 马头+颈部 -->
-          <path class="tianma-zone" data-role="ai" data-title="千里马 — AI能力" data-desc="干活的主力，原始力量。跑得快、力气大、不知疲倦"
-            d="M12,10 Q14,8 18,9 Q22,8 24,12 Q25,16 24,22 Q23,28 20,32 Q18,36 16,38 Q14,40 12,38 Q10,35 10,30 Q10,25 11,20 Q11,14 12,10 Z"
-            fill="rgba(212,175,55,0.05)" stroke="#D4AF37" stroke-width="0.5"
-            filter="url(#glow-gold)" opacity="0.6"/>
+          <!-- AI能力：左下浮标 → 马躯干 -->
+          <line x1="4" y1="42" x2="22" y2="44" stroke="#D4AF37" filter="url(#line-gold)"/>
+          <circle class="anchor-dot" cx="22" cy="44" fill="#D4AF37"/>
 
-          <!-- 3. 马躯干 -->
-          <path class="tianma-zone" data-role="ai-body" data-title="千里马 — AI能力" data-desc="核心引擎，承载所有被标准化的能力模块"
-            d="M16,38 Q20,34 28,32 Q36,30 42,33 Q46,36 48,42 Q49,48 47,55 Q44,62 38,66 Q32,68 26,66 Q20,63 17,58 Q15,52 15,46 Q15,42 16,38 Z"
-            fill="rgba(212,175,55,0.04)" stroke="#D4AF37" stroke-width="0.5"
-            filter="url(#glow-gold)" opacity="0.5"/>
+          <!-- 开发工程师：顶部中间浮标 → 辕杆区域 -->
+          <line x1="28" y1="4" x2="52" y2="30" stroke="#06B6D4" filter="url(#line-glow-cyan)"/>
+          <circle class="anchor-dot" cx="52" cy="30" fill="#06B6D4"/>
 
-          <!-- 4. 辕杆 -->
-          <path class="tianma-zone" data-role="dev" data-title="开发工程师 — 辕杆" data-desc="承载结构，让千里马的动力变成可交付的产品"
-            d="M42,42 Q48,40 55,38 Q60,37 65,40 Q68,42 68,45"
-            fill="none" stroke="#06B6D4" stroke-width="0.6" stroke-linecap="round"
-            filter="url(#glow-cyan)" opacity="0.7"/>
+          <!-- 业务方/PM/DA：右侧浮标 → 车厢乘客区 -->
+          <line x1="92" y1="20" x2="76" y2="32" stroke="#A855F7" filter="url(#line-glow-purple)"/>
+          <circle class="anchor-dot" cx="76" cy="32" fill="#A855F7"/>
 
-          <!-- 5. 马车厢体 -->
-          <path class="tianma-zone" data-role="dev-cart" data-title="开发工程师 — 马车" data-desc="持久化能力，保证稳定、低成本地被更多人使用"
-            d="M62,18 Q65,15 72,14 Q80,13 88,15 Q92,17 93,22 L94,52 Q93,58 88,60 Q80,62 72,62 Q65,62 62,58 L60,52 Z"
-            fill="rgba(6,182,212,0.04)" stroke="#06B6D4" stroke-width="0.5"
-            filter="url(#glow-cyan)" opacity="0.5"/>
+          <!-- 运维：底部左侧浮标 → 路面 -->
+          <line x1="12" y1="92" x2="30" y2="78" stroke="#10B981" filter="url(#line-glow-green)"/>
+          <circle class="anchor-dot" cx="30" cy="78" fill="#10B981"/>
 
-          <!-- 6. 车内乘客区 -->
-          <path class="tianma-zone" data-role="passengers" data-title="业务方 / PM / DA — 车上乘客" data-desc="被AI武装的使用者：业务方(乘客)、产品经理(导航员)、数据分析(瞭望手)"
-            d="M65,20 Q68,18 74,17 Q80,16 86,18 L88,30 Q87,45 84,48 Q78,50 72,48 Q68,45 66,30 Z"
-            fill="rgba(168,85,247,0.04)" stroke="#A855F7" stroke-width="0.5"
-            filter="url(#glow-purple)" opacity="0.5"/>
-
-          <!-- 7. 路面 -->
-          <path class="tianma-zone" data-role="ops" data-title="运维 — 道路养护者" data-desc="修路、立路标、积累路况，让下一次跑得更顺"
-            d="M5,72 Q30,70 50,71 Q70,72 90,70 Q95,71 98,72"
-            fill="none" stroke="#10B981" stroke-width="0.5" stroke-linecap="round"
-            filter="url(#glow-green)" opacity="0.6"/>
-
-          <!-- 8. 远处驿站 -->
-          <path class="tianma-zone" data-role="overseas" data-title="出海算法 — 驿站主人" data-desc="在不同城镇设驿站，把千里马+马车的能力卖给更多人"
-            d="M86,42 L92,38 L96,42 L96,65 L92,68 L88,68 L84,65 L84,42 Z"
-            fill="rgba(245,158,11,0.04)" stroke="#F59E0B" stroke-width="0.4"
-            filter="url(#glow-orange)" opacity="0.5"/>
+          <!-- 出海算法：底部右侧浮标 → 驿站 -->
+          <line x1="88" y1="92" x2="88" y2="62" stroke="#F59E0B" filter="url(#line-glow-orange)"/>
+          <circle class="anchor-dot" cx="88" cy="62" fill="#F59E0B"/>
         </svg>
 
-        <!-- Tooltip -->
-        <div class="tianma-tooltip" id="tianma-tooltip">
-          <div class="tooltip-title"></div>
-          <div class="tooltip-desc"></div>
+        <!-- 浮标标签层 -->
+        <div class="tianma-float-labels">
+          <div class="tianma-float" style="top:3%;left:0.5%;" data-role="algo">
+            <span class="float-dot" style="background:#EC4899;"></span>
+            <span class="float-name">算法工程师</span>
+            <span class="float-role">缰绳</span>
+            <div class="float-desc">控制方向，定义边界，让千里马跑对方向不脱缰</div>
+          </div>
+
+          <div class="tianma-float" style="top:38%;left:0.5%;" data-role="ai">
+            <span class="float-dot" style="background:#D4AF37;"></span>
+            <span class="float-name">千里马</span>
+            <span class="float-role">AI能力</span>
+            <div class="float-desc">干活的主力，原始力量。跑得快、力气大、不知疲倦</div>
+          </div>
+
+          <div class="tianma-float" style="top:0%;left:27%;" data-role="dev">
+            <span class="float-dot" style="background:#06B6D4;"></span>
+            <span class="float-name">开发工程师</span>
+            <span class="float-role">辕杆 + 马车</span>
+            <div class="float-desc">承载结构，让千里马的动力变成可交付的产品</div>
+          </div>
+
+          <div class="tianma-float" style="top:14%;right:0.5%;" data-role="passengers">
+            <span class="float-dot" style="background:#A855F7;"></span>
+            <span class="float-name">业务方 / PM / DA</span>
+            <span class="float-role">车上乘客</span>
+            <div class="float-desc">被AI武装的使用者：业务方(乘客)、产品经理(导航员)、数据分析(瞭望手)</div>
+          </div>
+
+          <div class="tianma-float" style="bottom:1%;left:5%;" data-role="ops">
+            <span class="float-dot" style="background:#10B981;"></span>
+            <span class="float-name">运维 / 知识经理</span>
+            <span class="float-role">道路养护者</span>
+            <div class="float-desc">修路、立路标、积累路况，让下一次跑得更顺</div>
+          </div>
+
+          <div class="tianma-float" style="bottom:1%;right:3%;" data-role="overseas">
+            <span class="float-dot" style="background:#F59E0B;"></span>
+            <span class="float-name">出海算法</span>
+            <span class="float-role">驿站主人</span>
+            <div class="float-desc">在不同城镇设驿站，把千里马+马车的能力卖给更多人</div>
+          </div>
         </div>
 
         <!-- 点击展开的角色详情面板 -->
@@ -1597,6 +1645,16 @@
           <button class="panel-close" id="panel-close">&times;</button>
           <div class="panel-header" id="panel-header"></div>
           <div class="panel-body" id="panel-body"></div>
+        </div>
+
+        <!-- 图例 -->
+        <div class="tianma-legend">
+          <span><i style="background:#D4AF37;"></i>千里马 = AI能力</span>
+          <span><i style="background:#EC4899;"></i>缰绳 = 算法工程师</span>
+          <span><i style="background:#06B6D4;"></i>马车 = 开发工程师</span>
+          <span><i style="background:#A855F7;"></i>乘客 = 业务方/PM/DA</span>
+          <span><i style="background:#10B981;"></i>路边 = 运维</span>
+          <span><i style="background:#F59E0B;"></i>驿站 = 出海算法</span>
         </div>
       </div>
     </section>
