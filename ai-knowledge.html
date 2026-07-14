@@ -2724,6 +2724,15 @@
       document.querySelectorAll('.mm-tool-btn').forEach(function (b) { b.classList.remove('active'); });
       var canvas = document.getElementById('reader-mindmap-canvas');
       canvas.classList.remove('mode-connect', 'mode-delete');
+      // Clear any leaked text selection to prevent search pollution
+      window.getSelection().removeAllRanges();
+      // Reset search state if it was inadvertently polluted
+      var searchInput = document.getElementById('search-input');
+      if (searchInput.value.trim() !== '' && articles.length > 0 && getFilteredArticles().length === 0) {
+        searchInput.value = '';
+        currentSearch = '';
+        renderArticles();
+      }
     }
 
     /* --- Escape key --- */
