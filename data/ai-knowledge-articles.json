@@ -55,6 +55,11 @@
           "text": " Harness Engineering 是什么？从哪冒出来的？",
           "color": "rgba(0, 255, 0, 0.25)",
           "index": 0
+        },
+        {
+          "text": "Harness Engineering 是什么？从哪冒出来的？",
+          "color": "transparent",
+          "index": 1
         }
       ]
     },
