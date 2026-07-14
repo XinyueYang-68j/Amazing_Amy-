@@ -6,7 +6,11 @@
       "url": "https://github.com/opencclaw/opencclaw",
       "source": "github",
       "layer": "harness",
-      "tags": ["agent", "openclaw", "开源"],
+      "tags": [
+        "agent",
+        "openclaw",
+        "开源"
+      ],
       "summary": "OpenClaw是当前最火的开源AI Agent框架，GitHub 315K+ Stars。让AI从'对话'走向'执行'——直接操作电脑、浏览器、文件。",
       "date": "2026-07-10",
       "read": false,
@@ -18,7 +22,11 @@
       "url": "https://qclaw.qq.com",
       "source": "product",
       "layer": "harness",
-      "tags": ["qclaw", "腾讯", "agent"],
+      "tags": [
+        "qclaw",
+        "腾讯",
+        "agent"
+      ],
       "summary": "腾讯电脑管家团队出品，核心亮点'微信直连'远程操控电脑。5000+ Skills生态，通过工信部首批认证。",
       "date": "2026-07-08",
       "read": false,
@@ -30,7 +38,11 @@
       "url": "https://cloud.tencent.com/developer/article/2648114",
       "source": "twitter",
       "layer": "loop",
-      "tags": ["clawpro", "企业", "管控"],
+      "tags": [
+        "clawpro",
+        "企业",
+        "管控"
+      ],
       "summary": "融合百万级用户验证，百元级启动成本。三级配额管控（企业/部门/个人），四层纵深安全防护。AI Agent从'个人养虾'升级到'企业统一管控中台'。",
       "date": "2026-07-06",
       "read": false,
@@ -42,7 +54,11 @@
       "url": "https://www.anthropic.com/research/building-effective-agents",
       "source": "twitter",
       "layer": "context",
-      "tags": ["anthropic", "context", "agent"],
+      "tags": [
+        "anthropic",
+        "context",
+        "agent"
+      ],
       "summary": "Anthropic官方Agent构建指南。从Prompt Engineering到Context Engineering的演进：关键不是怎么写prompt，而是怎么设计Agent的工作流和上下文管理。",
       "date": "2026-07-05",
       "read": false,
@@ -54,7 +70,11 @@
       "url": "https://openai.com/index/introducing-gpt-4-turbo/",
       "source": "twitter",
       "layer": "architecture",
-      "tags": ["架构", "解耦", "agent"],
+      "tags": [
+        "架构",
+        "解耦",
+        "agent"
+      ],
       "summary": "OpenAI技术演进背后反映的设计哲学：把能力（模型）和场景（应用）分离，让同一套底层能力适配无限多垂直场景。",
       "date": "2026-07-04",
       "read": false,
@@ -66,7 +86,11 @@
       "url": "https://www.chanmama.com",
       "source": "公众号",
       "layer": "harness",
-      "tags": ["蝉龙虾", "电商", "垂直"],
+      "tags": [
+        "蝉龙虾",
+        "电商",
+        "垂直"
+      ],
       "summary": "蝉妈妈基于OpenClaw封装的电商Agent。自动执行抖音/小红书/淘宝数据采集、竞品监控、爆款分析。典型例子：通用Agent框架+垂直场景封装=可订阅AI数字员工。",
       "date": "2026-07-03",
       "read": false,
@@ -78,7 +102,11 @@
       "url": "https://v0.dev",
       "source": "twitter",
       "layer": "loop",
-      "tags": ["vercel", "ai生成", "前端"],
+      "tags": [
+        "vercel",
+        "ai生成",
+        "前端"
+      ],
       "summary": "Vercel推出的AI前端生成工具，用自然语言描述UI即可生成代码。代表了AI Loop在开发工具领域的落地——生成→预览→反馈→迭代。",
       "date": "2026-07-02",
       "read": false,
@@ -90,7 +118,11 @@
       "url": "https://www.maycur.com",
       "source": "公众号",
       "layer": "harness",
-      "tags": ["每刻", "财务", "费控"],
+      "tags": [
+        "每刻",
+        "财务",
+        "费控"
+      ],
       "summary": "4500+企业、500+上市公司验证。AI识票准确率99.8%，人均报销耗时缩短90%。核心：把'财务费控'这个复杂场景结构化，让AI替代80%重复审核工作。",
       "date": "2026-07-01",
       "read": false,
@@ -101,47 +133,37 @@
     "prompt": {
       "id": "prompt",
       "name": "Prompt Engineering",
-      "subtitle": "怎么问AI才能得到好答案",
       "color": "#3B82F6",
       "icon": "💬",
-      "year": "2022-2023",
-      "description": "AI使用的入门阶段。核心技能是'写好prompt'，通过调整输入来优化AI输出。工具包括ChatGPT、Claude等对话式AI。"
+      "description": "AI使用的入门阶段。核心技能是\"写好prompt\"，通过调整输入来优化AI输出。工具包括ChatGPT、Claude等对话式AI。"
     },
     "context": {
       "id": "context",
       "name": "Context Engineering",
-      "subtitle": "给AI什么信息才能让它做对",
       "color": "#10B981",
       "icon": "📚",
-      "year": "2023-2024",
-      "description": "从'怎么问'升级到'给什么上下文'。RAG、知识库、检索增强、长上下文管理成为核心。关键是把领域知识结构化地注入AI的工作环境。"
+      "description": "从\"怎么问\"升级到\"给什么上下文\"。RAG、知识库、检索增强、长上下文管理成为核心。关键是把领域知识结构化地注入AI的工作环境。"
     },
     "harness": {
       "id": "harness",
       "name": "Harness Engineering",
-      "subtitle": "怎么让AI真正动手干活",
       "color": "#F59E0B",
       "icon": "🔧",
-      "year": "2024-2025",
-      "description": "OpenClaw标志性的新阶段。AI从'对话'走向'执行'——操作电脑、浏览器、文件。核心框架（OpenClaw、WorkBuddy）开源，垂直Agent产品爆发。"
+      "description": "OpenClaw标志性的新阶段。AI从\"对话\"走向\"执行\"——操作电脑、浏览器、文件。核心框架开源，垂直Agent产品爆发。"
     },
     "loop": {
       "id": "loop",
       "name": "AI Loop Engineering",
-      "subtitle": "怎么让AI自主迭代、闭环运转",
       "color": "#EC4899",
       "icon": "🔄",
-      "year": "2025-2026",
-      "description": "当前阶段。AI Agent不只是执行任务，而是自主规划→执行→反馈→迭代。企业级管控（ClawPro）、多Agent协作、自动能力跃升成为焦点。"
+      "description": "当前阶段。AI Agent不只是执行任务，而是自主规划→执行→反馈→迭代。企业级管控、多Agent协作、自动能力跃升成为焦点。"
     },
     "architecture": {
       "id": "architecture",
       "name": "架构与抽象能力",
-      "subtitle": "结构与内容的解耦，可迁移能力的搭建",
       "color": "#A855F7",
       "icon": "🏗️",
-      "year": "贯穿始终",
-      "description": "AI时代的决胜因素。每一次可迁移能力的搭建都是向上一层的解耦：把硬编码的知识变成可配置的结构。出海项目的核心交付物就是'行业解题结构'。"
+      "description": "AI时代的决胜因素。每一次可迁移能力的搭建都是向上一层的解耦：把硬编码的知识变成可配置的结构。"
     }
   }
 }
