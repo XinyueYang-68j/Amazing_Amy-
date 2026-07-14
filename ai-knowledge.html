@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI知识库 - Amy Su</title>
+  <link rel="stylesheet" href="./_shared/css/common.css">
+  <style>
+    /* ============================================================
+       ai-knowledge.css — AI知识库页面
+       ============================================================ */
+    :root {
+      --gold: #D4AF37;
+      --gold-light: #E8CC6E;
+      --gold-dim: #A8882B;
+      --bg: #000000;
+      --bg2: #0D0D0D;
+      --bg3: #141414;
+      --bg4: #1A1A1A;
+      --ink: #F5F5F5;
+      --body: #D1D5DB;
+      --muted: #8A8A8A;
+      --rule: #1A1A1A;
+      --blue: #3B82F6;
+      --green: #10B981;
+      --amber: #F59E0B;
+      --pink: #EC4899;
+      --purple: #A855F7;
+      --glass: rgba(255,255,255,0.04);
+      --glass-border: rgba(255,255,255,0.08);
+      --glass-hover: rgba(255,255,255,0.07);
+      --font-body: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--body);
+      background: var(--bg);
+      line-height: 1.8;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- Hero Section ---- */
+    .ak-hero {
+      position: relative;
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 1.5rem 4rem;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 700px 500px at 50% 40%, rgba(212,175,55,0.1) 0%, transparent 70%),
+        radial-gradient(ellipse 300px 300px at 25% 65%, rgba(59,130,246,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 300px 300px at 75% 35%, rgba(168,85,247,0.06) 0%, transparent 60%),
+        var(--bg);
+    }
+
+    .ak-hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
+      background: linear-gradient(to bottom, transparent, var(--bg));
+      pointer-events: none;
+    }
+
+    .ak-hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+      position: relative;
+    }
+
+    .ak-hero .ak-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--ink);
+      font-weight: 600;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .ak-hero .ak-desc {
+      max-width: 640px;
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 2;
+      border-left: 2px solid var(--gold-dim);
+      padding-left: 1.25rem;
+      text-align: left;
+    }
+
+    /* ---- Section Common ---- */
+    .ak-section {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+    }
+
+    .ak-section-title {
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.03em;
+    }
+
+    .ak-section-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+    }
+
+    /* ============================================================
+       Spiral Staircase
+       ============================================================ */
+    .staircase-container {
+      display: flex;
+      gap: 1.5rem;
+      align-items: stretch;
+      min-height: 420px;
+    }
+
+    .staircase-steps {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 6px;
+      position: relative;
+    }
+
+    .staircase-step {
+      position: relative;
+      padding: 1.25rem 1.5rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .staircase-step:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    }
+
+    .staircase-step.step-prompt {
+      margin-left: 0;
+      background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05));
+      border-color: rgba(59,130,246,0.2);
+    }
+
+    .staircase-step.step-context {
+      margin-left: 18%;
+      background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05));
+      border-color: rgba(16,185,129,0.2);
+    }
+
+    .staircase-step.step-harness {
+      margin-left: 36%;
+      background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));
+      border-color: rgba(245,158,11,0.2);
+    }
+
+    .staircase-step.step-loop {
+      margin-left: 54%;
+      background: linear-gradient(135deg, rgba(236,72,153,0.15), rgba(236,72,153,0.05));
+      border-color: rgba(236,72,153,0.2);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .step-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .step-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--ink);
+    }
+
+    .step-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .step-year {
+      opacity: 0.7;
+    }
+
+    .step-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      font-size: 0.75rem;
+      color: var(--body);
+    }
+
+    .step-count-num {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .step-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .staircase-step.active .step-desc {
+      display: block;
+    }
+
+    /* Architecture vertical bar */
+    .arch-bar {
+      width: 200px;
+      min-width: 160px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .arch-bar-line {
+      position: absolute;
+      top: 10%;
+      bottom: 10%;
+      width: 3px;
+      background: linear-gradient(to bottom, transparent, var(--purple), transparent);
+      border-radius: 2px;
+      opacity: 0.6;
+    }
+
+    .arch-bar-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05));
+      border: 1px solid rgba(168,85,247,0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .arch-bar-content:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(168,85,247,0.15);
+    }
+
+    .arch-bar-content .step-icon {
+      font-size: 1.8rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .arch-bar-content .step-name {
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .arch-bar-content .step-year {
+      font-size: 0.78rem;
+      color: var(--purple);
+      opacity: 0.8;
+      margin-bottom: 0.4rem;
+      display: block;
+    }
+
+    .arch-bar-content .step-desc {
+      display: none;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+      text-align: left;
+    }
+
+    .arch-bar-content.active .step-desc {
+      display: block;
+    }
+
+    .arch-bar-content .step-count {
+      margin-top: 0.5rem;
+    }
+
+    /* Connecting dots */
+    .arch-dot {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--purple);
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 0 8px rgba(168,85,247,0.5);
+    }
+
+    .arch-dot-top { top: 10%; }
+    .arch-dot-bottom { bottom: 10%; }
+
+    /* ============================================================
+       Article Collection
+       ============================================================ */
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .filter-group-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-right: 0.3rem;
+      white-space: nowrap;
+    }
+
+    .filter-btn {
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--rule);
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--gold-dim);
+      color: var(--body);
+    }
+
+    .filter-btn.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #000;
+      font-weight: 600;
+    }
+
+    .filter-search {
+      flex: 1;
+      min-width: 180px;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--rule);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .filter-search::placeholder {
+      color: var(--muted);
+      opacity: 0.6;
+    }
+
+    .filter-search:focus {
+      border-color: var(--gold-dim);
+    }
+
+    .btn-add {
+      padding: 0.45rem 1.1rem;
+      border-radius: 999px;
+      border: 1px solid var(--gold);
+      background: transparent;
+      color: var(--gold);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .btn-add:hover {
+      background: var(--gold);
+      color: #000;
+    }
+
+    /* Article Grid */
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* Article Card */
+    .article-card {
+      position: relative;
+      padding: 1.5rem;
+      border-radius: 12px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: cardFadeIn 0.4s ease forwards;
+    }
+
+    .article-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      border-color: rgba(255,255,255,0.12);
+      background: var(--glass-hover);
+    }
+
+    .article-card.is-read {
+      opacity: 0.55;
+    }
+
+    .article-card.is-read:hover {
+      opacity: 0.85;
+    }
+
+    @keyframes cardFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .card-badges {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .badge-source {
+      background: rgba(255,255,255,0.06);
+      color: var(--body);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .badge-source svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+    }
+
+    .badge-layer {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .badge-layer[data-layer="prompt"] { background: rgba(59,130,246,0.25); border: 1px solid rgba(59,130,246,0.3); }
+    .badge-layer[data-layer="context"] { background: rgba(16,185,129,0.25); border: 1px solid rgba(16,185,129,0.3); }
+    .badge-layer[data-layer="harness"] { background: rgba(245,158,11,0.25); border: 1px solid rgba(245,158,11,0.3); color: #FCD34D; }
+    .badge-layer[data-layer="loop"] { background: rgba(236,72,153,0.25); border: 1px solid rgba(236,72,153,0.3); }
+    .badge-layer[data-layer="architecture"] { background: rgba(168,85,247,0.25); border: 1px solid rgba(168,85,247,0.3); }
+
+    .card-read-toggle {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--rule);
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      padding: 0;
+    }
+
+    .card-read-toggle:hover {
+      border-color: var(--gold-dim);
+    }
+
+    .card-read-toggle.read {
+      border-color: var(--green);
+      background: rgba(16,185,129,0.15);
+    }
+
+    .card-read-toggle .icon-check,
+    .card-read-toggle .icon-unread {
+      display: none;
+    }
+
+    .card-read-toggle.read .icon-check {
+      display: block;
+    }
+
+    .card-read-toggle:not(.read) .icon-unread {
+      display: block;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.5;
+      transition: color 0.2s ease;
+    }
+
+    .article-card:hover .card-title {
+      color: var(--gold);
+    }
+
+    .card-summary {
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.7;
+      flex: 1;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .card-date {
+      font-size: 0.75rem;
+      color: var(--muted);
+      opacity: 0.7;
+    }
+
+    .card-tags {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .card-tag {
+      font-size: 0.7rem;
+      padding: 0.12rem 0.55rem;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .articles-empty {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+      grid-column: 1 / -1;
+    }
+
+    .articles-empty .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      opacity: 0.4;
+    }
+
+    /* ============================================================
+       Modal
+       ============================================================ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal {
+      background: var(--bg3);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.show .modal {
+      transform: translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      font-size: 1.2rem;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      background: rgba(255,255,255,0.12);
+      color: var(--ink);
+    }
+
+    .modal h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      font-weight: 500;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--rule);
+      background: rgba(255,255,255,0.03);
+      color: var(--ink);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+      border-color: var(--gold-dim);
+    }
+
+    .form-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8A8A' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+
+    .form-select option {
+      background: var(--bg3);
+      color: var(--ink);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.6;
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    .form-submit {
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 8px;
+      border: none;
+      background: var(--gold);
+      color: #000;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.2s ease;
+      margin-top: 0.5rem;
+    }
+
+    .form-submit:hover {
+      opacity: 0.9;
+    }
+
+    /* ============================================================
+       Toast
+       ============================================================ */
+    .toast-container {
+      position: fixed;
+      top: 80px;
+      right: 1.5rem;
+      z-index: 3000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+
+    .toast {
+      padding: 0.7rem 1.25rem;
+      border-radius: 10px;
+      background: var(--bg3);
+      border: 1px solid var(--glass-border);
+      color: var(--ink);
+      font-size: 0.85rem;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      pointer-events: auto;
+      opacity: 0;
+      transform: translateX(30px);
+      animation: toastIn 0.3s ease forwards;
+      max-width: 320px;
+    }
+
+    .toast.toast-out {
+      animation: toastOut 0.3s ease forwards;
+    }
+
+    @keyframes toastIn {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes toastOut {
+      to {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+    }
+
+    /* ============================================================
+       Responsive
+       ============================================================ */
+    @media (max-width: 768px) {
+      .ak-hero {
+        min-height: 50vh;
+        padding: 5rem 1.25rem 3rem;
+      }
+
+      .ak-hero .ak-desc {
+        border-left: none;
+        padding-left: 0;
+        text-align: center;
+      }
+
+      .staircase-container {
+        flex-direction: column;
+        min-height: auto;
+      }
+
+      .staircase-step.step-prompt,
+      .staircase-step.step-context,
+      .staircase-step.step-harness,
+      .staircase-step.step-loop {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .arch-bar {
+        width: 100%;
+        min-width: 0;
+        flex-direction: row;
+        gap: 1rem;
+      }
+
+      .arch-bar-line {
+        display: none;
+      }
+
+      .arch-bar-content {
+        width: 100%;
+      }
+
+      .arch-dot {
+        display: none;
+      }
+
+      .articles-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-bar {
+        padding: 1rem;
+      }
+
+      .filter-search {
+        min-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card-badges {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .modal {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <input type="checkbox" id="navbar-toggle" class="navbar-toggle">
+    <div class="navbar-inner">
+      <a href="./index.html" class="navbar-logo">Amy Su</a>
+      <label for="navbar-toggle" class="navbar-toggle-label"><span></span></label>
+      <ul class="navbar-links">
+        <li><a href="./index.html">CV</a></li>
+        <li><a href="./radar.html">雷达图</a></li>
+        <li><a href="./growth.html">提高方向</a></li>
+        <li><a href="./cyber-universe.html">赛博宇宙</a></li>
+        <li><a href="./career-ecosystem.html">职业生态</a></li>
+        <li><a href="./career-evolution.html">职业演化</a></li>
+        <li><a href="./ai-knowledge.html" class="active">AI知识库</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ==================== Hero ==================== -->
+    <section class="ak-hero">
+      <h1>AI知识库</h1>
+      <p class="ak-subtitle">AI时代的个人知识管理系统</p>
+      <p class="ak-desc">
+        基于螺旋上升的知识演化框架，将AI领域的学习路径拆解为五个层次：从Prompt Engineering的基础对话能力，到Context Engineering的上下文管理，再到Harness Engineering的执行落地，直至AI Loop Engineering的自主闭环运转，以及贯穿始终的架构与抽象能力。每一层都是对前一层的升维与超越。
+      </p>
+    </section>
+
+    <!-- ==================== Spiral Staircase ==================== -->
+    <section class="ak-section">
+      <h2 class="ak-section-title">知识螺旋阶梯</h2>
+      <p class="ak-section-desc">点击任意层级查看详细描述。每一层代表AI能力的一个维度，从底层到顶层逐步升维。</p>
+
+      <div class="staircase-container">
+        <!-- Steps: rendered top-to-bottom as Layer 4 → Layer 1 -->
+        <div class="staircase-steps" id="staircase-steps">
+          <!-- Layer 4 — top -->
+          <div class="staircase-step step-loop" data-layer="loop" onclick="toggleStepDesc(this)">
+            <div class="step-header">
+              <span class="step-icon">🔄</span>
+              <span class="step-name">AI Loop Engineering</span>
+            </div>
+            <div class="step-meta">
+              <span class="step-year">2025-2026</span>
+              <span class="step-count"><span class="step-count-num" data-count="loop">0</span> 篇</span>
+            </div>
+            <div class="step-desc">当前阶段。AI Agent不只是执行任务，而是自主规划→执行→反馈→迭代。企业级管控、多Agent协作、自动能力跃升成为焦点。</div>
+          </div>
+          <!-- Layer 3 -->
+          <div class="staircase-step step-harness" data-layer="harness" onclick="toggleStepDesc(this)">
+            <div class="step-header">
+              <span class="step-icon">🔧</span>
+              <span class="step-name">Harness Engineering</span>
+            </div>
+            <div class="step-meta">
+              <span class="step-year">2024-2025</span>
+              <span class="step-count"><span class="step-count-num" data-count="harness">0</span> 篇</span>
+            </div>
+            <div class="step-desc">AI从"对话"走向"执行"——操作电脑、浏览器、文件。核心框架开源，垂直Agent产品爆发。</div>
+          </div>
+          <!-- Layer 2 -->
+          <div class="staircase-step step-context" data-layer="context" onclick="toggleStepDesc(this)">
+            <div class="step-header">
+              <span class="step-icon">📚</span>
+              <span class="step-name">Context Engineering</span>
+            </div>
+            <div class="step-meta">
+              <span class="step-year">2023-2024</span>
+              <span class="step-count"><span class="step-count-num" data-count="context">0</span> 篇</span>
+            </div>
+            <div class="step-desc">从"怎么问"升级到"给什么上下文"。RAG、知识库、检索增强、长上下文管理成为核心。</div>
+          </div>
+          <!-- Layer 1 — bottom -->
+          <div class="staircase-step step-prompt" data-layer="prompt" onclick="toggleStepDesc(this)">
+            <div class="step-header">
+              <span class="step-icon">💬</span>
+              <span class="step-name">Prompt Engineering</span>
+            </div>
+            <div class="step-meta">
+              <span class="step-year">2022-2023</span>
+              <span class="step-count"><span class="step-count-num" data-count="prompt">0</span> 篇</span>
+            </div>
+            <div class="step-desc">AI使用的入门阶段。核心技能是"写好prompt"，通过调整输入来优化AI输出。</div>
+          </div>
+        </div>
+
+        <!-- Architecture bar -->
+        <div class="arch-bar">
+          <div class="arch-bar-line"></div>
+          <div class="arch-dot arch-dot-top"></div>
+          <div class="arch-dot arch-dot-bottom"></div>
+          <div class="arch-bar-content" data-layer="architecture" onclick="toggleStepDesc(this)">
+            <span class="step-icon">🏗️</span>
+            <span class="step-name">架构与抽象能力</span>
+            <span class="step-year">贯穿始终</span>
+            <div class="step-desc">AI时代的决胜因素。每一次可迁移能力的搭建都是向上一层的解耦：把硬编码的知识变成可配置的结构。</div>
+            <span class="step-count"><span class="step-count-num" data-count="architecture">0</span> 篇</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== Article Collection ==================== -->
+    <section class="ak-section">
+      <h2 class="ak-section-title">文章收藏</h2>
+      <p class="ak-section-desc">收集与整理AI领域的优质内容，按知识层级分类管理。支持筛选、搜索与阅读状态追踪。</p>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <span class="filter-group-label">层级</span>
+          <button class="filter-btn active" data-filter="layer" data-value="all">全部</button>
+          <button class="filter-btn" data-filter="layer" data-value="prompt">💬 Prompt</button>
+          <button class="filter-btn" data-filter="layer" data-value="context">📚 Context</button>
+          <button class="filter-btn" data-filter="layer" data-value="harness">🔧 Harness</button>
+          <button class="filter-btn" data-filter="layer" data-value="loop">🔄 Loop</button>
+          <button class="filter-btn" data-filter="layer" data-value="architecture">🏗️ 架构</button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-group-label">来源</span>
+          <button class="filter-btn active" data-filter="source" data-value="all">全部</button>
+          <button class="filter-btn" data-filter="source" data-value="twitter">Twitter</button>
+          <button class="filter-btn" data-filter="source" data-value="github">GitHub</button>
+          <button class="filter-btn" data-filter="source" data-value="公众号">公众号</button>
+        </div>
+        <input type="text" class="filter-search" id="search-input" placeholder="搜索标题、标签或摘要...">
+        <button class="btn-add" id="btn-add-article">+ 添加文章</button>
+      </div>
+
+      <!-- Articles Grid -->
+      <div class="articles-grid" id="articles-grid">
+        <!-- Articles rendered here by JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== Add Article Modal ==================== -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <button class="modal-close" id="modal-close">&times;</button>
+      <h3>添加文章</h3>
+      <form id="add-article-form" onsubmit="return false;">
+        <div class="form-group">
+          <label class="form-label">文章链接 *</label>
+          <input type="url" class="form-input" id="form-url" placeholder="https://..." required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">文章标题 *</label>
+          <input type="text" class="form-input" id="form-title" placeholder="输入文章标题" required>
+        </div>
+        <div style="display:flex; gap:1rem;">
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">所属层级</label>
+            <select class="form-select" id="form-layer">
+              <option value="prompt">💬 Prompt Engineering</option>
+              <option value="context">📚 Context Engineering</option>
+              <option value="harness" selected>🔧 Harness Engineering</option>
+              <option value="loop">🔄 AI Loop Engineering</option>
+              <option value="architecture">🏗️ 架构与抽象能力</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">来源</label>
+            <select class="form-select" id="form-source">
+              <option value="twitter">Twitter</option>
+              <option value="github">GitHub</option>
+              <option value="公众号">公众号</option>
+              <option value="product">产品</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">标签（逗号分隔）</label>
+          <input type="text" class="form-input" id="form-tags" placeholder="agent, 开源, RAG">
+        </div>
+        <div class="form-group">
+          <label class="form-label">摘要</label>
+          <textarea class="form-textarea" id="form-summary" placeholder="简要描述文章核心内容..."></textarea>
+        </div>
+        <button type="submit" class="form-submit" id="form-submit">添加到知识库</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== Toast Container ==================== -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- ==================== Scripts ==================== -->
+  <script src="./_shared/js/github-api.js?v=8"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    /* ---------- State ---------- */
+    var articles = [];
+    var currentFilterLayer = 'all';
+    var currentFilterSource = 'all';
+    var currentSearch = '';
+
+    var DATA_PATH = './data/ai-knowledge-articles.json';
+
+    /* ---------- Layer config (mirrors JSON) ---------- */
+    var LAYER_MAP = {
+      prompt:      { name: 'Prompt Engineering',      color: '#3B82F6', icon: '💬' },
+      context:     { name: 'Context Engineering',     color: '#10B981', icon: '📚' },
+      harness:     { name: 'Harness Engineering',     color: '#F59E0B', icon: '🔧' },
+      loop:        { name: 'AI Loop Engineering',     color: '#EC4899', icon: '🔄' },
+      architecture:{ name: '架构与抽象能力',            color: '#A855F7', icon: '🏗️' }
+    };
+
+    /* ---------- SVG Icons for sources ---------- */
+    var SOURCE_ICONS = {
+      twitter: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
+      github: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.161 22 16.416 22 12c0-5.523-4.477-10-10-10z"/></svg>',
+      '公众号': '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm3.2 4.127c-3.67 0-7.173 2.58-7.173 5.98 0 3.4 3.503 5.979 7.174 5.979.752 0 1.473-.118 2.153-.307a.66.66 0 0 1 .548.075l1.453.85a.249.249 0 0 0 .128.042.226.226 0 0 0 .222-.226c0-.055-.022-.11-.037-.163l-.298-1.132a.452.452 0 0 1 .163-.509C21.833 19.748 24 17.55 24 15.098c0-3.4-3.531-5.98-7.202-5.98zm-2.536 3.507c.491 0 .889.405.889.903a.896.896 0 0 1-.889.903.896.896 0 0 1-.889-.903c0-.498.398-.903.89-.903zm5.072 0c.491 0 .889.405.889.903a.896.896 0 0 1-.889.903.896.896 0 0 1-.889-.903c0-.498.398-.903.89-.903z"/></svg>',
+      product: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M12 8v8M8 12h8"/></svg>'
+    };
+
+    var SOURCE_LABELS = {
+      twitter: 'Twitter',
+      github: 'GitHub',
+      '公众号': '公众号',
+      product: '产品'
+    };
+
+    /* ============================================================
+       Data Loading
+       ============================================================ */
+    function loadData() {
+      fetch(DATA_PATH)
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          articles = data.articles || [];
+          renderArticles();
+          renderLayerCounts();
+        })
+        .catch(function (err) {
+          console.error('Failed to load data:', err);
+          renderArticles();
+        });
+
+      // If GitHub token available, try loading latest version from GitHub
+      if (window.GitHubAPI && GitHubAPI.hasToken()) {
+        GitHubAPI.readFile('data/ai-knowledge-articles.json')
+          .then(function (result) {
+            if (result.content && result.content.articles) {
+              articles = result.content.articles;
+              renderArticles();
+              renderLayerCounts();
+              showToast('已从GitHub加载最新数据');
+            }
+          })
+          .catch(function () {
+            // Silently fall back to local data
+          });
+      }
+    }
+
+    /* ============================================================
+       Render Layer Counts
+       ============================================================ */
+    function renderLayerCounts() {
+      var counts = { prompt: 0, context: 0, harness: 0, loop: 0, architecture: 0 };
+      articles.forEach(function (a) {
+        if (counts.hasOwnProperty(a.layer)) {
+          counts[a.layer]++;
+        }
+      });
+      document.querySelectorAll('.step-count-num').forEach(function (el) {
+        var layer = el.getAttribute('data-count');
+        if (counts.hasOwnProperty(layer)) {
+          el.textContent = counts[layer];
+        }
+      });
+    }
+
+    /* ============================================================
+       Render Articles
+       ============================================================ */
+    function renderArticles() {
+      var grid = document.getElementById('articles-grid');
+      var filtered = getFilteredArticles();
+
+      if (filtered.length === 0) {
+        grid.innerHTML =
+          '<div class="articles-empty">' +
+            '<div class="empty-icon">📭</div>' +
+            '<div>暂无匹配的文章</div>' +
+          '</div>';
+        return;
+      }
+
+      var html = '';
+      filtered.forEach(function (article, index) {
+        var layerInfo = LAYER_MAP[article.layer] || LAYER_MAP.harness;
+        var sourceIcon = SOURCE_ICONS[article.source] || SOURCE_ICONS.twitter;
+        var sourceLabel = SOURCE_LABELS[article.source] || article.source;
+        var readClass = article.read ? ' is-read' : '';
+        var readToggleClass = article.read ? ' read' : '';
+        var tagsHtml = '';
+        if (article.tags && article.tags.length) {
+          tagsHtml = article.tags.map(function (t) {
+            return '<span class="card-tag">' + escapeHtml(t) + '</span>';
+          }).join('');
+        }
+
+        html +=
+          '<div class="article-card' + readClass + '" data-id="' + article.id + '" style="animation-delay:' + (index * 0.05) + 's" onclick="openArticle(\'' + escapeAttr(article.url) + '\')">' +
+            '<div class="card-top">' +
+              '<div class="card-badges">' +
+                '<span class="badge badge-source">' + sourceIcon + ' ' + escapeHtml(sourceLabel) + '</span>' +
+                '<span class="badge badge-layer" data-layer="' + article.layer + '">' + layerInfo.icon + ' ' + escapeHtml(layerInfo.name) + '</span>' +
+              '</div>' +
+              '<button class="card-read-toggle' + readToggleClass + '" onclick="event.stopPropagation(); toggleRead(\'' + article.id + '\')" title="' + (article.read ? '标记为未阅' : '标记为已阅') + '">' +
+                '<svg class="icon-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+                '<svg class="icon-unread" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="12" cy="12" r="8"/></svg>' +
+              '</button>' +
+            '</div>' +
+            '<div class="card-title">' + escapeHtml(article.title) + '</div>' +
+            '<div class="card-summary">' + escapeHtml(article.summary || '') + '</div>' +
+            '<div class="card-footer">' +
+              '<span class="card-date">' + escapeHtml(article.date || '') + '</span>' +
+              '<div class="card-tags">' + tagsHtml + '</div>' +
+            '</div>' +
+          '</div>';
+      });
+
+      grid.innerHTML = html;
+    }
+
+    /* ============================================================
+       Filtering
+       ============================================================ */
+    function getFilteredArticles() {
+      return articles.filter(function (a) {
+        if (currentFilterLayer !== 'all' && a.layer !== currentFilterLayer) return false;
+        if (currentFilterSource !== 'all' && a.source !== currentFilterSource) return false;
+        if (currentSearch) {
+          var q = currentSearch.toLowerCase();
+          var haystack = [
+            a.title,
+            a.summary,
+            a.url
+          ].concat(a.tags || []).join(' ').toLowerCase();
+          if (haystack.indexOf(q) === -1) return false;
+        }
+        return true;
+      });
+    }
+
+    /* ============================================================
+       Read Toggle
+       ============================================================ */
+    window.toggleRead = function (id) {
+      var article = articles.find(function (a) { return a.id === id; });
+      if (!article) return;
+      article.read = !article.read;
+      renderArticles();
+      renderLayerCounts();
+      saveToGitHub();
+      showToast(article.read ? '已标记为已阅' : '已标记为未阅');
+    };
+
+    /* ============================================================
+       Open Article
+       ============================================================ */
+    window.openArticle = function (url) {
+      if (url) window.open(url, '_blank', 'noopener,noreferrer');
+    };
+
+    /* ============================================================
+       Toggle Step Description
+       ============================================================ */
+    window.toggleStepDesc = function (el) {
+      // Toggle on clicked element
+      el.classList.toggle('active');
+    };
+
+    /* ============================================================
+       Staircase Click → Filter
+       ============================================================ */
+    document.querySelectorAll('.staircase-step, .arch-bar-content').forEach(function (el) {
+      el.addEventListener('dblclick', function () {
+        var layer = el.getAttribute('data-layer');
+        if (!layer) return;
+        // Set filter to this layer
+        setLayerFilter(layer);
+        // Scroll to articles
+        document.getElementById('articles-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    function setLayerFilter(layer) {
+      currentFilterLayer = layer;
+      document.querySelectorAll('[data-filter="layer"]').forEach(function (btn) {
+        btn.classList.toggle('active', btn.getAttribute('data-value') === layer);
+      });
+      renderArticles();
+    }
+
+    /* ============================================================
+       Filter Buttons
+       ============================================================ */
+    document.querySelectorAll('.filter-btn[data-filter="layer"]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        currentFilterLayer = this.getAttribute('data-value');
+        document.querySelectorAll('[data-filter="layer"]').forEach(function (b) {
+          b.classList.remove('active');
+        });
+        this.classList.add('active');
+        renderArticles();
+      });
+    });
+
+    document.querySelectorAll('.filter-btn[data-filter="source"]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        currentFilterSource = this.getAttribute('data-value');
+        document.querySelectorAll('[data-filter="source"]').forEach(function (b) {
+          b.classList.remove('active');
+        });
+        this.classList.add('active');
+        renderArticles();
+      });
+    });
+
+    /* ============================================================
+       Search
+       ============================================================ */
+    var searchTimer = null;
+    document.getElementById('search-input').addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      var self = this;
+      searchTimer = setTimeout(function () {
+        currentSearch = self.value.trim();
+        renderArticles();
+      }, 200);
+    });
+
+    /* ============================================================
+       Modal
+       ============================================================ */
+    var overlay = document.getElementById('modal-overlay');
+
+    document.getElementById('btn-add-article').addEventListener('click', function () {
+      overlay.classList.add('show');
+    });
+
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) closeModal();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && overlay.classList.contains('show')) closeModal();
+    });
+
+    function closeModal() {
+      overlay.classList.remove('show');
+    }
+
+    /* ============================================================
+       Add Article
+       ============================================================ */
+    document.getElementById('form-submit').addEventListener('click', function () {
+      var url = document.getElementById('form-url').value.trim();
+      var title = document.getElementById('form-title').value.trim();
+      var layer = document.getElementById('form-layer').value;
+      var source = document.getElementById('form-source').value;
+      var tagsStr = document.getElementById('form-tags').value.trim();
+      var summary = document.getElementById('form-summary').value.trim();
+
+      if (!url || !title) {
+        showToast('请填写文章链接和标题');
+        return;
+      }
+
+      var tags = tagsStr ? tagsStr.split(/[,，]/).map(function (t) { return t.trim(); }).filter(Boolean) : [];
+      var today = new Date();
+      var dateStr = today.getFullYear() + '-' +
+        String(today.getMonth() + 1).padStart(2, '0') + '-' +
+        String(today.getDate()).padStart(2, '0');
+
+      var newArticle = {
+        id: 'art-' + Date.now(),
+        title: title,
+        url: url,
+        source: source,
+        layer: layer,
+        tags: tags,
+        summary: summary,
+        date: dateStr,
+        read: false,
+        highlights: []
+      };
+
+      articles.unshift(newArticle);
+      renderArticles();
+      renderLayerCounts();
+      saveToGitHub();
+      closeModal();
+
+      // Reset form
+      document.getElementById('add-article-form').reset();
+      document.getElementById('form-layer').value = 'harness';
+
+      showToast('文章已添加');
+    });
+
+    /* ============================================================
+       Save to GitHub
+       ============================================================ */
+    function saveToGitHub() {
+      var data = { articles: articles, layers: null };
+
+      // Preserve layer definitions from original data if available
+      // We construct a minimal layers object based on our LAYER_MAP
+      data.layers = {};
+      var layerDescriptions = {
+        prompt: 'AI使用的入门阶段。核心技能是"写好prompt"，通过调整输入来优化AI输出。工具包括ChatGPT、Claude等对话式AI。',
+        context: '从"怎么问"升级到"给什么上下文"。RAG、知识库、检索增强、长上下文管理成为核心。关键是把领域知识结构化地注入AI的工作环境。',
+        harness: 'OpenClaw标志性的新阶段。AI从"对话"走向"执行"——操作电脑、浏览器、文件。核心框架开源，垂直Agent产品爆发。',
+        loop: '当前阶段。AI Agent不只是执行任务，而是自主规划→执行→反馈→迭代。企业级管控、多Agent协作、自动能力跃升成为焦点。',
+        architecture: 'AI时代的决胜因素。每一次可迁移能力的搭建都是向上一层的解耦：把硬编码的知识变成可配置的结构。'
+      };
+
+      Object.keys(LAYER_MAP).forEach(function (key) {
+        data.layers[key] = {
+          id: key,
+          name: LAYER_MAP[key].name,
+          color: LAYER_MAP[key].color,
+          icon: LAYER_MAP[key].icon,
+          description: layerDescriptions[key] || ''
+        };
+      });
+
+      if (!window.GitHubAPI || !GitHubAPI.hasToken()) {
+        // Save to localStorage as fallback
+        try {
+          localStorage.setItem('ai-knowledge-articles-local', JSON.stringify(data));
+        } catch (e) { /* ignore */ }
+        showToast('未登录GitHub，数据仅保存到本地');
+        return;
+      }
+
+      GitHubAPI.writeFile('data/ai-knowledge-articles.json', data, null, 'update articles')
+        .then(function () {
+          showToast('已同步到GitHub');
+        })
+        .catch(function () {
+          // Fallback to localStorage
+          try {
+            localStorage.setItem('ai-knowledge-articles-local', JSON.stringify(data));
+          } catch (e) { /* ignore */ }
+          showToast('GitHub同步失败，已保存到本地');
+        });
+    }
+
+    /* ============================================================
+       Toast Notification
+       ============================================================ */
+    window.showToast = function (msg) {
+      var container = document.getElementById('toast-container');
+      var toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      container.appendChild(toast);
+
+      setTimeout(function () {
+        toast.classList.add('toast-out');
+        setTimeout(function () {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+      }, 2500);
+    };
+
+    /* ============================================================
+       Helpers
+       ============================================================ */
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function escapeAttr(str) {
+      if (!str) return '';
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    /* ============================================================
+       Init
+       ============================================================ */
+    loadData();
+
+    // Try loading from localStorage fallback if fetch fails
+    setTimeout(function () {
+      if (articles.length === 0) {
+        try {
+          var cached = localStorage.getItem('ai-knowledge-articles-local');
+          if (cached) {
+            var parsed = JSON.parse(cached);
+            if (parsed.articles && parsed.articles.length) {
+              articles = parsed.articles;
+              renderArticles();
+              renderLayerCounts();
+              showToast('已从本地缓存加载数据');
+            }
+          }
+        } catch (e) { /* ignore */ }
+      }
+    }, 1500);
+
+  })();
+  </script>
+</body>
+</html>
