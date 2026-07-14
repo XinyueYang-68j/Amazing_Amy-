@@ -2789,8 +2789,12 @@
         });
       }
 
-      // Init mindmap
-      initMindmap();
+      // Init mindmap — delay to ensure overlay CSS transition completes and canvas has real dimensions
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          initMindmap();
+        });
+      });
     }
 
     window.openReader = openReader;
