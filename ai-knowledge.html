@@ -1994,6 +1994,7 @@
             <button class="hl-color" data-color="rgba(100,149,237,0.25)" style="background:#6495ED;" title="蓝色高亮"></button>
             <button class="hl-color" data-color="rgba(255,105,180,0.25)" style="background:#FF69B4;" title="粉色高亮"></button>
             <button class="hl-color" data-color="rgba(255,165,0,0.25)" style="background:#FFA500;" title="橙色高亮"></button>
+            <button class="hl-color hl-color-none" data-color="transparent" style="background:transparent; border:1px dashed rgba(255,255,255,0.3);" title="无色标记（仅标记不显色）">A</button>
             <button class="hl-clear-btn" id="hl-clear-btn" title="清除全部高亮">✕ 清除</button>
           </div>
         </div>
@@ -2813,12 +2814,14 @@
         });
       }
 
-      // Init mindmap — delay to ensure overlay CSS transition completes and canvas has real dimensions
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
+      // Init mindmap — use setTimeout(200) + ResizeObserver fallback
+      // 200ms ensures display:flex layout is fully computed
+      mindmapInitialized = false;
+      setTimeout(function () {
+        if (!mindmapInitialized) {
           initMindmap();
-        });
-      });
+        }
+      }, 200);
     }
 
     window.openReader = openReader;
@@ -2875,10 +2878,16 @@
           }
           try {
             var mark = document.createElement('mark');
-            mark.style.background = color;
-            mark.style.padding = '1px 2px';
-            mark.style.borderRadius = '3px';
             mark.classList.add('user-highlight');
+            if (color === 'transparent') {
+              mark.style.background = 'transparent';
+              mark.style.borderBottom = '1px solid rgba(255,255,255,0.35)';
+              mark.style.padding = '0 1px';
+            } else {
+              mark.style.background = color;
+              mark.style.padding = '1px 2px';
+              mark.style.borderRadius = '3px';
+            }
             range.surroundContents(mark);
           } catch (e) {
             // surroundContents can fail on cross-element selections; ignore
@@ -2988,10 +2997,16 @@
               range.setStart(node, idx);
               range.setEnd(node, idx + h.text.length);
               var mark = document.createElement('mark');
-              mark.style.background = h.color;
-              mark.style.padding = '1px 2px';
-              mark.style.borderRadius = '3px';
               mark.classList.add('user-highlight');
+              if (h.color === 'transparent') {
+                mark.style.background = 'transparent';
+                mark.style.borderBottom = '1px solid rgba(255,255,255,0.35)';
+                mark.style.padding = '0 1px';
+              } else {
+                mark.style.background = h.color;
+                mark.style.padding = '1px 2px';
+                mark.style.borderRadius = '3px';
+              }
               range.surroundContents(mark);
               restored++;
               break;
@@ -3071,19 +3086,37 @@
     });
 
     /* --- Canvas-based mindmap --- */
-    function initMindmap() {
+    var mindmapInitialized = false;
+    var mindmapPendingResize = false;
+
+    function initMindmap(forceWidth, forceHeight) {
       var canvas = document.getElementById('reader-mindmap-canvas');
       var container = canvas.parentElement;
       var headerH = container.querySelector('.reader-panel-header') ? container.querySelector('.reader-panel-header').offsetHeight : 44;
 
-      // Safety: if container has no dimensions yet, retry after a short delay
-      if (container.clientWidth < 10 || container.clientHeight < 10) {
-        setTimeout(initMindmap, 100);
+      var w = forceWidth || container.clientWidth;
+      var h = forceHeight || (container.clientHeight - headerH);
+
+      // Safety: if still no dimensions, use ResizeObserver as fallback
+      if (w < 10 || h < 10) {
+        if (!mindmapPendingResize) {
+          mindmapPendingResize = true;
+          var observer = new ResizeObserver(function (entries) {
+            var entry = entries[0];
+            if (entry && entry.contentRect.width > 10 && entry.contentRect.height > 10) {
+              observer.disconnect();
+              mindmapPendingResize = false;
+              initMindmap(entry.contentRect.width, entry.contentRect.height - headerH);
+            }
+          });
+          observer.observe(container);
+        }
         return;
       }
 
-      canvas.width = container.clientWidth;
-      canvas.height = container.clientHeight - headerH;
+      canvas.width = w;
+      canvas.height = h;
+      mindmapInitialized = true;
 
       var article = getCurrentArticle();
       var centerLabel = article ? (article.title.length > 15 ? article.title.substring(0, 15) + '...' : article.title) : '中心';
