@@ -1538,6 +1538,39 @@
       height: 14px;
     }
 
+    .card-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .card-action-btn:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--ink);
+    }
+    .card-action-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+    .card-like-btn.liked {
+      color: #EC4899;
+    }
+    .card-like-btn.liked svg {
+      fill: currentColor;
+    }
+    .card-delete-btn:hover {
+      color: #E8463A;
+      background: rgba(232,70,58,0.1);
+    }
+
     .card-content-badge {
       font-size: 0.6rem;
       padding: 0.1rem 0.4rem;
@@ -2131,6 +2164,12 @@
                 ? '<span class="card-content-badge">可本地阅读</span>'
                 : '<span class="card-content-badge card-content-remote">需跳转</span>') +
             '</div>' +
+            '<button class="card-action-btn card-like-btn' + (article.liked ? ' liked' : '') + '" data-id="' + article.id + '" onclick="event.stopPropagation(); toggleLike(\'' + article.id + '\')" title="点赞">' +
+              '<svg viewBox="0 0 24 24" fill="' + (article.liked ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+            '</button>' +
+            '<button class="card-action-btn card-delete-btn" data-id="' + article.id + '" onclick="event.stopPropagation(); deleteArticle(\'' + article.id + '\')" title="删除">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+            '</button>' +
             '<button class="card-external-link" onclick="event.stopPropagation(); openArticle(\'' + escapeAttr(article.url) + '\')" title="在新标签页中打开">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
             '</button>' +
@@ -2256,6 +2295,27 @@
     function closeModal() {
       overlay.classList.remove('show');
     }
+
+    /* ============================================================
+       Like & Delete Actions
+       ============================================================ */
+    window.toggleLike = function(articleId) {
+      var article = articles.find(function(a) { return a.id === articleId; });
+      if (!article) return;
+      article.liked = !article.liked;
+      renderArticles();
+      saveToGitHub();
+      showToast(article.liked ? '已点赞 ❤️' : '已取消点赞');
+    };
+
+    window.deleteArticle = function(articleId) {
+      if (!confirm('确定要删除这篇文章吗？')) return;
+      articles = articles.filter(function(a) { return a.id !== articleId; });
+      renderArticles();
+      renderLayerCounts();
+      saveToGitHub();
+      showToast('文章已删除');
+    };
 
     /* ============================================================
        GitHub Token Login
