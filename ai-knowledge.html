@@ -1846,6 +1846,21 @@
         </div>
         <input type="text" class="filter-search" id="search-input" placeholder="搜索标题、标签或摘要...">
         <button class="btn-add" id="btn-add-article">+ 添加文章</button>
+        <button class="btn-add" id="btn-github-login" style="border-color: rgba(255,255,255,0.15); font-size:0.72rem; padding: 0.4rem 0.8rem;">🔗 GitHub同步</button>
+      </div>
+
+      <!-- GitHub Token Login Bar (hidden by default) -->
+      <div class="github-login-bar" id="github-login-bar" style="display:none; margin-bottom:1rem; padding:0.8rem 1.2rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:10px;">
+        <div style="font-size:0.78rem; color:var(--muted); margin-bottom:0.5rem;">输入 GitHub Personal Access Token 以启用数据云端同步</div>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <input type="password" class="form-input" id="gh-token-input" placeholder="ghp_xxxxxxxx" style="flex:1; font-size:0.8rem; padding:0.4rem 0.8rem;">
+          <button class="btn-add" id="btn-github-save-token" style="font-size:0.75rem; padding:0.4rem 0.8rem;">保存Token</button>
+          <button class="btn-add" id="btn-github-dismiss" style="font-size:0.75rem; padding:0.4rem 0.8rem; border-color:rgba(255,255,255,0.1);">关闭</button>
+        </div>
+        <div style="font-size:0.68rem; color:var(--muted); margin-top:0.4rem; opacity:0.6;">
+          Token 仅存储在浏览器本地，不会上传到任何服务器。
+          <a href="https://github.com/settings/tokens/new?scopes=repo&description=AI%20Knowledge%20Base" target="_blank" rel="noopener" style="color:var(--gold);">点击创建 Token →</a>
+        </div>
       </div>
 
       <!-- Articles Grid -->
@@ -2243,6 +2258,51 @@
     }
 
     /* ============================================================
+       GitHub Token Login
+       ============================================================ */
+    var ghLoginBar = document.getElementById('github-login-bar');
+    var ghLoginBtn = document.getElementById('btn-github-login');
+
+    // Update button text based on token status
+    function updateGhLoginBtn() {
+      if (window.GitHubAPI && GitHubAPI.hasToken()) {
+        ghLoginBtn.textContent = '✅ GitHub已连接';
+        ghLoginBtn.style.borderColor = 'rgba(16,185,129,0.3)';
+      } else {
+        ghLoginBtn.textContent = '🔗 GitHub同步';
+        ghLoginBtn.style.borderColor = 'rgba(255,255,255,0.15)';
+      }
+    }
+    updateGhLoginBtn();
+
+    ghLoginBtn.addEventListener('click', function () {
+      if (ghLoginBar.style.display === 'none') {
+        ghLoginBar.style.display = 'block';
+        document.getElementById('gh-token-input').value = '';
+      } else {
+        ghLoginBar.style.display = 'none';
+      }
+    });
+
+    document.getElementById('btn-github-dismiss').addEventListener('click', function () {
+      ghLoginBar.style.display = 'none';
+    });
+
+    document.getElementById('btn-github-save-token').addEventListener('click', function () {
+      var token = document.getElementById('gh-token-input').value.trim();
+      if (!token) {
+        showToast('请输入GitHub Token');
+        return;
+      }
+      GitHubAPI.setToken(token);
+      updateGhLoginBtn();
+      ghLoginBar.style.display = 'none';
+      showToast('GitHub Token已保存，数据将自动同步');
+      // Try syncing immediately
+      saveToGitHub();
+    });
+
+    /* ============================================================
        Add Article
        ============================================================ */
     document.getElementById('form-submit').addEventListener('click', function () {
@@ -2401,6 +2461,115 @@
     }
 
     /* ============================================================
+       Content Fetching — CORS proxy + HTML parsing
+       ============================================================ */
+    var CORS_PROXIES = [
+      'https://api.allorigins.win/raw?url=',
+      'https://corsproxy.io/?',
+      'https://api.codetabs.com/v1/proxy?quest='
+    ];
+
+    /**
+     * Fetch article HTML via CORS proxy, extract main content
+     * Returns a Promise that resolves to { html, title } or null
+     */
+    function fetchArticleContent(url) {
+      var fetchAttempt = function (proxyUrl) {
+        return fetch(proxyUrl + encodeURIComponent(url))
+          .then(function (res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.text();
+          });
+      };
+
+      // Try proxies in sequence
+      var chain = Promise.reject(new Error('No proxy'));
+      CORS_PROXIES.forEach(function (proxy) {
+        chain = chain.catch(function () {
+          return fetchAttempt(proxy);
+        });
+      });
+
+      return chain.then(function (rawHtml) {
+        return extractArticleHtml(rawHtml, url);
+      }).catch(function (err) {
+        console.warn('Content fetch failed for', url, err);
+        return null;
+      });
+    }
+
+    /**
+     * Extract main article content from raw HTML
+     * Tries <article>, [role="main"], main, then body
+     */
+    function extractArticleHtml(rawHtml, sourceUrl) {
+      try {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(rawHtml, 'text/html');
+
+        // Remove noise elements
+        var noiseSelectors = ['script', 'style', 'noscript', 'nav', 'footer',
+          '[role="navigation"]', '[role="banner"]', '[role="contentinfo"]',
+          '[aria-label="menu"]', '[aria-label="sidebar"]', '[aria-label="navigation"]',
+          '.sidebar', '.ad', '.advertisement', '.cookie-banner', '.popup',
+          '[class*="sidebar"]', '[class*="nav-"]', '[class*="header-"]',
+          '[class*="footer"]', '[id*="sidebar"]', '[id*="nav-"]', '[id*="footer"]',
+          '[class*="comment"]', '[class*="social"]', '[class*="share"]',
+          '[class*="related"]', '[class*="recommend"]'];
+        noiseSelectors.forEach(function (sel) {
+          try {
+            doc.querySelectorAll(sel).forEach(function (el) { el.remove(); });
+          } catch (e) { /* invalid selector */ }
+        });
+
+        // Find main content area
+        var contentEl =
+          doc.querySelector('article') ||
+          doc.querySelector('[role="main"]') ||
+          doc.querySelector('main') ||
+          doc.querySelector('.post-content') ||
+          doc.querySelector('.article-content') ||
+          doc.querySelector('.entry-content') ||
+          doc.querySelector('.content') ||
+          doc.querySelector('#content') ||
+          doc.body;
+
+        if (!contentEl) return null;
+
+        // Fix relative URLs to absolute
+        var base = new URL(sourceUrl);
+        contentEl.querySelectorAll('a[href]').forEach(function (a) {
+          try {
+            var href = a.getAttribute('href');
+            if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('javascript:')) {
+              a.href = new URL(href, base).href;
+            }
+            a.setAttribute('target', '_blank');
+            a.setAttribute('rel', 'noopener noreferrer');
+          } catch (e) { /* ignore bad URLs */ }
+        });
+
+        contentEl.querySelectorAll('img[src]').forEach(function (img) {
+          try {
+            var src = img.getAttribute('src');
+            if (src && !src.startsWith('data:') && !src.startsWith('http')) {
+              img.src = new URL(src, base).href;
+            }
+          } catch (e) { /* ignore */ }
+        });
+
+        var html = contentEl.innerHTML;
+        var title = doc.querySelector('title');
+        title = title ? title.textContent.trim() : '';
+
+        return { html: html, title: title };
+      } catch (e) {
+        console.warn('HTML parse error:', e);
+        return null;
+      }
+    }
+
+    /* ============================================================
        Dual-Screen Reading Mode
        ============================================================ */
     function getCurrentArticle() {
@@ -2442,7 +2611,7 @@
           '<div class="reader-content-source-hint">已加载本地缓存内容 · 可直接阅读和高亮</div>' +
         '</div>';
       } else {
-        // 无本地内容 → 显示摘要 + 提示跳转
+        // 无本地内容 → 先显示摘要，同时后台自动抓取
         bodyHtml =
           '<div class="reader-article-summary">' +
             '<div class="reader-article-summary-label">摘要</div>' +
@@ -2451,11 +2620,11 @@
           '<div class="reader-article-tags">' +
             (article.tags || []).map(function (t) { return '<span class="reader-tag">' + escapeHtml(t) + '</span>'; }).join('') +
           '</div>' +
-          '<a class="reader-external-btn reader-external-btn-prominent" href="' + escapeAttr(article.url) + '" target="_blank" rel="noopener">' +
+          '<div class="reader-content-source-hint" id="reader-fetch-status" style="opacity:1; font-size:0.78rem;">⏳ 正在自动加载文章内容...</div>' +
+          '<a class="reader-external-btn" href="' + escapeAttr(article.url) + '" target="_blank" rel="noopener">' +
             '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
-            ' 此文章需要在外部打开阅读 →' +
-          '</a>' +
-          '<div class="reader-content-source-hint">该网站暂不支持本地预览，将在新标签页打开</div>';
+            ' 或在新标签页打开原文' +
+          '</a>';
       }
 
       content.innerHTML =
@@ -2486,6 +2655,56 @@
       // Show overlay
       document.getElementById('reader-overlay').classList.add('visible');
       document.body.style.overflow = 'hidden';
+
+      // Auto-fetch content if article has no local content
+      if (!article.contentType || article.contentType === 'none') {
+        fetchArticleContent(article.url).then(function (result) {
+          if (result && result.html && result.html.length > 50) {
+            // Store content to article object
+            article.contentType = 'html';
+            article.contentHtml = result.html;
+            // Update title if we got a better one
+            if (result.title && result.title.length > article.title.length) {
+              article.title = result.title;
+              document.getElementById('reader-article-title').textContent = result.title;
+            }
+            // Render the fetched content into reader
+            var contentEl = document.getElementById('reader-content');
+            var embeddedDiv = document.createElement('div');
+            embeddedDiv.className = 'reader-embedded-content';
+            embeddedDiv.contentEditable = 'true';
+            embeddedDiv.id = 'reader-embedded-body';
+            embeddedDiv.innerHTML = article.contentHtml;
+            // Replace the placeholder content
+            var metaEl = contentEl.querySelector('.reader-article-meta');
+            var headingEl = contentEl.querySelector('.reader-article-heading');
+            contentEl.innerHTML = '';
+            if (metaEl) contentEl.appendChild(metaEl);
+            if (headingEl) contentEl.appendChild(headingEl);
+            contentEl.appendChild(embeddedDiv);
+            // Add footer
+            var footer = document.createElement('div');
+            footer.className = 'reader-external-footer';
+            footer.innerHTML =
+              '<a class="reader-external-btn" href="' + escapeAttr(article.url) + '" target="_blank" rel="noopener">' +
+                '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+                ' 访问原文网页' +
+              '</a>' +
+              '<div class="reader-content-source-hint">已自动加载源网站内容 · 可直接编辑和选中高亮</div>';
+            contentEl.appendChild(footer);
+            showToast('文章内容已自动加载');
+            // Update card badge and save
+            renderArticles();
+            saveToGitHub();
+          } else {
+            var statusEl = document.getElementById('reader-fetch-status');
+            if (statusEl) {
+              statusEl.textContent = '⚠️ 自动加载失败，请在新标签页阅读原文';
+              statusEl.style.opacity = '1';
+            }
+          }
+        });
+      }
 
       // Init mindmap
       initMindmap();
