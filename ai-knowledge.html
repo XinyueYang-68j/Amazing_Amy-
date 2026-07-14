@@ -1108,6 +1108,110 @@
       opacity: 0.5;
       word-break: break-all;
     }
+
+    /* Local content: rendered markdown */
+    .reader-local-content {
+      font-size: 0.85rem;
+      line-height: 1.75;
+      color: var(--body);
+    }
+
+    .reader-local-content .md-h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 1.5rem 0 0.6rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .reader-local-content .md-h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin: 1.2rem 0 0.4rem;
+    }
+
+    .reader-local-content .md-h4 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--body);
+      margin: 1rem 0 0.3rem;
+    }
+
+    .reader-local-content .md-p {
+      margin: 0.5rem 0;
+    }
+
+    .reader-local-content .md-ul {
+      margin: 0.4rem 0;
+      padding-left: 1.2rem;
+    }
+
+    .reader-local-content .md-li {
+      margin: 0.25rem 0;
+      list-style: disc;
+    }
+
+    .reader-local-content .md-code {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.78rem;
+      overflow-x: auto;
+      margin: 0.5rem 0;
+      color: #D1D5DB;
+    }
+
+    .reader-local-content .md-inline {
+      background: rgba(255,255,255,0.06);
+      padding: 0.1rem 0.3rem;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      color: var(--gold);
+    }
+
+    .reader-local-content .md-link {
+      color: var(--gold);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(212,175,55,0.3);
+    }
+
+    .reader-local-content .md-link:hover {
+      border-color: var(--gold);
+    }
+
+    /* User highlights on content */
+    .reader-local-content mark.user-highlight {
+      padding: 1px 3px;
+      border-radius: 3px;
+      cursor: default;
+    }
+
+    /* External footer */
+    .reader-external-footer {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .reader-external-btn-prominent {
+      background: rgba(212,175,55,0.18);
+      animation: pulse-gold 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-gold {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+      50% { box-shadow: 0 0 0 4px rgba(212,175,55,0.15); }
+    }
+
+    .reader-content-source-hint {
+      font-size: 0.68rem;
+      color: var(--muted);
+      opacity: 0.5;
+      margin-top: 0.5rem;
+    }
     .reader-panel-content mark.user-highlight {
       padding: 1px 2px;
       border-radius: 3px;
@@ -1296,6 +1400,20 @@
     .card-external-link svg {
       width: 14px;
       height: 14px;
+    }
+
+    .card-content-badge {
+      font-size: 0.6rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      background: rgba(16,185,129,0.12);
+      color: #10B981;
+      white-space: nowrap;
+    }
+
+    .card-content-remote {
+      background: rgba(245,158,11,0.1);
+      color: #F59E0B;
     }
 
     /* Responsive: stack panels on narrow screens */
@@ -1858,6 +1976,9 @@
             '<div class="card-footer">' +
               '<span class="card-date">' + escapeHtml(article.date || '') + '</span>' +
               '<div class="card-tags">' + tagsHtml + '</div>' +
+              (article.content && article.content.length > 100
+                ? '<span class="card-content-badge">可本地阅读</span>'
+                : '<span class="card-content-badge card-content-remote">需跳转</span>') +
             '</div>' +
             '<button class="card-external-link" onclick="event.stopPropagation(); openArticle(\'' + escapeAttr(article.url) + '\')" title="在新标签页中打开">' +
               '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
@@ -2114,6 +2235,36 @@
     }
 
     /* ============================================================
+       Simple Markdown → HTML Renderer
+       ============================================================ */
+    function renderMd(text) {
+      if (!text) return '';
+      var html = escapeHtml(text);
+      // Headings
+      html = html.replace(/^### (.+)$/gm, '<h4 class="md-h4">$1</h4>');
+      html = html.replace(/^## (.+)$/gm, '<h3 class="md-h3">$1</h3>');
+      html = html.replace(/^# (.+)$/gm, '<h2 class="md-h2">$1</h2>');
+      // Bold & italic
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+      // Code blocks
+      html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="md-code"><code>$2</code></pre>');
+      html = html.replace(/`([^`]+)`/g, '<code class="md-inline">$1</code>');
+      // Lists
+      html = html.replace(/^- (.+)$/gm, '<li class="md-li">$1</li>');
+      html = html.replace(/(<li class="md-li">.*<\/li>\n?)+/g, '<ul class="md-ul">$&</ul>');
+      // Ordered lists
+      html = html.replace(/^\d+\. (.+)$/gm, '<li class="md-li">$1</li>');
+      // Links
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener" class="md-link">$1</a>');
+      // Paragraphs (lines not already wrapped)
+      html = html.replace(/^(?!<[huplo]|<li|<\/|```)(.+)$/gm, '<p class="md-p">$1</p>');
+      // Clean up empty paragraphs
+      html = html.replace(/<p class="md-p">\s*<\/p>/g, '');
+      return html;
+    }
+
+    /* ============================================================
        Dual-Screen Reading Mode
        ============================================================ */
     function getCurrentArticle() {
@@ -2129,9 +2280,39 @@
       document.getElementById('reader-article-title').textContent = article.title;
 
       var content = document.getElementById('reader-content');
-      // 渲染文章详情（不使用iframe，主流网站禁止iframe嵌入）
       var layerInfo = LAYER_MAP[article.layer] || {};
       var sourceIcon = SOURCE_ICONS[article.source] || '';
+
+      var bodyHtml = '';
+
+      if (article.content && article.content.length > 100) {
+        // 有本地存储的文章内容 → 直接渲染Markdown
+        bodyHtml = '<div class="reader-local-content">' + renderMd(article.content) + '</div>';
+        // 底部附加原文链接
+        bodyHtml += '<div class="reader-external-footer">' +
+          '<a class="reader-external-btn" href="' + escapeAttr(article.url) + '" target="_blank" rel="noopener">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+            ' 访问原文网页' +
+          '</a>' +
+          '<div class="reader-content-source-hint">已加载本地缓存内容 · 可直接阅读和高亮</div>' +
+        '</div>';
+      } else {
+        // 无本地内容 → 显示摘要 + 提示跳转
+        bodyHtml =
+          '<div class="reader-article-summary">' +
+            '<div class="reader-article-summary-label">摘要</div>' +
+            '<p class="reader-article-summary-text">' + escapeHtml(article.summary || '暂无摘要') + '</p>' +
+          '</div>' +
+          '<div class="reader-article-tags">' +
+            (article.tags || []).map(function (t) { return '<span class="reader-tag">' + escapeHtml(t) + '</span>'; }).join('') +
+          '</div>' +
+          '<a class="reader-external-btn reader-external-btn-prominent" href="' + escapeAttr(article.url) + '" target="_blank" rel="noopener">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+            ' 此文章需要在外部打开阅读 →' +
+          '</a>' +
+          '<div class="reader-content-source-hint">该网站暂不支持本地预览，将在新标签页打开</div>';
+      }
+
       content.innerHTML =
         '<div class="reader-article-meta">' +
           '<div class="reader-article-source">' + sourceIcon + ' ' + escapeHtml(article.source) + '</div>' +
@@ -2139,18 +2320,7 @@
           '<div class="reader-article-date">' + escapeHtml(article.date || '') + '</div>' +
         '</div>' +
         '<h3 class="reader-article-heading">' + escapeHtml(article.title) + '</h3>' +
-        '<div class="reader-article-summary">' +
-          '<div class="reader-article-summary-label">摘要</div>' +
-          '<p class="reader-article-summary-text" id="reader-summary-text">' + escapeHtml(article.summary || '暂无摘要') + '</p>' +
-        '</div>' +
-        '<div class="reader-article-tags">' +
-          (article.tags || []).map(function (t) { return '<span class="reader-tag">' + escapeHtml(t) + '</span>'; }).join('') +
-        '</div>' +
-        '<a class="reader-external-btn" href="' + escapeAttr(article.url) + '" target="_blank" rel="noopener">' +
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
-          ' 在新标签页打开原文' +
-        '</a>' +
-        '<div class="reader-article-url" title="' + escapeAttr(article.url) + '">' + escapeHtml(article.url) + '</div>';
+        bodyHtml;
 
       // Update read button state
       var readBtn = document.getElementById('reader-read-btn');
