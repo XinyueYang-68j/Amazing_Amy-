@@ -2083,6 +2083,15 @@
           .then(function (result) {
             if (result.content && result.content.articles) {
               articles = result.content.articles;
+              // Sync _mindmap and _notes from articles into articleDataCache
+              articles.forEach(function (a) {
+                if ((a._mindmap || a._notes) && !articleDataCache[a.id]) {
+                  articleDataCache[a.id] = {
+                    notes: a._notes || [],
+                    mindmap: a._mindmap || { nodes: [], edges: [] }
+                  };
+                }
+              });
               renderArticles();
               renderLayerCounts();
               showToast('已从GitHub加载最新数据');
@@ -2944,24 +2953,29 @@
 
       // Restore saved mindmap data
       var data = articleDataCache[currentArticleId];
-      if (data && data.mindmap && data.mindmap.nodes) {
-        data.mindmap.nodes.forEach(function (n) {
-          mmState.nodes.push(n);
-        });
+      var mindmapNodes = [];
+      var mindmapEdges = [];
+
+      if (data && data.mindmap) {
+        mindmapNodes = data.mindmap.nodes || [];
+        mindmapEdges = data.mindmap.edges || [];
       }
-      if (data && data.mindmap && data.mindmap.edges) {
-        mmState.edges = data.mindmap.edges;
-      } else {
-        // Try from article embedded data
-        if (article && article._mindmap && article._mindmap.nodes) {
-          article._mindmap.nodes.forEach(function (n) {
-            mmState.nodes.push(n);
-          });
-          mmState.edges = article._mindmap.edges || [];
-        } else {
-          mmState.edges = [];
-        }
+
+      // Also try from article embedded data (GitHub-saved)
+      if (mindmapNodes.length === 0 && article && article._mindmap && article._mindmap.nodes) {
+        mindmapNodes = article._mindmap.nodes;
+        mindmapEdges = article._mindmap.edges || [];
+        // Sync back to articleDataCache
+        articleDataCache[currentArticleId] = {
+          notes: currentArticleNotes,
+          mindmap: { nodes: mindmapNodes, edges: mindmapEdges }
+        };
       }
+
+      mindmapNodes.forEach(function (n) {
+        mmState.nodes.push(n);
+      });
+      mmState.edges = mindmapEdges;
 
       mmState.mode = 'select';
       mmState.dragging = null;
