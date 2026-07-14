@@ -1,6 +1,18 @@
 {
   "articles": [
     {
+      "id": "art-1784009189583",
+      "title": "test",
+      "url": "https://cloud.tencent.com/developer/article/2700164?policyId=1004",
+      "source": "公众号",
+      "layer": "loop",
+      "tags": [],
+      "summary": "",
+      "date": "2026-07-14",
+      "read": false,
+      "highlights": []
+    },
+    {
       "id": "seed-001",
       "title": "OpenClaw: The Open-Source AI Agent Framework",
       "url": "https://github.com/opencclaw/opencclaw",
