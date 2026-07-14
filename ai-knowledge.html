@@ -121,212 +121,112 @@
     }
 
     /* ============================================================
-       Spiral Staircase
+       DNA Double Helix
        ============================================================ */
-    .staircase-container {
-      display: flex;
-      gap: 1.5rem;
-      align-items: stretch;
-      min-height: 420px;
+    .helix-container {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1rem 0;
     }
 
-    .staircase-steps {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      gap: 6px;
-      position: relative;
+    .helix-svg {
+      width: 100%;
+      height: auto;
     }
 
-    .staircase-step {
-      position: relative;
-      padding: 1.25rem 1.5rem;
-      border-radius: 10px;
+    .helix-node {
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.06);
+      transition: opacity 0.3s, filter 0.3s;
     }
 
-    .staircase-step:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    .helix-node:hover {
+      filter: brightness(1.3);
     }
 
-    .staircase-step.step-prompt {
-      margin-left: 0;
-      background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05));
-      border-color: rgba(59,130,246,0.2);
+    .helix-node:hover text {
+      fill: #fff !important;
     }
 
-    .staircase-step.step-context {
-      margin-left: 18%;
-      background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05));
-      border-color: rgba(16,185,129,0.2);
-    }
-
-    .staircase-step.step-harness {
-      margin-left: 36%;
-      background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));
-      border-color: rgba(245,158,11,0.2);
-    }
-
-    .staircase-step.step-loop {
-      margin-left: 54%;
-      background: linear-gradient(135deg, rgba(236,72,153,0.15), rgba(236,72,153,0.05));
-      border-color: rgba(236,72,153,0.2);
-    }
-
-    .step-header {
+    .helix-legend {
       display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 0.35rem;
-    }
-
-    .step-icon {
-      font-size: 1.3rem;
-      flex-shrink: 0;
-    }
-
-    .step-name {
-      font-weight: 700;
-      font-size: 1rem;
-      color: var(--ink);
-    }
-
-    .step-meta {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-size: 0.78rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      font-size: 0.75rem;
       color: var(--muted);
     }
 
-    .step-year {
-      opacity: 0.7;
-    }
-
-    .step-count {
-      display: inline-flex;
+    .helix-legend span {
+      display: flex;
       align-items: center;
       gap: 0.3rem;
-      padding: 0.15rem 0.6rem;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.06);
-      font-size: 0.75rem;
-      color: var(--body);
     }
 
-    .step-count-num {
-      font-weight: 700;
-      color: var(--ink);
+    .helix-legend i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
     }
 
-    .step-desc {
-      font-size: 0.82rem;
+    .helix-direction {
+      text-align: center;
+      font-size: 0.72rem;
       color: var(--muted);
-      line-height: 1.6;
-      margin-top: 0.5rem;
-      display: none;
-    }
-
-    .staircase-step.active .step-desc {
-      display: block;
-    }
-
-    /* Architecture vertical bar */
-    .arch-bar {
-      width: 200px;
-      min-width: 160px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .arch-bar-line {
-      position: absolute;
-      top: 10%;
-      bottom: 10%;
-      width: 3px;
-      background: linear-gradient(to bottom, transparent, var(--purple), transparent);
-      border-radius: 2px;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.5rem;
       opacity: 0.6;
     }
 
-    .arch-bar-content {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 1.5rem 1rem;
-      border-radius: 12px;
-      background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05));
-      border: 1px solid rgba(168,85,247,0.2);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    @keyframes helix-pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.5; }
     }
 
-    .arch-bar-content:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 30px rgba(168,85,247,0.15);
+    .helix-rung {
+      animation: helix-pulse 4s ease-in-out infinite;
     }
 
-    .arch-bar-content .step-icon {
-      font-size: 1.8rem;
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-
-    .arch-bar-content .step-name {
-      font-size: 0.95rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .arch-bar-content .step-year {
-      font-size: 0.78rem;
-      color: var(--purple);
-      opacity: 0.8;
-      margin-bottom: 0.4rem;
-      display: block;
-    }
-
-    .arch-bar-content .step-desc {
+    /* Helix detail panel (replaces step-desc) */
+    .helix-detail {
+      max-width: 800px;
+      margin: 1rem auto 0;
+      padding: 1rem 1.25rem;
+      border-radius: 10px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(10px);
+      font-size: 0.85rem;
+      color: var(--body);
+      line-height: 1.7;
       display: none;
-      font-size: 0.78rem;
-      color: var(--muted);
-      line-height: 1.6;
-      text-align: left;
     }
 
-    .arch-bar-content.active .step-desc {
+    .helix-detail.visible {
       display: block;
     }
 
-    .arch-bar-content .step-count {
-      margin-top: 0.5rem;
+    .helix-detail-title {
+      font-weight: 700;
+      margin-bottom: 0.3rem;
     }
 
-    /* Connecting dots */
-    .arch-dot {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--purple);
-      left: 50%;
-      transform: translateX(-50%);
-      box-shadow: 0 0 8px rgba(168,85,247,0.5);
+    .helix-detail-close {
+      float: right;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.1rem;
     }
 
-    .arch-dot-top { top: 10%; }
-    .arch-dot-bottom { bottom: 10%; }
+    .helix-detail-close:hover { color: var(--ink); }
+
+    @media (max-width: 768px) {
+      .helix-container { padding: 0.5rem 0; }
+    }
 
     /* ============================================================
        Article Collection
@@ -836,37 +736,10 @@
         text-align: center;
       }
 
-      .staircase-container {
-        flex-direction: column;
-        min-height: auto;
+      .helix-container {
+        padding: 0.5rem 0;
       }
-
-      .staircase-step.step-prompt,
-      .staircase-step.step-context,
-      .staircase-step.step-harness,
-      .staircase-step.step-loop {
-        margin-left: 0;
-        width: 100%;
-      }
-
-      .arch-bar {
-        width: 100%;
-        min-width: 0;
-        flex-direction: row;
-        gap: 1rem;
-      }
-
-      .arch-bar-line {
-        display: none;
-      }
-
-      .arch-bar-content {
-        width: 100%;
-      }
-
-      .arch-dot {
-        display: none;
-      }
+    }
 
       .articles-grid {
         grid-template-columns: 1fr;
@@ -925,74 +798,145 @@
 
     <!-- ==================== Spiral Staircase ==================== -->
     <section class="ak-section">
-      <h2 class="ak-section-title">知识螺旋阶梯</h2>
-      <p class="ak-section-desc">点击任意层级查看详细描述。每一层代表AI能力的一个维度，从底层到顶层逐步升维。</p>
+      <h2 class="ak-section-title">知识螺旋</h2>
+      <p class="ak-section-desc">DNA双螺旋结构：左链为技术演进维度，右链为架构抽象维度。碱基对横杠连接两个维度，紫色中轴代表贯穿始终的架构能力。点击任意层级查看描述或筛选文章。</p>
 
-      <div class="staircase-container">
-        <!-- Steps: rendered top-to-bottom as Layer 4 → Layer 1 -->
-        <div class="staircase-steps" id="staircase-steps">
-          <!-- Layer 4 — top -->
-          <div class="staircase-step step-loop" data-layer="loop" onclick="toggleStepDesc(this)">
-            <div class="step-header">
-              <span class="step-icon">🔄</span>
-              <span class="step-name">AI Loop Engineering</span>
-            </div>
-            <div class="step-meta">
-              <span class="step-year">2025-2026</span>
-              <span class="step-count"><span class="step-count-num" data-count="loop">0</span> 篇</span>
-            </div>
-            <div class="step-desc">当前阶段。AI Agent不只是执行任务，而是自主规划→执行→反馈→迭代。企业级管控、多Agent协作、自动能力跃升成为焦点。</div>
-          </div>
-          <!-- Layer 3 -->
-          <div class="staircase-step step-harness" data-layer="harness" onclick="toggleStepDesc(this)">
-            <div class="step-header">
-              <span class="step-icon">🔧</span>
-              <span class="step-name">Harness Engineering</span>
-            </div>
-            <div class="step-meta">
-              <span class="step-year">2024-2025</span>
-              <span class="step-count"><span class="step-count-num" data-count="harness">0</span> 篇</span>
-            </div>
-            <div class="step-desc">AI从"对话"走向"执行"——操作电脑、浏览器、文件。核心框架开源，垂直Agent产品爆发。</div>
-          </div>
-          <!-- Layer 2 -->
-          <div class="staircase-step step-context" data-layer="context" onclick="toggleStepDesc(this)">
-            <div class="step-header">
-              <span class="step-icon">📚</span>
-              <span class="step-name">Context Engineering</span>
-            </div>
-            <div class="step-meta">
-              <span class="step-year">2023-2024</span>
-              <span class="step-count"><span class="step-count-num" data-count="context">0</span> 篇</span>
-            </div>
-            <div class="step-desc">从"怎么问"升级到"给什么上下文"。RAG、知识库、检索增强、长上下文管理成为核心。</div>
-          </div>
-          <!-- Layer 1 — bottom -->
-          <div class="staircase-step step-prompt" data-layer="prompt" onclick="toggleStepDesc(this)">
-            <div class="step-header">
-              <span class="step-icon">💬</span>
-              <span class="step-name">Prompt Engineering</span>
-            </div>
-            <div class="step-meta">
-              <span class="step-year">2022-2023</span>
-              <span class="step-count"><span class="step-count-num" data-count="prompt">0</span> 篇</span>
-            </div>
-            <div class="step-desc">AI使用的入门阶段。核心技能是"写好prompt"，通过调整输入来优化AI输出。</div>
-          </div>
+      <div class="helix-container">
+        <div class="helix-direction">能力升维 ▲</div>
+        <svg class="helix-svg" viewBox="0 0 720 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="hl-left" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#3B82F6"/>
+              <stop offset="33%" stop-color="#10B981"/>
+              <stop offset="66%" stop-color="#F59E0B"/>
+              <stop offset="100%" stop-color="#EC4899"/>
+            </linearGradient>
+            <linearGradient id="hl-right" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#F59E0B"/>
+              <stop offset="33%" stop-color="#06B6D4"/>
+              <stop offset="66%" stop-color="#8B5CF6"/>
+              <stop offset="100%" stop-color="#A855F7"/>
+            </linearGradient>
+            <filter id="hl-glow">
+              <feGaussianBlur stdDeviation="2.5" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Left strand: 技术演进 -->
+          <path d="M210,30 C280,90 120,170 210,230 C300,290 120,370 210,430 C240,450 270,460 290,470"
+                stroke="url(#hl-left)" stroke-width="3" stroke-linecap="round" filter="url(#hl-glow)" opacity="0.75"/>
+
+          <!-- Right strand: 架构抽象 -->
+          <path d="M510,30 C440,90 600,170 510,230 C420,290 600,370 510,430 C480,450 450,460 430,470"
+                stroke="url(#hl-right)" stroke-width="3" stroke-linecap="round" filter="url(#hl-glow)" opacity="0.75"/>
+
+          <!-- Base pair rungs -->
+          <line x1="234" y1="60" x2="486" y2="60" stroke="#3B82F6" stroke-width="1" opacity="0.2" class="helix-rung"/>
+          <line x1="185" y1="110" x2="535" y2="110" stroke="#3B82F6" stroke-width="1" opacity="0.2" class="helix-rung" style="animation-delay:0.4s"/>
+          <line x1="165" y1="190" x2="555" y2="190" stroke="#10B981" stroke-width="1" opacity="0.2" class="helix-rung" style="animation-delay:0.8s"/>
+          <line x1="205" y1="235" x2="515" y2="235" stroke="#10B981" stroke-width="1" opacity="0.2" class="helix-rung" style="animation-delay:1.2s"/>
+          <line x1="240" y1="300" x2="480" y2="300" stroke="#F59E0B" stroke-width="1" opacity="0.2" class="helix-rung" style="animation-delay:1.6s"/>
+          <line x1="175" y1="345" x2="545" y2="345" stroke="#F59E0B" stroke-width="1" opacity="0.2" class="helix-rung" style="animation-delay:2.0s"/>
+          <line x1="215" y1="395" x2="505" y2="395" stroke="#EC4899" stroke-width="1" opacity="0.2" class="helix-rung" style="animation-delay:2.4s"/>
+          <line x1="250" y1="440" x2="470" y2="440" stroke="#EC4899" stroke-width="1" opacity="0.2" class="helix-rung" style="animation-delay:2.8s"/>
+
+          <!-- Architecture center axis -->
+          <rect x="336" y="25" width="48" height="450" rx="24" fill="#A855F7" opacity="0.06"/>
+          <rect x="348" y="25" width="24" height="450" rx="12" fill="#A855F7" opacity="0.1"/>
+          <text x="360" y="258" text-anchor="middle" font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" fill="#A855F7" opacity="0.6" transform="rotate(-90 360 258)">架构与抽象能力</text>
+
+          <!-- Intersection dots -->
+          <circle cx="210" cy="60" r="4" fill="#3B82F6" opacity="0.85"/>
+          <circle cx="510" cy="60" r="4" fill="#F59E0B" opacity="0.85"/>
+          <circle cx="165" cy="190" r="4" fill="#10B981" opacity="0.85"/>
+          <circle cx="555" cy="190" r="4" fill="#06B6D4" opacity="0.85"/>
+          <circle cx="240" cy="300" r="4" fill="#F59E0B" opacity="0.85"/>
+          <circle cx="480" cy="300" r="4" fill="#8B5CF6" opacity="0.85"/>
+          <circle cx="215" cy="395" r="4" fill="#EC4899" opacity="0.85"/>
+          <circle cx="505" cy="395" r="4" fill="#A855F7" opacity="0.85"/>
+
+          <!-- Left strand labels: 技术演进 4 layers -->
+          <g class="helix-node" data-layer="loop" onclick="filterByLayer('loop')">
+            <rect x="50" y="375" width="135" height="62" rx="10" fill="#EC4899" fill-opacity="0.12" stroke="#EC4899" stroke-width="1" stroke-opacity="0.3"/>
+            <text x="117" y="396" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="600" fill="#EC4899">AI Loop</text>
+            <text x="117" y="412" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10" fill="#EC4899" opacity="0.65">Engineering</text>
+            <text x="117" y="430" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#9CA3AF">2025-2026 · 自主迭代</text>
+            <text x="117" y="443" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#EC4899" opacity="0.8"><tspan data-count="loop">0</tspan> 篇文章</text>
+          </g>
+
+          <g class="helix-node" data-layer="harness" onclick="filterByLayer('harness')">
+            <rect x="50" y="282" width="135" height="62" rx="10" fill="#F59E0B" fill-opacity="0.12" stroke="#F59E0B" stroke-width="1" stroke-opacity="0.3"/>
+            <text x="117" y="303" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="600" fill="#F59E0B">Harness</text>
+            <text x="117" y="319" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10" fill="#F59E0B" opacity="0.65">Engineering</text>
+            <text x="117" y="337" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#9CA3AF">2024-2025 · 让AI干活</text>
+            <text x="117" y="350" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#F59E0B" opacity="0.8"><tspan data-count="harness">0</tspan> 篇文章</text>
+          </g>
+
+          <g class="helix-node" data-layer="context" onclick="filterByLayer('context')">
+            <rect x="50" y="172" width="135" height="62" rx="10" fill="#10B981" fill-opacity="0.12" stroke="#10B981" stroke-width="1" stroke-opacity="0.3"/>
+            <text x="117" y="193" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="600" fill="#10B981">Context</text>
+            <text x="117" y="209" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10" fill="#10B981" opacity="0.65">Engineering</text>
+            <text x="117" y="227" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#9CA3AF">2023-2024 · 给什么信息</text>
+            <text x="117" y="240" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#10B981" opacity="0.8"><tspan data-count="context">0</tspan> 篇文章</text>
+          </g>
+
+          <g class="helix-node" data-layer="prompt" onclick="filterByLayer('prompt')">
+            <rect x="50" y="48" width="135" height="62" rx="10" fill="#3B82F6" fill-opacity="0.12" stroke="#3B82F6" stroke-width="1" stroke-opacity="0.3"/>
+            <text x="117" y="69" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="600" fill="#3B82F6">Prompt</text>
+            <text x="117" y="85" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10" fill="#3B82F6" opacity="0.65">Engineering</text>
+            <text x="117" y="103" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#9CA3AF">2022-2023 · 怎么问AI</text>
+            <text x="117" y="116" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#3B82F6" opacity="0.8"><tspan data-count="prompt">0</tspan> 篇文章</text>
+          </g>
+
+          <!-- Right strand labels: 架构抽象 4 levels -->
+          <g class="helix-node" data-layer="architecture" onclick="filterByLayer('architecture')">
+            <rect x="535" y="48" width="135" height="62" rx="10" fill="#A855F7" fill-opacity="0.08" stroke="#A855F7" stroke-width="1" stroke-opacity="0.2"/>
+            <text x="602" y="69" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" font-weight="600" fill="#A855F7">结构抽象</text>
+            <text x="602" y="85" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#A855F7" opacity="0.55">代码→配置→知识</text>
+            <text x="602" y="103" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#9CA3AF">L1 硬编码</text>
+          </g>
+
+          <g class="helix-node" data-layer="architecture" onclick="filterByLayer('architecture')">
+            <rect x="535" y="172" width="135" height="62" rx="10" fill="#A855F7" fill-opacity="0.08" stroke="#A855F7" stroke-width="1" stroke-opacity="0.2"/>
+            <text x="602" y="193" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" font-weight="600" fill="#A855F7">场景解耦</text>
+            <text x="602" y="209" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#A855F7" opacity="0.55">知识库·RAG·检索链路</text>
+            <text x="602" y="227" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#9CA3AF">L2 可配置</text>
+          </g>
+
+          <g class="helix-node" data-layer="architecture" onclick="filterByLayer('architecture')">
+            <rect x="535" y="282" width="135" height="62" rx="10" fill="#A855F7" fill-opacity="0.08" stroke="#A855F7" stroke-width="1" stroke-opacity="0.2"/>
+            <text x="602" y="303" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" font-weight="600" fill="#A855F7">能力封装</text>
+            <text x="602" y="319" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#A855F7" opacity="0.55">Agent·Skill·模板</text>
+            <text x="602" y="337" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#9CA3AF">L3 可迁移</text>
+          </g>
+
+          <g class="helix-node" data-layer="architecture" onclick="filterByLayer('architecture')">
+            <rect x="535" y="375" width="135" height="62" rx="10" fill="#A855F7" fill-opacity="0.08" stroke="#A855F7" stroke-width="1" stroke-opacity="0.2"/>
+            <text x="602" y="396" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="12" font-weight="600" fill="#A855F7">闭环自驱</text>
+            <text x="602" y="412" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#A855F7" opacity="0.55">反馈·跃升·自动进化</text>
+            <text x="602" y="430" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#9CA3AF">L4 自治</text>
+          </g>
+
+          <!-- Strand labels at bottom -->
+          <text x="200" y="490" font-family="PingFang SC, sans-serif" font-size="10" fill="#3B82F6" opacity="0.6">← 技术演进 strand</text>
+          <text x="420" y="490" font-family="PingFang SC, sans-serif" font-size="10" fill="#A855F7" opacity="0.6">架构抽象 strand →</text>
+        </svg>
+
+        <!-- Helix detail panel -->
+        <div class="helix-detail" id="helix-detail">
+          <button class="helix-detail-close" onclick="document.getElementById('helix-detail').classList.remove('visible')">&times;</button>
+          <div class="helix-detail-title" id="helix-detail-title"></div>
+          <div id="helix-detail-body"></div>
         </div>
 
-        <!-- Architecture bar -->
-        <div class="arch-bar">
-          <div class="arch-bar-line"></div>
-          <div class="arch-dot arch-dot-top"></div>
-          <div class="arch-dot arch-dot-bottom"></div>
-          <div class="arch-bar-content" data-layer="architecture" onclick="toggleStepDesc(this)">
-            <span class="step-icon">🏗️</span>
-            <span class="step-name">架构与抽象能力</span>
-            <span class="step-year">贯穿始终</span>
-            <div class="step-desc">AI时代的决胜因素。每一次可迁移能力的搭建都是向上一层的解耦：把硬编码的知识变成可配置的结构。</div>
-            <span class="step-count"><span class="step-count-num" data-count="architecture">0</span> 篇</span>
-          </div>
+        <!-- Legend -->
+        <div class="helix-legend">
+          <span><i style="background:#3B82F6;"></i>Prompt · 怎么问</span>
+          <span><i style="background:#10B981;"></i>Context · 给什么</span>
+          <span><i style="background:#F59E0B;"></i>Harness · 让AI干活</span>
+          <span><i style="background:#EC4899;"></i>Loop · 自主迭代</span>
+          <span><i style="background:#A855F7;"></i>架构 · 解耦贯穿</span>
         </div>
       </div>
     </section>
@@ -1163,7 +1107,8 @@
           counts[a.layer]++;
         }
       });
-      document.querySelectorAll('.step-count-num').forEach(function (el) {
+      // Update both old .step-count-num (if any) and SVG tspan data-count
+      document.querySelectorAll('[data-count]').forEach(function (el) {
         var layer = el.getAttribute('data-count');
         if (counts.hasOwnProperty(layer)) {
           el.textContent = counts[layer];
@@ -1266,26 +1211,12 @@
     };
 
     /* ============================================================
-       Toggle Step Description
+       Helix Click → Filter
        ============================================================ */
-    window.toggleStepDesc = function (el) {
-      // Toggle on clicked element
-      el.classList.toggle('active');
+    window.filterByLayer = function (layer) {
+      setLayerFilter(layer);
+      document.getElementById('articles-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-
-    /* ============================================================
-       Staircase Click → Filter
-       ============================================================ */
-    document.querySelectorAll('.staircase-step, .arch-bar-content').forEach(function (el) {
-      el.addEventListener('dblclick', function () {
-        var layer = el.getAttribute('data-layer');
-        if (!layer) return;
-        // Set filter to this layer
-        setLayerFilter(layer);
-        // Scroll to articles
-        document.getElementById('articles-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    });
 
     function setLayerFilter(layer) {
       currentFilterLayer = layer;
