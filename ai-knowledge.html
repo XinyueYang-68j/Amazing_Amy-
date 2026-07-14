@@ -1380,6 +1380,25 @@
       transform: scale(1.2);
       border-color: rgba(255, 255, 255, 0.4);
     }
+    .hl-clear-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 4px 8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: #9CA3AF;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: 4px;
+    }
+    .hl-clear-btn:hover {
+      color: #E8463A;
+      border-color: rgba(232,70,58,0.3);
+      background: rgba(232,70,58,0.08);
+    }
 
     /* Notes section */
     .reader-notes-section {
@@ -1975,6 +1994,7 @@
             <button class="hl-color" data-color="rgba(100,149,237,0.25)" style="background:#6495ED;" title="蓝色高亮"></button>
             <button class="hl-color" data-color="rgba(255,105,180,0.25)" style="background:#FF69B4;" title="粉色高亮"></button>
             <button class="hl-color" data-color="rgba(255,165,0,0.25)" style="background:#FFA500;" title="橙色高亮"></button>
+            <button class="hl-clear-btn" id="hl-clear-btn" title="清除全部高亮">✕ 清除</button>
           </div>
         </div>
         <div class="reader-panel-content" id="reader-content">
@@ -1998,6 +2018,7 @@
             <button class="mm-tool-btn" id="mm-add-node" title="新建节点">+ 节点</button>
             <button class="mm-tool-btn" id="mm-add-edge" title="连线模式">连线</button>
             <button class="mm-tool-btn" id="mm-delete" title="删除">删除</button>
+            <button class="mm-tool-btn" id="mm-sync" title="同步/刷新脑图">↻ 同步</button>
             <button class="mm-tool-btn" id="mm-fit" title="适应视图">适应</button>
           </div>
         </div>
@@ -2879,6 +2900,25 @@
       }
     });
 
+    // Clear all highlights button
+    document.getElementById('hl-clear-btn').addEventListener('click', function () {
+      var marks = document.querySelectorAll('#reader-content .user-highlight');
+      if (marks.length === 0) {
+        showToast('没有高亮需要清除');
+        return;
+      }
+      marks.forEach(function (mark) {
+        var parent = mark.parentNode;
+        while (mark.firstChild) {
+          parent.insertBefore(mark.firstChild, mark);
+        }
+        parent.removeChild(mark);
+        parent.normalize();
+      });
+      saveHighlights();
+      showToast('已清除全部高亮');
+    });
+
     function saveHighlights() {
       var article = getCurrentArticle();
       if (!article) return;
@@ -3307,6 +3347,34 @@
       // Re-center the view by reinitializing
       initMindmap();
       showToast('视图已适应');
+    });
+
+    // Sync button: force re-read from articleDataCache and reinit mindmap
+    document.getElementById('mm-sync').addEventListener('click', function () {
+      // Re-read data from localStorage + article embedded data
+      try {
+        var cached = localStorage.getItem('ak-article-data');
+        if (cached) {
+          var freshCache = JSON.parse(cached);
+          if (freshCache[currentArticleId]) {
+            articleDataCache[currentArticleId] = freshCache[currentArticleId];
+          }
+        }
+      } catch (e) { /* ignore */ }
+      // Also check article._mindmap
+      var article = getCurrentArticle();
+      if (article && article._mindmap && article._mindmap.nodes && article._mindmap.nodes.length > 0) {
+        var cached = articleDataCache[currentArticleId] || {};
+        if (!cached.mindmap || cached.mindmap.nodes.length === 0) {
+          articleDataCache[currentArticleId] = {
+            notes: cached.notes || [],
+            mindmap: article._mindmap,
+            highlights: cached.highlights
+          };
+        }
+      }
+      initMindmap();
+      showToast('脑图已同步');
     });
 
     /* --- Data persistence --- */
