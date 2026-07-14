@@ -1010,6 +1010,104 @@
       font-size: 0.88rem;
       opacity: 0.6;
     }
+
+    .reader-article-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .reader-article-source {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .reader-article-layer {
+      font-weight: 600;
+    }
+
+    .reader-article-heading {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.4;
+      margin-bottom: 1.2rem;
+    }
+
+    .reader-article-summary {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    .reader-article-summary-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .reader-article-summary-text {
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: var(--body);
+    }
+
+    .reader-article-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .reader-tag {
+      font-size: 0.68rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .reader-external-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      background: rgba(212,175,55,0.12);
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: background 0.2s, transform 0.15s;
+      border: 1px solid rgba(212,175,55,0.2);
+      margin-bottom: 0.8rem;
+    }
+
+    .reader-external-btn:hover {
+      background: rgba(212,175,55,0.2);
+      transform: translateY(-1px);
+    }
+
+    .reader-external-btn svg {
+      flex-shrink: 0;
+    }
+
+    .reader-article-url {
+      font-size: 0.7rem;
+      color: var(--muted);
+      opacity: 0.5;
+      word-break: break-all;
+    }
     .reader-panel-content mark.user-highlight {
       padding: 1px 2px;
       border-radius: 3px;
@@ -2031,11 +2129,28 @@
       document.getElementById('reader-article-title').textContent = article.title;
 
       var content = document.getElementById('reader-content');
-      if (article.url) {
-        content.innerHTML = '<iframe src="' + escapeAttr(article.url) + '" style="width:100%;height:100%;border:none;"></iframe>';
-      } else {
-        content.innerHTML = '<div class="reader-placeholder">该文章没有可用的在线链接</div>';
-      }
+      // 渲染文章详情（不使用iframe，主流网站禁止iframe嵌入）
+      var layerInfo = LAYER_MAP[article.layer] || {};
+      var sourceIcon = SOURCE_ICONS[article.source] || '';
+      content.innerHTML =
+        '<div class="reader-article-meta">' +
+          '<div class="reader-article-source">' + sourceIcon + ' ' + escapeHtml(article.source) + '</div>' +
+          '<div class="reader-article-layer" style="color:' + (layerInfo.color || '#999') + '">' + escapeHtml(layerInfo.name || article.layer) + '</div>' +
+          '<div class="reader-article-date">' + escapeHtml(article.date || '') + '</div>' +
+        '</div>' +
+        '<h3 class="reader-article-heading">' + escapeHtml(article.title) + '</h3>' +
+        '<div class="reader-article-summary">' +
+          '<div class="reader-article-summary-label">摘要</div>' +
+          '<p class="reader-article-summary-text" id="reader-summary-text">' + escapeHtml(article.summary || '暂无摘要') + '</p>' +
+        '</div>' +
+        '<div class="reader-article-tags">' +
+          (article.tags || []).map(function (t) { return '<span class="reader-tag">' + escapeHtml(t) + '</span>'; }).join('') +
+        '</div>' +
+        '<a class="reader-external-btn" href="' + escapeAttr(article.url) + '" target="_blank" rel="noopener">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+          ' 在新标签页打开原文' +
+        '</a>' +
+        '<div class="reader-article-url" title="' + escapeAttr(article.url) + '">' + escapeHtml(article.url) + '</div>';
 
       // Update read button state
       var readBtn = document.getElementById('reader-read-btn');
