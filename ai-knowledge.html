@@ -2065,6 +2065,14 @@
        Data Loading
        ============================================================ */
     function loadData() {
+      // First, restore articleDataCache from localStorage (for mindmap/notes)
+      try {
+        var cached = localStorage.getItem('ak-article-data');
+        if (cached) {
+          articleDataCache = JSON.parse(cached);
+        }
+      } catch (e) { /* ignore */ }
+
       fetch(DATA_PATH)
         .then(function (res) { return res.json(); })
         .then(function (data) {
@@ -2084,14 +2092,20 @@
             if (result.content && result.content.articles) {
               articles = result.content.articles;
               // Sync _mindmap and _notes from articles into articleDataCache
+              // Always prefer GitHub data (most recent) over localStorage
               articles.forEach(function (a) {
-                if ((a._mindmap || a._notes) && !articleDataCache[a.id]) {
+                if (a._mindmap || a._notes) {
+                  var cached = articleDataCache[a.id] || {};
                   articleDataCache[a.id] = {
-                    notes: a._notes || [],
-                    mindmap: a._mindmap || { nodes: [], edges: [] }
+                    notes: a._notes || cached.notes || [],
+                    mindmap: a._mindmap || cached.mindmap || { nodes: [], edges: [] }
                   };
                 }
               });
+              // Also persist the updated cache to localStorage for offline fallback
+              try {
+                localStorage.setItem('ak-article-data', JSON.stringify(articleDataCache));
+              } catch (e) { /* ignore */ }
               renderArticles();
               renderLayerCounts();
               showToast('已从GitHub加载最新数据');
@@ -2962,7 +2976,7 @@
       }
 
       // Also try from article embedded data (GitHub-saved)
-      if (mindmapNodes.length === 0 && article && article._mindmap && article._mindmap.nodes) {
+      if (mindmapNodes.length === 0 && article && article._mindmap && article._mindmap.nodes && article._mindmap.nodes.length > 0) {
         mindmapNodes = article._mindmap.nodes;
         mindmapEdges = article._mindmap.edges || [];
         // Sync back to articleDataCache
@@ -2970,6 +2984,11 @@
           notes: currentArticleNotes,
           mindmap: { nodes: mindmapNodes, edges: mindmapEdges }
         };
+      }
+
+      // Debug: show restored count
+      if (mindmapNodes.length > 0) {
+        showToast('已恢复 ' + mindmapNodes.length + ' 个脑图节点');
       }
 
       mindmapNodes.forEach(function (n) {
