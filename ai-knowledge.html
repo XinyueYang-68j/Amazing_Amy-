@@ -2735,6 +2735,9 @@
       // Load saved data
       loadArticleData(articleId);
 
+      // Restore highlights after content is in DOM
+      restoreHighlights();
+
       // Show overlay
       document.getElementById('reader-overlay').classList.add('visible');
       document.body.style.overflow = 'hidden';
@@ -2877,8 +2880,89 @@
     });
 
     function saveHighlights() {
-      // Highlights are stored in DOM; for persistence we would need to serialize
-      // For now they are visual only within the session
+      var article = getCurrentArticle();
+      if (!article) return;
+
+      var marks = document.querySelectorAll('#reader-content .user-highlight');
+      var highlights = [];
+      marks.forEach(function (mark) {
+        var text = mark.textContent;
+        var color = mark.style.background;
+        var parentEl = mark.parentElement;
+        // Find nearest identifiable sibling index within the content area
+        var contentEl = document.getElementById('reader-content');
+        var index = Array.prototype.indexOf.call(contentEl.querySelectorAll('.user-highlight'), mark);
+        highlights.push({ text: text.substring(0, 200), color: color, index: index });
+      });
+
+      article._highlights = highlights;
+      // Also save to articleDataCache
+      if (articleDataCache[currentArticleId]) {
+        articleDataCache[currentArticleId].highlights = highlights;
+      } else {
+        articleDataCache[currentArticleId] = {
+          notes: currentArticleNotes || [],
+          mindmap: { nodes: [], edges: [] },
+          highlights: highlights
+        };
+      }
+      // Persist to localStorage
+      try {
+        localStorage.setItem('ak-article-data', JSON.stringify(articleDataCache));
+      } catch (e) { /* ignore */ }
+      // Sync to GitHub
+      saveToGitHub();
+    }
+
+    function restoreHighlights() {
+      var article = getCurrentArticle();
+      if (!article) return;
+
+      var highlights = null;
+      // Try articleDataCache first, then article embedded data
+      if (articleDataCache[currentArticleId] && articleDataCache[currentArticleId].highlights) {
+        highlights = articleDataCache[currentArticleId].highlights;
+      } else if (article._highlights) {
+        highlights = article._highlights;
+      }
+      if (!highlights || highlights.length === 0) return;
+
+      var contentEl = document.getElementById('reader-content');
+      var allTextNodes = [];
+      // Collect all text nodes in content area
+      var walker = document.createTreeWalker(contentEl, NodeFilter.SHOW_TEXT, null, false);
+      while (walker.nextNode()) {
+        if (walker.currentNode.textContent.trim()) {
+          allTextNodes.push(walker.currentNode);
+        }
+      }
+
+      var restored = 0;
+      highlights.forEach(function (h) {
+        for (var i = 0; i < allTextNodes.length; i++) {
+          var node = allTextNodes[i];
+          var idx = node.textContent.indexOf(h.text);
+          if (idx >= 0) {
+            try {
+              var range = document.createRange();
+              range.setStart(node, idx);
+              range.setEnd(node, idx + h.text.length);
+              var mark = document.createElement('mark');
+              mark.style.background = h.color;
+              mark.style.padding = '1px 2px';
+              mark.style.borderRadius = '3px';
+              mark.classList.add('user-highlight');
+              range.surroundContents(mark);
+              restored++;
+              break;
+            } catch (e) { /* skip */ }
+          }
+        }
+      });
+
+      if (restored > 0) {
+        showToast('已恢复 ' + restored + ' 处高亮');
+      }
     }
 
     /* --- Notes system --- */
@@ -2949,9 +3033,15 @@
     /* --- Canvas-based mindmap --- */
     function initMindmap() {
       var canvas = document.getElementById('reader-mindmap-canvas');
-      var ctx = canvas.getContext('2d');
       var container = canvas.parentElement;
       var headerH = container.querySelector('.reader-panel-header') ? container.querySelector('.reader-panel-header').offsetHeight : 44;
+
+      // Safety: if container has no dimensions yet, retry after a short delay
+      if (container.clientWidth < 10 || container.clientHeight < 10) {
+        setTimeout(initMindmap, 100);
+        return;
+      }
+
       canvas.width = container.clientWidth;
       canvas.height = container.clientHeight - headerH;
 
@@ -3233,12 +3323,16 @@
 
       articleDataCache[article.id] = {
         notes: currentArticleNotes,
-        mindmap: mindmapData
+        mindmap: mindmapData,
+        highlights: articleDataCache[article.id] ? articleDataCache[article.id].highlights : undefined
       };
 
       // Embed mindmap + notes into article object so saveToGitHub persists them
       article._notes = currentArticleNotes;
       article._mindmap = mindmapData;
+      if (!article._highlights) {
+        article._highlights = articleDataCache[article.id] ? articleDataCache[article.id].highlights : [];
+      }
 
       try {
         localStorage.setItem('ak-article-data', JSON.stringify(articleDataCache));
