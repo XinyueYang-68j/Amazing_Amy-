@@ -1109,6 +1109,142 @@
       word-break: break-all;
     }
 
+    /* Embedded HTML content: preserve source formatting, dark-theme adapted */
+    .reader-embedded-content {
+      font-size: 0.88rem;
+      line-height: 1.8;
+      color: #D1D5DB;
+      padding: 0.5rem 0;
+      outline: none;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+    .reader-embedded-content:focus {
+      background: rgba(255,255,255,0.015);
+    }
+    /* Reset all source colors to dark-theme safe */
+    .reader-embedded-content,
+    .reader-embedded-content * {
+      color: inherit;
+    }
+    .reader-embedded-content h1, .reader-embedded-content h2, .reader-embedded-content h3,
+    .reader-embedded-content h4, .reader-embedded-content h5, .reader-embedded-content h6 {
+      color: #F5F5F5 !important;
+      font-weight: 700;
+      margin: 1.4rem 0 0.5rem;
+      line-height: 1.4;
+    }
+    .reader-embedded-content h1 { font-size: 1.4rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.3rem; }
+    .reader-embedded-content h2 { font-size: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.25rem; }
+    .reader-embedded-content h3 { font-size: 1.05rem; }
+    .reader-embedded-content h4 { font-size: 0.95rem; }
+    .reader-embedded-content p {
+      margin: 0.6rem 0;
+    }
+    .reader-embedded-content a {
+      color: var(--gold) !important;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(212,175,55,0.25);
+      transition: border-color 0.2s;
+    }
+    .reader-embedded-content a:hover {
+      border-color: var(--gold);
+    }
+    .reader-embedded-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin: 0.6rem 0;
+      display: block;
+    }
+    .reader-embedded-content ul, .reader-embedded-content ol {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+    }
+    .reader-embedded-content li {
+      margin: 0.25rem 0;
+    }
+    .reader-embedded-content ul > li { list-style: disc; }
+    .reader-embedded-content ol > li { list-style: decimal; }
+    .reader-embedded-content blockquote {
+      border-left: 3px solid var(--gold-dim);
+      padding: 0.4rem 0.8rem;
+      margin: 0.6rem 0;
+      background: rgba(255,255,255,0.03);
+      border-radius: 0 6px 6px 0;
+      color: var(--muted);
+    }
+    .reader-embedded-content pre, .reader-embedded-content code {
+      font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    }
+    .reader-embedded-content pre {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      margin: 0.6rem 0;
+      line-height: 1.6;
+      color: #D1D5DB !important;
+    }
+    .reader-embedded-content code {
+      background: rgba(255,255,255,0.06);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      color: var(--gold);
+    }
+    .reader-embedded-content pre code {
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      color: inherit;
+    }
+    .reader-embedded-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.6rem 0;
+      font-size: 0.82rem;
+    }
+    .reader-embedded-content th, .reader-embedded-content td {
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 0.4rem 0.6rem;
+      text-align: left;
+    }
+    .reader-embedded-content th {
+      background: rgba(255,255,255,0.04);
+      color: #F5F5F5 !important;
+      font-weight: 600;
+    }
+    .reader-embedded-content hr {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin: 1rem 0;
+    }
+    .reader-embedded-content strong, .reader-embedded-content b {
+      color: #F5F5F5 !important;
+      font-weight: 600;
+    }
+    .reader-embedded-content em, .reader-embedded-content i {
+      font-style: italic;
+    }
+    /* Source site cleanup: hide nav, header, footer, sidebar noise if any leaked through */
+    .reader-embedded-content nav, .reader-embedded-content footer,
+    .reader-embedded-content [role="navigation"], .reader-embedded-content [role="banner"],
+    .reader-embedded-content [role="contentinfo"], .reader-embedded-content [aria-label="menu"],
+    .reader-embedded-content .sidebar, .reader-embedded-content .ad,
+    .reader-embedded-content iframe, .reader-embedded-content script,
+    .reader-embedded-content style, .reader-embedded-content noscript {
+      display: none !important;
+    }
+    /* User highlights on embedded content */
+    .reader-embedded-content mark.user-highlight {
+      padding: 1px 3px;
+      border-radius: 3px;
+      cursor: default;
+    }
+
     /* Local content: rendered markdown */
     .reader-local-content {
       font-size: 0.85rem;
@@ -1976,7 +2112,7 @@
             '<div class="card-footer">' +
               '<span class="card-date">' + escapeHtml(article.date || '') + '</span>' +
               '<div class="card-tags">' + tagsHtml + '</div>' +
-              (article.content && article.content.length > 100
+              ((article.contentType === 'html' || article.contentType === 'md')
                 ? '<span class="card-content-badge">可本地阅读</span>'
                 : '<span class="card-content-badge card-content-remote">需跳转</span>') +
             '</div>' +
@@ -2285,10 +2421,19 @@
 
       var bodyHtml = '';
 
-      if (article.content && article.content.length > 100) {
-        // 有本地存储的文章内容 → 直接渲染Markdown
-        bodyHtml = '<div class="reader-local-content">' + renderMd(article.content) + '</div>';
-        // 底部附加原文链接
+      if (article.contentType === 'html' && article.contentHtml) {
+        // HTML内容：保留源网站格式，contenteditable可编辑
+        bodyHtml = '<div class="reader-embedded-content" contenteditable="true" id="reader-embedded-body">' + article.contentHtml + '</div>';
+        bodyHtml += '<div class="reader-external-footer">' +
+          '<a class="reader-external-btn" href="' + escapeAttr(article.url) + '" target="_blank" rel="noopener">' +
+            '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+            ' 访问原文网页' +
+          '</a>' +
+          '<div class="reader-content-source-hint">已加载源网站内容 · 可直接编辑和选中高亮</div>' +
+        '</div>';
+      } else if (article.contentType === 'md' && article.contentHtml) {
+        // Markdown内容
+        bodyHtml = '<div class="reader-local-content">' + renderMd(article.contentHtml) + '</div>';
         bodyHtml += '<div class="reader-external-footer">' +
           '<a class="reader-external-btn" href="' + escapeAttr(article.url) + '" target="_blank" rel="noopener">' +
             '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
