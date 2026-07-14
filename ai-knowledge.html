@@ -224,6 +224,95 @@
 
     .helix-detail-close:hover { color: var(--ink); }
 
+    /* ============================================================
+       Trending TOP10
+       ============================================================ */
+    .trending-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+
+    .trending-card {
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    .trending-card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1rem;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--ink);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .trending-card-icon {
+      font-size: 1.1rem;
+    }
+
+    .trending-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .trending-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.65rem 1rem;
+      text-decoration: none;
+      color: var(--body);
+      transition: background 0.2s;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+
+    .trending-item:last-child {
+      border-bottom: none;
+    }
+
+    .trending-item:hover {
+      background: rgba(255,255,255,0.04);
+    }
+
+    .trending-rank {
+      font-weight: 800;
+      font-size: 0.8rem;
+      color: var(--muted);
+      min-width: 1.2rem;
+      text-align: center;
+    }
+
+    .trending-item:nth-child(1) .trending-rank { color: #EC4899; }
+    .trending-item:nth-child(2) .trending-rank { color: #F59E0B; }
+    .trending-item:nth-child(3) .trending-rank { color: #10B981; }
+
+    .trending-text {
+      flex: 1;
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+
+    .trending-badge {
+      font-size: 0.6rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .trending-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 768px) {
       .helix-container { padding: 0.5rem 0; }
     }
@@ -861,7 +950,7 @@
             <rect x="50" y="375" width="135" height="62" rx="10" fill="#EC4899" fill-opacity="0.12" stroke="#EC4899" stroke-width="1" stroke-opacity="0.3"/>
             <text x="117" y="396" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="13" font-weight="600" fill="#EC4899">AI Loop</text>
             <text x="117" y="412" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="10" fill="#EC4899" opacity="0.65">Engineering</text>
-            <text x="117" y="430" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#9CA3AF">2025-2026 · 自主迭代</text>
+            <text x="117" y="430" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#9CA3AF">2025-Now · 自主迭代</text>
             <text x="117" y="443" text-anchor="middle" font-family="PingFang SC, sans-serif" font-size="9" fill="#EC4899" opacity="0.8"><tspan data-count="loop">0</tspan> 篇文章</text>
           </g>
 
@@ -938,6 +1027,88 @@
           <span><i style="background:#EC4899;"></i>Loop · 自主迭代</span>
           <span><i style="background:#A855F7;"></i>架构 · 解耦贯穿</span>
         </div>
+      </div>
+    </section>
+
+    <!-- ==================== Trending TOP10 ==================== -->
+    <section class="ak-section">
+      <h2 class="ak-section-title">本周热门 <span style="font-size:0.7em;color:var(--muted);font-weight:400;">· 每周自动更新</span></h2>
+      <p class="ak-section-desc">AI领域本周最火的概念与文章。数据来源：GitHub Trending、Twitter/X、技术社区。点击可跳转原文。</p>
+
+      <div class="trending-grid">
+        <!-- 热门概念 -->
+        <div class="trending-card trending-concepts">
+          <div class="trending-card-header">
+            <span class="trending-card-icon">🔥</span>
+            <span>热门概念</span>
+          </div>
+          <div class="trending-list">
+            <a class="trending-item" href="https://juejin.cn/post/7660360633646071858" target="_blank" rel="noopener">
+              <span class="trending-rank">1</span>
+              <span class="trending-text">MCP协议 — AI Agent的"HTTP时刻"</span>
+              <span class="trending-badge" style="background:rgba(236,72,153,0.15);color:#EC4899;">Loop</span>
+            </a>
+            <a class="trending-item" href="https://blog.csdn.net/weixin_39108752/article/details/159639912" target="_blank" rel="noopener">
+              <span class="trending-rank">2</span>
+              <span class="trending-text">多Agent协作 — 从单体Agent到数字员工团队</span>
+              <span class="trending-badge" style="background:rgba(236,72,153,0.15);color:#EC4899;">Loop</span>
+            </a>
+            <a class="trending-item" href="https://insights.reinventing.ai/articles/ai-agents-reliability-loops-small-teams-2026-07-09" target="_blank" rel="noopener">
+              <span class="trending-rank">3</span>
+              <span class="trending-text">Reliability Loops — 替代Demo-only工作流</span>
+              <span class="trending-badge" style="background:rgba(236,72,153,0.15);color:#EC4899;">Loop</span>
+            </a>
+            <a class="trending-item" href="https://www.avaya.com/content/dam/aem-avaya-portal/en_us/documents/wp-mcp-status-report-mis16053en.pdf" target="_blank" rel="noopener">
+              <span class="trending-rank">4</span>
+              <span class="trending-text">MCP企业级落地 — Linux基金会治理</span>
+              <span class="trending-badge" style="background:rgba(245,158,11,0.15);color:#F59E0B;">Harness</span>
+            </a>
+            <a class="trending-item" href="https://ai-automate.fr/veille/agents-orchestration-multi-echelles-juillet-2026" target="_blank" rel="noopener">
+              <span class="trending-rank">5</span>
+              <span class="trending-text">多尺度编排 — 牧羊犬-搜索者范式</span>
+              <span class="trending-badge" style="background:rgba(236,72,153,0.15);color:#EC4899;">Loop</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- GitHub Trending -->
+        <div class="trending-card trending-repos">
+          <div class="trending-card-header">
+            <span class="trending-card-icon">⭐</span>
+            <span>GitHub 热门项目</span>
+          </div>
+          <div class="trending-list">
+            <a class="trending-item" href="https://github.com/topoteretes/cognee" target="_blank" rel="noopener">
+              <span class="trending-rank">1</span>
+              <span class="trending-text">cognee — 知识图谱长期记忆 v3.0</span>
+              <span class="trending-badge" style="background:rgba(16,185,129,0.15);color:#10B981;">Context</span>
+            </a>
+            <a class="trending-item" href="https://github.com/DietrichGebert/ponytail" target="_blank" rel="noopener">
+              <span class="trending-rank">2</span>
+              <span class="trending-text">ponytail — AI编码Agent的YAGNI哲学</span>
+              <span class="trending-badge" style="background:rgba(245,158,11,0.15);color:#F59E0B;">Harness</span>
+            </a>
+            <a class="trending-item" href="https://github.com/farion1231/cc-switch" target="_blank" rel="noopener">
+              <span class="trending-rank">3</span>
+              <span class="trending-text">cc-switch — AI编码工具统一管理器</span>
+              <span class="trending-badge" style="background:rgba(245,158,11,0.15);color:#F59E0B;">Harness</span>
+            </a>
+            <a class="trending-item" href="https://github.com/aaif-goose/goose" target="_blank" rel="noopener">
+              <span class="trending-rank">4</span>
+              <span class="trending-text">goose — Rust开源AI编码Agent</span>
+              <span class="trending-badge" style="background:rgba(245,158,11,0.15);color:#F59E0B;">Harness</span>
+            </a>
+            <a class="trending-item" href="https://github.com/opencclaw/opencclaw" target="_blank" rel="noopener">
+              <span class="trending-rank">5</span>
+              <span class="trending-text">OpenClaw — 315K+ Stars Agent框架</span>
+              <span class="trending-badge" style="background:rgba(245,158,11,0.15);color:#F59E0B;">Harness</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:1rem;font-size:0.72rem;color:var(--muted);opacity:0.5;">
+        数据更新于 2026-07-14 · 后续接入自动爬取后每周一更新
       </div>
     </section>
 
