@@ -31,7 +31,7 @@
       "highlights": [],
       "content": "## OpenClaw: The Open-Source AI Agent Framework\n\nOpenClaw是当前最火的开源AI Agent框架，GitHub获得315K+ Stars。\n\n### 核心能力\n- 直接操作电脑：文件管理、浏览器自动化、邮件处理\n- Skills技能系统：可无限扩展的专业能力包\n- 多模型支持：DeepSeek、Hunyuan、Kimi、GLM等国产大模型\n- 本地运行：数据安全，不上传云端\n- 跨平台：Mac + Windows\n\n### 为什么重要\nOpenClaw标志着AI从\"对话式\"到\"执行力\"的跨越。它让AI不再只是回答问题，而是真正动手完成任务——帮你整理文件、搜索信息、生成报告、自动回邮件。\n\n### 生态系统\n- ClawHub技能社区：1.3万个精选Skills\n- GitHub开源生态：社区贡献持续增长\n- 企业级方案：腾讯云ClawPro提供托管版本\n",
       "contentSource": "local",
-      "liked": true
+      "liked": false
     },
     {
       "id": "seed-002",
